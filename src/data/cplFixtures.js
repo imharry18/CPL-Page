@@ -1,68 +1,65 @@
-// src/data/cplFixtures.js
-
 export const CPL_FIXTURES = [
-  // --- DAY 1: Jan 25 (2 Matches Per Team) ---
   { 
     id: 1, 
     match: 'Match 01', 
     teamA: 'The Godfathers', 
     teamB: 'Kesari Strikers', 
     date: 'Jan 25', 
-    time: '07:15 AM', 
+    time: '07:00 AM', 
     venue: 'Football Ground' 
   },
   { 
     id: 2, 
     match: 'Match 02', 
     teamA: 'Kshatriya Kings', 
-    teamB: 'Melbourne Stars', 
+    teamB: 'Bajrang United', 
     date: 'Jan 25', 
-    time: '08:30 AM', 
+    time: '08:15 AM', 
     venue: 'Football Ground' 
   },
   { 
     id: 3, 
     match: 'Match 03', 
-    teamA: 'Bajrang United', 
+    teamA: 'Melbourne Stars', 
     teamB: 'Trishul Titans', 
     date: 'Jan 25', 
-    time: '09:45 AM', 
+    time: '09:30 AM', 
     venue: 'Football Ground' 
   },
   { 
     id: 4, 
     match: 'Match 04', 
     teamA: 'Rashtriya Rifles', 
-    teamB: 'The Warlords', 
+    teamB: 'Kesari Strikers', 
     date: 'Jan 25', 
-    time: '11:00 AM', 
+    time: '10:45 AM', 
     venue: 'Football Ground' 
   },
   { 
     id: 5, 
     match: 'Match 05', 
-    teamA: 'The Godfathers', 
+    teamA: 'The Warlords', 
     teamB: 'Kshatriya Kings', 
     date: 'Jan 25', 
-    time: '12:15 PM', 
+    time: '12:00 PM', 
     venue: 'Football Ground' 
   },
   { 
     id: 6, 
     match: 'Match 06', 
-    teamA: 'Kesari Strikers', 
-    teamB: 'Melbourne Stars', 
+    teamA: 'The Godfathers', 
+    teamB: 'Bajrang United', 
     date: 'Jan 25', 
-    time: '01:30 PM', 
+    time: '01:15 PM', 
     venue: 'Football Ground' 
   },
   { 
     id: 7, 
     match: 'Match 07', 
-    teamA: 'Bajrang United', 
+    teamA: 'Melbourne Stars', 
     teamB: 'Rashtriya Rifles', 
     date: 'Jan 25', 
-    time: '02:45 PM', 
+    time: '02:30 PM', 
     venue: 'Football Ground' 
   },
   { 
@@ -71,16 +68,15 @@ export const CPL_FIXTURES = [
     teamA: 'Trishul Titans', 
     teamB: 'The Warlords', 
     date: 'Jan 25', 
-    time: '04:00 PM', 
+    time: '03:15 PM', 
     venue: 'Football Ground' 
   },
 
-  // --- DAY 2: Jan 26 (1 Match Per Team) ---
   { 
     id: 9, 
     match: 'Match 09', 
-    teamA: 'Rashtriya Rifles', 
-    teamB: 'Trishul Titans', 
+    teamA: 'Kesari Strikers', 
+    teamB: 'Melbourne Stars', 
     date: 'Jan 26', 
     time: 'TBA', 
     venue: 'To Be Announced' 
@@ -88,8 +84,8 @@ export const CPL_FIXTURES = [
   { 
     id: 10, 
     match: 'Match 10', 
-    teamA: 'The Warlords', 
-    teamB: 'The Godfathers', 
+    teamA: 'Bajrang United', 
+    teamB: 'Trishul Titans', 
     date: 'Jan 26', 
     time: 'TBA', 
     venue: 'To Be Announced' 
@@ -97,7 +93,7 @@ export const CPL_FIXTURES = [
   { 
     id: 11, 
     match: 'Match 11', 
-    teamA: 'Kesari Strikers', 
+    teamA: 'The Godfathers', 
     teamB: 'Kshatriya Kings', 
     date: 'Jan 26', 
     time: 'TBA', 
@@ -106,8 +102,8 @@ export const CPL_FIXTURES = [
   { 
     id: 12, 
     match: 'Match 12', 
-    teamA: 'Melbourne Stars', 
-    teamB: 'Bajrang United', 
+    teamA: 'Rashtriya Rifles', 
+    teamB: 'Melbourne Stars', 
     date: 'Jan 26', 
     time: 'TBA', 
     venue: 'To Be Announced' 
