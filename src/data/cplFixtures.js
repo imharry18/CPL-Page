@@ -1,3 +1,5 @@
+// src/data/cplFixtures.js
+
 export const CPL_FIXTURES = [
   { 
     id: 1, 
@@ -30,7 +32,7 @@ export const CPL_FIXTURES = [
     id: 4, 
     match: 'Match 04', 
     teamA: 'Rashtriya Rifles', 
-    teamB: 'Kesari Strikers', 
+    teamB: 'The Warlords', 
     date: 'Jan 25', 
     time: '10:45 AM', 
     venue: 'Football Ground' 
@@ -38,45 +40,46 @@ export const CPL_FIXTURES = [
   { 
     id: 5, 
     match: 'Match 05', 
-    teamA: 'The Warlords', 
+    teamA: 'The Godfathers', 
     teamB: 'Kshatriya Kings', 
     date: 'Jan 25', 
-    time: '12:00 PM', 
+    time: '12:15 PM', 
     venue: 'Football Ground' 
   },
   { 
     id: 6, 
     match: 'Match 06', 
-    teamA: 'The Godfathers', 
-    teamB: 'Bajrang United', 
+    teamA: 'Trishul Titans', 
+    teamB: 'The Warlords', 
     date: 'Jan 25', 
-    time: '01:15 PM', 
+    time: '01:30 PM', 
     venue: 'Football Ground' 
   },
   { 
     id: 7, 
     match: 'Match 07', 
-    teamA: 'Melbourne Stars', 
+    teamA: 'Bajrang United', 
     teamB: 'Rashtriya Rifles', 
     date: 'Jan 25', 
-    time: '02:30 PM', 
+    time: '02:45 PM', 
     venue: 'Football Ground' 
   },
   { 
     id: 8, 
     match: 'Match 08', 
-    teamA: 'Trishul Titans', 
-    teamB: 'The Warlords', 
+    teamA: 'Kesari Strikers', 
+    teamB: 'Melbourne Stars', 
     date: 'Jan 25', 
-    time: '03:15 PM', 
+    time: '04:00 PM', 
     venue: 'Football Ground' 
   },
 
+  // --- DAY 2: Jan 26 (1 Match Per Team) ---
   { 
     id: 9, 
     match: 'Match 09', 
-    teamA: 'Kesari Strikers', 
-    teamB: 'Melbourne Stars', 
+    teamA: 'Rashtriya Rifles', 
+    teamB: 'Trishul Titans', 
     date: 'Jan 26', 
     time: 'TBA', 
     venue: 'To Be Announced' 
@@ -84,8 +87,8 @@ export const CPL_FIXTURES = [
   { 
     id: 10, 
     match: 'Match 10', 
-    teamA: 'Bajrang United', 
-    teamB: 'Trishul Titans', 
+    teamA: 'The Warlords', 
+    teamB: 'The Godfathers', 
     date: 'Jan 26', 
     time: 'TBA', 
     venue: 'To Be Announced' 
@@ -93,7 +96,7 @@ export const CPL_FIXTURES = [
   { 
     id: 11, 
     match: 'Match 11', 
-    teamA: 'The Godfathers', 
+    teamA: 'Kesari Strikers', 
     teamB: 'Kshatriya Kings', 
     date: 'Jan 26', 
     time: 'TBA', 
@@ -102,10 +105,10 @@ export const CPL_FIXTURES = [
   { 
     id: 12, 
     match: 'Match 12', 
-    teamA: 'Rashtriya Rifles', 
-    teamB: 'Melbourne Stars', 
+    teamA: 'Melbourne Stars', 
+    teamB: 'Bajrang United', 
     date: 'Jan 26', 
     time: 'TBA', 
     venue: 'To Be Announced' 
   },
-];
+]; 
