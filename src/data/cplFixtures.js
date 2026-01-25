@@ -87,8 +87,8 @@ export const CPL_FIXTURES = [
   { 
     id: 10, 
     match: 'Match 10', 
-    teamA: 'The Warlords', 
-    teamB: 'The Godfathers', 
+    teamA: 'Melbourne Stars', 
+    teamB: 'Bajrang United', 
     date: 'Jan 26', 
     time: 'TBA', 
     venue: 'To Be Announced' 
@@ -105,8 +105,8 @@ export const CPL_FIXTURES = [
   { 
     id: 12, 
     match: 'Match 12', 
-    teamA: 'Melbourne Stars', 
-    teamB: 'Bajrang United', 
+    teamA: 'The Warlords', 
+    teamB: 'The Godfathers', 
     date: 'Jan 26', 
     time: 'TBA', 
     venue: 'To Be Announced' 
