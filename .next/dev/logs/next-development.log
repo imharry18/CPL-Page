@@ -1,7 +1,6 @@
-[00:00:01.557] Server  LOG      ✓ Ready in 1049ms
-[00:00:07.281] Server  LOG      ○ Compiling / ...
-[00:06:54.456] Server  LOG      ✓ Compiled in 9ms
-[00:06:56.039] Server  LOG      ✓ Compiled in 16ms
-[00:08:02.880] Server  LOG      ✓ Compiled in 6ms
-[00:08:33.501] Server  LOG      ✓ Compiled in 10ms
-[00:08:35.681] Server  LOG      ✓ Compiled in 5ms
+{"timestamp":"00:00:02.474","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:06.776","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:01:20.687","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:02:18.101","source":"Server","level":"LOG","message":"✓ Compiled in 215ms"}
+{"timestamp":"00:02:54.107","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:05:04.803","source":"Server","level":"LOG","message":"✓ Compiled in 14ms"}
