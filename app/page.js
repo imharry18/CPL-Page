@@ -54,6 +54,10 @@ export default function Home() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
+  const handleRegister = useCallback(() => {
+    window.open("https://docs.google.com/forms/d/e/1FAIpQLScq9CSsKVhVQcWhjYG5UqFzhEZvUjDcFiVILCbMcI4LyhUIpA/viewform", "_blank");
+  }, []);
+
   return (
     <main style={{ position: "relative", minHeight: "100vh" }}>
       <style dangerouslySetInnerHTML={{__html: `
@@ -79,10 +83,10 @@ export default function Home() {
       <Navbar onNavigate={handleNavigate} />
 
       <div className="scroll-container">
-        <HeroSection onRegister={() => handleNavigate("register")} />
+        <HeroSection onRegister={handleRegister} />
         <MomentsSection />
         <AboutSection onChampions={() => handleNavigate("champions")} />
-        <ChampionsSection champions={CHAMPIONS} onRegister={() => handleNavigate("register")} />
+        <ChampionsSection champions={CHAMPIONS} onRegister={handleRegister} />
         <StatsSection
           seasonStats={seasonStats}
           activeSeason={activeSeason}
@@ -92,9 +96,9 @@ export default function Home() {
           formatNrr={formatNrr}
           rankClass={rankClass}
         />
-        <RecordsSection highlights={LEAGUE_HIGHLIGHTS} onRegister={() => handleNavigate("register")} />
+        <RecordsSection highlights={LEAGUE_HIGHLIGHTS} onRegister={handleRegister} />
         <RegisterSection
-          onNotify={() => alert("You'll be notified when registrations open!")}
+          onNotify={handleRegister}
           onTop={() => handleNavigate("hero")}
         />
       </div>

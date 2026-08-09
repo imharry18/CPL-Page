@@ -42,7 +42,7 @@ export default function RegisterSection({ onNotify, onTop }) {
           </p>
           <div className="reg-actions">
             <button type="button" className="btn-premium" onClick={onNotify}>
-              Get Notified
+              Register Now
             </button>
             <button type="button" className="btn-top" onClick={onTop}>
               Back to Top
