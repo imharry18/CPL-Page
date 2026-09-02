@@ -1,72 +1,58 @@
-import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
+import { Archivo, Inter_Tight, IBM_Plex_Mono } from "next/font/google";
+import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-primary",
+/**
+ * Archivo is loaded as a variable font with its width axis, so headlines can
+ * be pushed wide (wdth 112) the way broadcast scoreboard type is. One file
+ * covers every weight and width we use.
+ */
+const display = Archivo({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  axes: ["wdth"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const body = Inter_Tight({
+  variable: "--font-body",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+/** Every number on the page is set in this, with tabular figures, so columns
+ *  of runs and wickets line up instead of jittering. */
+const mono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 export const metadata = {
-  title: "Campus Premier League | Season 4",
+  title: "Campus Premier League — Season 4",
   description:
-    "The largest inter-college cricket league — champions, stats, and Season 4 registration.",
-  icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
-  },
+    "Inter-hostel cricket since 2025. Three champions, no repeats, a full stats archive, and the Season 4 player pool.",
+  // 64px copy of the crest: the full logo is 503KB, which is a lot to ask
+  // of every page load for a 16px browser tab.
+  icons: { icon: "/icon-64.png", apple: "/icon-64.png" },
   openGraph: {
-    title: "Campus Premier League",
-    description: "Where campus meets cricket. Season 4 coming 2026.",
+    title: "Campus Premier League — Season 4",
+    description: "Same pitch, same ball, same chance. Season 4 auction on 12 September.",
+    type: "website",
   },
+};
+
+export const viewport = {
+  themeColor: "#07090a",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${plusJakarta.variable} ${geistMono.variable}`}
+      className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
-      <head>
-        <link rel="icon" href="/logo.png" type="image/png" />
-        <link rel="shortcut icon" href="/logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/logo.png" />
-        <style dangerouslySetInnerHTML={{ __html: `
-          :root {
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-muted: rgba(255, 255, 255, 0.45);
-            --accent-gold: #d4af37;
-            --accent-gold-light: #f3e5ab;
-          }
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          html { background-color: transparent; }
-          body {
-            font-family: var(--font-primary), 'Inter', sans-serif;
-            background: transparent;
-            color: var(--text-primary);
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-          }
-          ::-webkit-scrollbar { width: 4px; }
-          ::-webkit-scrollbar-track { background: transparent; }
-          ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 4px; }
-          .reveal { opacity: 1; transform: translateY(0); }
-          @keyframes reveal-up {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes orb-float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, -20px) scale(1.05); }
-          }
-        `}} />
-      </head>
       <body>{children}</body>
     </html>
   );
