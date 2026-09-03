@@ -56,24 +56,37 @@ export default function LobbyTeamsPage() {
 
               <p className="side-no num">{String(side.no).padStart(2, "0")}</p>
 
+              {/* The name sits on the floor of the card; the detail below it is
+                  collapsed to nothing until hover, and expanding it is what
+                  lifts the name. */}
               {side.name ? (
-                <>
+                <div className="side-body">
                   <h2 className="side-name side-name-real display">
                     {side.name}
                   </h2>
-                  {/* A captain can be named later than the side is, so an
-                      unnamed one stays redacted rather than reading blank. */}
-                  <p className="side-meta num">
-                    Captain {side.captain || mask(side.no + 3, 3)}
-                  </p>
-                  <p className="side-note">{side.note}</p>
-                </>
+                  <div className="side-detail">
+                    <div>
+                      {/* A captain can be named later than the side is, so an
+                          unnamed one stays redacted rather than blank. */}
+                      <p className="side-meta num">
+                        Captain {side.captain || mask(side.no + 3, 3)}
+                      </p>
+                      <p className="side-note">{side.note}</p>
+                    </div>
+                  </div>
+                </div>
               ) : (
-                <>
+                <div className="side-body">
                   <p className="cipher side-name">{mask(side.no, 7)}</p>
-                  <p className="side-meta num">Captain {mask(side.no + 3, 3)}</p>
-                  <p className="side-note side-teaser">{side.teaser}</p>
-                </>
+                  <div className="side-detail">
+                    <div>
+                      <p className="side-meta num">
+                        Captain {mask(side.no + 3, 3)}
+                      </p>
+                      <p className="side-note side-teaser">{side.teaser}</p>
+                    </div>
+                  </div>
+                </div>
               )}
             </article>
           ))}

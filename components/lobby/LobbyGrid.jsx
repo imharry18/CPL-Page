@@ -23,16 +23,12 @@ export default function LobbyGrid({ cards }) {
           >
             <div className="tile-art" aria-hidden="true" />
 
-            <div className="tile-body">
-              <p className="tile-eyebrow num">{card.eyebrow}</p>
-              <h2 className="display tile-title">{card.title}</h2>
-              <p className="tile-note">{card.note}</p>
-            </div>
-
-            <p className="tile-stat num">
-              {card.stat}
-              <span aria-hidden="true">→</span>
-            </p>
+            {/* The name and the arrow, and nothing else. The artwork says the
+                rest, and the page behind the tile says it properly. */}
+            <h2 className="display tile-title">{card.title}</h2>
+            <span className="tile-go" aria-hidden="true">
+              →
+            </span>
           </Link>
         );
       })}

@@ -11,18 +11,7 @@
   "prefers": "Bowling"
  },
  {
-  "name": "Abishak Jagotra",
-  "year": "3rd Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 9,
-  "role": "Batter",
-  "prefers": "Batting"
- },
- {
-  "name": "Aditya pandey",
+  "name": "Aditya Pandey",
   "year": "2nd Year",
   "hostellite": true,
   "bat": "Good",
@@ -66,6 +55,17 @@
   "prefers": "Bowling"
  },
  {
+  "name": "Aman Singh",
+  "year": "4th Year",
+  "hostellite": true,
+  "bat": "Best",
+  "bowl": "Best",
+  "allround": "Best",
+  "rating": 12,
+  "role": "All-rounder",
+  "prefers": "Bowling"
+ },
+ {
   "name": "Amogh Pravin Jawanjal",
   "year": "2nd Year",
   "hostellite": false,
@@ -77,7 +77,7 @@
   "prefers": "Bowling"
  },
  {
-  "name": "Aniruddha balsaraf",
+  "name": "Aniruddha Balsaraf",
   "year": "2nd Year",
   "hostellite": true,
   "bat": "Average",
@@ -187,7 +187,7 @@
   "prefers": "Bowling"
  },
  {
-  "name": "Aum vishwakarma",
+  "name": "Aum Vishwakarma",
   "year": "2nd Year",
   "hostellite": true,
   "bat": "Best",
@@ -198,7 +198,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Ayan singh",
+  "name": "Ayan Singh",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Good",
@@ -253,7 +253,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Ekshwaaku choudhari",
+  "name": "Ekshwaaku Choudhari",
   "year": "2nd Year",
   "hostellite": false,
   "bat": "Best",
@@ -262,6 +262,17 @@
   "rating": 8,
   "role": "Batter",
   "prefers": "Batting"
+ },
+ {
+  "name": "Harish",
+  "year": "4th Year",
+  "hostellite": false,
+  "bat": "Best",
+  "bowl": "Best",
+  "allround": "Best",
+  "rating": 12,
+  "role": "All-rounder",
+  "prefers": ""
  },
  {
   "name": "Harsh Atara",
@@ -319,7 +330,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Ishaan bansal",
+  "name": "Ishaan Bansal",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Good",
@@ -374,6 +385,17 @@
   "prefers": "Batting"
  },
  {
+  "name": "Keshav Panpalia",
+  "year": "1st Year",
+  "hostellite": true,
+  "bat": "Good",
+  "bowl": "Average",
+  "allround": "Good",
+  "rating": 8,
+  "role": "All-rounder",
+  "prefers": "Batting"
+ },
+ {
   "name": "Kishan Bhattad",
   "year": "2nd Year",
   "hostellite": true,
@@ -383,6 +405,17 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting"
+ },
+ {
+  "name": "Krish Sharma",
+  "year": "4th Year",
+  "hostellite": true,
+  "bat": "Average",
+  "bowl": "Good",
+  "allround": "Good",
+  "rating": 8,
+  "role": "All-rounder",
+  "prefers": "Bowling"
  },
  {
   "name": "Krishna Shonka",
@@ -407,7 +440,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Kunal sanjay rai",
+  "name": "Kunal Sanjay Rai",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Good",
@@ -418,7 +451,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Kunal vinod jagdale",
+  "name": "Kunal Vinod Jagdale",
   "year": "2nd Year",
   "hostellite": false,
   "bat": "Best",
@@ -495,7 +528,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Meet agrawal",
+  "name": "Meet Agrawal",
   "year": "2nd Year",
   "hostellite": true,
   "bat": "Average",
@@ -517,7 +550,18 @@
   "prefers": "Bowling"
  },
  {
-  "name": "Neel dorle",
+  "name": "Mukhtar Hussain",
+  "year": "4th Year",
+  "hostellite": true,
+  "bat": "Best",
+  "bowl": "Best",
+  "allround": "Best",
+  "rating": 12,
+  "role": "All-rounder",
+  "prefers": "Batting"
+ },
+ {
+  "name": "Neel Dorle",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Best",
@@ -564,10 +608,10 @@
   "name": "Paras Sharma",
   "year": "4th Year",
   "hostellite": true,
-  "bat": "Best",
-  "bowl": "Best",
-  "allround": "Best",
-  "rating": 12,
+  "bat": "Good",
+  "bowl": "Good",
+  "allround": "Good",
+  "rating": 9,
   "role": "All-rounder",
   "prefers": "Batting"
  },
@@ -605,7 +649,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Pawan swami",
+  "name": "Pawan Swami",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Okay",
@@ -638,7 +682,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Priyanshu khatri",
+  "name": "Priyanshu Khatri",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Best",
@@ -715,7 +759,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Rounak urade",
+  "name": "Rounak Urade",
   "year": "2nd Year",
   "hostellite": false,
   "bat": "Best",
@@ -770,7 +814,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Sanidhya gautam",
+  "name": "Sanidhya Gautam",
   "year": "2nd Year",
   "hostellite": true,
   "bat": "Good",
@@ -825,7 +869,7 @@
   "prefers": ""
  },
  {
-  "name": "SHASHWAT S GAWANDE",
+  "name": "Shashwat S Gawande",
   "year": "1st Year",
   "hostellite": false,
   "bat": "Best",
@@ -836,7 +880,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Shikhar karengulwar",
+  "name": "Shikhar Karengulwar",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Good",
@@ -913,7 +957,7 @@
   "prefers": "Bowling"
  },
  {
-  "name": "Swarit kokas",
+  "name": "Swarit Kokas",
   "year": "2nd Year",
   "hostellite": false,
   "bat": "Best",
@@ -935,7 +979,7 @@
   "prefers": "Bowling"
  },
  {
-  "name": "Tanishq vijay dodeja",
+  "name": "Tanishq Vijay Dodeja",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Best",
@@ -946,7 +990,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Trishal raghuwanshi",
+  "name": "Trishal Raghuwanshi",
   "year": "1st Year",
   "hostellite": true,
   "bat": "Average",
@@ -979,7 +1023,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "Utkarsh borkar",
+  "name": "Utkarsh Borkar",
   "year": "3rd Year",
   "hostellite": false,
   "bat": "Best",
@@ -1001,7 +1045,7 @@
   "prefers": "Batting"
  },
  {
-  "name": "vedang khedikar",
+  "name": "Vedang Khedikar",
   "year": "2nd Year",
   "hostellite": true,
   "bat": "Good",
@@ -1060,10 +1104,10 @@
   "year": "1st Year",
   "hostellite": true,
   "bat": "Best",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 9,
-  "role": "Batter",
+  "bowl": "Good",
+  "allround": "Best",
+  "rating": 11,
+  "role": "All-rounder",
   "prefers": "Batting"
  }
 ]

@@ -673,9 +673,15 @@ img {
   z-index: 1090;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* `safe` centre: on a viewport too short for the menu, plain `center`
+     overflows in BOTH directions and the first links are cut off above the top
+     of the screen with no way to reach them. `safe` falls back to start
+     alignment exactly when that would happen. */
+  justify-content: safe center;
   gap: 2rem;
   padding: 6rem var(--gutter) 3rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: rgba(7, 9, 10, 0.96);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -698,9 +704,11 @@ img {
   text-transform: uppercase;
   letter-spacing: -0.03em;
   color: var(--seam);
-  opacity: 0;
-  transform: translateY(14px);
-  animation: sheet-in 0.6s var(--ease-out) forwards;
+  /* Visible by default and animated FROM hidden, not the other way round. A
+     menu whose links start at opacity 0 and depend on an animation to become
+     readable is one paused timeline away from an empty screen — which is
+     exactly what a backgrounded tab does. */
+  animation: sheet-in 0.6s var(--ease-out) backwards;
   animation-delay: var(--delay, 0s);
 }
 .nav-sheet nav a .num {
@@ -709,7 +717,20 @@ img {
   color: var(--leather-lit);
 }
 @keyframes sheet-in {
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; transform: translateY(14px); }
+}
+/* A short window — a landscape phone, or a small desktop window — cannot hold
+   the menu at full size. Start it at the top and set it smaller rather than
+   letting it run off the screen. */
+@media (max-height: 620px) {
+  .nav-sheet {
+    justify-content: flex-start;
+    gap: 1.25rem;
+    padding-top: 4.5rem;
+  }
+  .nav-sheet nav a {
+    font-size: clamp(1.4rem, 6vw, 2rem);
+  }
 }
 .nav-sheet-foot {
   font-family: var(--mono);
@@ -1968,7 +1989,10 @@ img {
 .lobby-shell {
   position: fixed;
   inset: 0;
-  z-index: 1;
+  /* Above the backdrop layer (z-index 3), same as .shell on the main site.
+     Below it, the vignette's dark bottom radial paints over the content and
+     the lowest row of cards comes out dimmer than the rest. */
+  z-index: 10;
   display: flex;
   flex-direction: column;
   height: 100svh;
@@ -1977,6 +2001,8 @@ img {
 
 /* No bar background. It sits over the page rather than on top of it. */
 .lobby-bar {
+  position: relative;
+  z-index: 10;
   flex: none;
   display: flex;
   align-items: center;
@@ -2001,6 +2027,8 @@ img {
 }
 
 .lobby {
+  position: relative;
+  z-index: 10;
   padding: clamp(1rem, 3vh, 2.5rem) var(--gutter) clamp(1.25rem, 3vh, 2.5rem);
 }
 /* Inside the shell the main area takes the leftover height and hands it to the
@@ -2104,21 +2132,7 @@ img {
   filter: saturate(1.06) contrast(1.04);
 }
 
-/* A shadow on the type as well, so it survives a bright patch that gets
-   through both scrims. */
-.tile-body {
-  text-shadow: 0 1px 14px rgba(4, 5, 6, 0.9), 0 1px 3px rgba(4, 5, 6, 0.8);
-}
-.tile-eyebrow {
-  font-size: 0.62rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: #ff7a89;
-}
-/* Pure white, and shadowed with black only. A white glow here looks like the
-   obvious way to "light up" a name, but it lifts the background around the
-   letters rather than the letters themselves — the contrast drops and the word
-   reads as fog. Contrast is what makes type look bright. */
+/* The title sits on the floor of the tile, the arrow in the far corner. */
 .tile-title {
   font-variation-settings: "wdth" 112, "wght" 800;
   font-size: clamp(1.6rem, 1rem + 1.7vw, 2.6rem);
@@ -2136,28 +2150,21 @@ img {
   -webkit-font-smoothing: auto;
 }
 .tile-tall .tile-title {
-  font-size: clamp(1.7rem, 1rem + 2.2vw, 3rem);
+  font-size: clamp(1.9rem, 1rem + 2.4vw, 3.2rem);
 }
-.tile-note {
-  max-width: 34ch;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.94);
+.tile-go {
+  position: absolute;
+  right: clamp(1.1rem, 2vw, 1.75rem);
+  bottom: clamp(1.1rem, 2vw, 1.75rem);
+  font-size: 1rem;
+  color: var(--seam-45);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.95);
+  transition: transform 0.35s var(--ease-out), color 0.35s var(--ease-out);
 }
-.tile-stat {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--seam-22);
-  font-size: 0.66rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.88);
-  text-shadow: 0 1px 10px rgba(4, 5, 6, 0.9);
-}
-.tile:hover .tile-stat {
-  color: var(--seam);
+.tile:hover .tile-go,
+.tile:focus-visible .tile-go {
+  transform: translateX(4px);
+  color: #fff;
 }
 
 /* The spans collapse in two steps. Four columns of a 1-wide tile are unusable
@@ -2180,12 +2187,7 @@ img {
     grid-row: span 2;
   }
 }
-/* One screen still means one screen on a phone — the notes are the first thing
-   to go, since the title and the stat line carry the meaning. */
 @media (max-width: 620px) {
-  .tile-note {
-    display: none;
-  }
   .lobby-title {
     font-size: clamp(2rem, 9vw, 3rem);
   }
@@ -2329,7 +2331,6 @@ img {
   display: grid;
   justify-items: center;
   align-content: end;
-  gap: 0.6rem;
   /* A poster, not a tile: the logo owns the card and the type sits along the
      bottom of it. */
   aspect-ratio: 3 / 4;
@@ -2493,12 +2494,63 @@ img {
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.95);
 }
 
+/* At rest a card is its crest and its name, and the name sits on the floor of
+   the card. On hover the detail underneath it expands from nothing, which is
+   what pushes the name up — one movement, not two.
+
+   The expansion is an animated grid row rather than a height, because the note
+   is one line for some sides and two for others and a hard-coded height would
+   clip one of them.
+
+   Only where hovering is possible: on a touch screen there is no hover, so the
+   detail would never be reachable. There the card shows everything. */
+.side-body {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+.side-detail > div {
+  overflow: hidden;
+}
+
+@media (hover: hover) {
+  .side-detail {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.45s var(--ease-out),
+      opacity 0.3s var(--ease-out);
+  }
+  .side:hover .side-detail,
+  .side:focus-within .side-detail {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  /* The scrim deepens with it, so the type lands on something dark rather than
+     on the middle of the crest. */
+  .side:hover .side-art {
+    background-image: linear-gradient(
+        to top,
+        rgba(4, 5, 6, 0.96) 0%,
+        rgba(4, 5, 6, 0.9) 22%,
+        rgba(4, 5, 6, 0.6) 40%,
+        rgba(4, 5, 6, 0.18) 56%,
+        transparent 72%
+      ),
+      var(--logo, none);
+  }
+}
+
 /* All of the above is decoration. Anyone who has asked for less motion gets a
    still card — lit, but not moving. */
 @media (prefers-reduced-motion: reduce) {
   .side,
   .side-sweep {
     animation: none;
+  }
+  .side-detail {
+    transition: none;
   }
 }
 

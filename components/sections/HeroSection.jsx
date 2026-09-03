@@ -22,7 +22,7 @@ export default function HeroSection({ totals, dates }) {
       <div className="hero-body">
         <p className="hero-status reveal">
           <span className="dot" aria-hidden="true" />
-          Season 04 · Entries open
+          Season 04 · Entries closed
         </p>
 
         <h1 className="display hero-title">
