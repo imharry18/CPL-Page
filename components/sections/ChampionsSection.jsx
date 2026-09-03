@@ -1,5 +1,3 @@
-import TrophyEmbed from "@/components/TrophyEmbed";
-
 export default function ChampionsSection({ champions }) {
   return (
     <section id="champions" className="section">
@@ -47,7 +45,6 @@ export default function ChampionsSection({ champions }) {
               <p className="champ-open-title">Season 04 — unclaimed</p>
               <p className="champ-open-note">Entries open · decided 27 September</p>
             </div>
-            <TrophyEmbed />
           </div>
         </div>
       </div>
