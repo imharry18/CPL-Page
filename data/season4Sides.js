@@ -34,7 +34,7 @@ export const SEASON_4_SIDES = [
   {
     no: 3,
     name: "Vajra Strikers",
-    captain: "Shreyas",
+    captain: "Shreyash",
     logo: "/lobby/teams/vajra-strikers.jpg",
     // The vajra is Indra's thunderbolt — a weapon said never to miss.
     note: "The thunderbolt that never misses. All powerplay.",
