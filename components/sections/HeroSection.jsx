@@ -5,7 +5,7 @@ import NextUp from "@/components/NextUp";
 /* Server Component apart from the countdown, so almost none of this ships as
    JavaScript. */
 
-export default function HeroSection({ totals, dates, registerUrl }) {
+export default function HeroSection({ totals, dates }) {
   // Three near-equal lines, so the headline sets as a solid block of type —
   // and the anaphora gives it the cadence of a chant rather than a slogan.
   const lines = ["Same pitch.", "Same ball.", "Same chance."];
@@ -38,25 +38,16 @@ export default function HeroSection({ totals, dates, registerUrl }) {
         </h1>
 
         <p className="lede hero-lede reveal" style={{ "--delay": "0.45s" }}>
-          Inter-hostel cricket since 2025. Eight squads, two match days, and a
+          Inter-hostel cricket since 2025. Eight squads, one match day, and a
           trophy nobody has won twice.
         </p>
 
         <div className="hero-actions reveal" style={{ "--delay": "0.55s" }}>
-          <a
-            className="btn btn-primary btn-lg"
-            href={registerUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Enter Season 4
-          </a>
-          <Link className="btn btn-lg" href="/players">
-            Season 4 players
+          {/* One button only. Players and past seasons are both reachable
+              from the lobby, so putting them here just competes with it. */}
+          <Link className="btn btn-primary btn-lg" href="/lobby">
+            Season 4
           </Link>
-          <a className="btn btn-lg" href="#stats">
-            Past seasons
-          </a>
         </div>
       </div>
 

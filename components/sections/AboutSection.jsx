@@ -1,4 +1,6 @@
-export default function AboutSection({ registerUrl }) {
+import Link from "next/link";
+
+export default function AboutSection() {
   return (
     <section id="about" className="section">
       <div className="wrap">
@@ -23,14 +25,9 @@ export default function AboutSection({ registerUrl }) {
               <a className="btn" href="#teams">
                 See the teams
               </a>
-              <a
-                className="btn btn-primary"
-                href={registerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Enter Season 4
-              </a>
+              <Link className="btn btn-primary" href="/lobby">
+                Season 4
+              </Link>
             </div>
           </div>
 
@@ -50,10 +47,6 @@ export default function AboutSection({ registerUrl }) {
             <div className="fact">
               <dt>Entry fee</dt>
               <dd>₹100</dd>
-            </div>
-            <div className="fact">
-              <dt>Seniority rule</dt>
-              <dd>None</dd>
             </div>
           </dl>
         </div>

@@ -1,4 +1,6 @@
-export default function ScheduleSection({ dates, registerUrl }) {
+import Link from "next/link";
+
+export default function ScheduleSection({ dates }) {
   return (
     <section id="schedule" className="section schedule">
       <div className="wrap">
@@ -28,15 +30,10 @@ export default function ScheduleSection({ dates, registerUrl }) {
         </ol>
 
         <p className="schedule-cta reveal">
-          <a
-            className="btn btn-primary btn-lg"
-            href={registerUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Enter Season 4
-          </a>
-          <span>Every match at the football ground. Entries close 11 September.</span>
+          <Link className="btn btn-primary btn-lg" href="/lobby">
+            Season 4
+          </Link>
+          <span>Every match at the football ground. Entries are closed.</span>
         </p>
       </div>
     </section>

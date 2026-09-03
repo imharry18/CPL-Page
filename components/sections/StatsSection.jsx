@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import TeamCards from "@/components/TeamCards";
+
 /**
  * The only genuinely interactive part of the page, so the only section that
  * needs to be a Client Component. It receives finished tables as props — it
@@ -19,6 +21,9 @@ const VIEWS = [
   { key: "batting", label: "Batting", meta: "Most runs" },
   { key: "bowling", label: "Bowling", meta: "Most wickets" },
   { key: "overview", label: "Overview", meta: "Tournament totals" },
+  // Only Season 3's franchises were recorded, so this tab is offered on that
+  // season alone rather than shown empty on the other two.
+  { key: "teams", label: "Teams", meta: "The eight franchises", season: "s3" },
 ];
 
 function formatNrr(nrr) {
@@ -28,13 +33,14 @@ function formatNrr(nrr) {
   return `${value > 0 ? "+" : ""}${value.toFixed(2)}`;
 }
 
-export default function StatsSection({ seasons }) {
+export default function StatsSection({ seasons, teams }) {
   const [season, setSeason] = useState("s3");
   const [view, setView] = useState("points");
 
   const data = seasons[season];
   const seasonMeta = SEASONS.find((s) => s.key === season);
   const viewMeta = VIEWS.find((v) => v.key === view);
+  const views = VIEWS.filter((v) => !v.season || v.season === season);
 
   return (
     <section id="stats" className="section">
@@ -65,7 +71,7 @@ export default function StatsSection({ seasons }) {
           </div>
 
           <div className="tabs tabs-secondary" role="tablist" aria-label="Table">
-            {VIEWS.map((v) => (
+            {views.map((v) => (
               <button
                 key={v.key}
                 type="button"
@@ -185,6 +191,16 @@ export default function StatsSection({ seasons }) {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {view === "teams" && (
+              <div className="panel-teams">
+                <p className="panel-note">
+                  These were the Season 3 franchises. Season 4 squads do not
+                  exist yet — they are built from scratch at the auction.
+                </p>
+                <TeamCards teams={teams} />
               </div>
             )}
 

@@ -2,13 +2,6 @@
 
 import { useDeferredValue, useMemo, useState } from "react";
 
-const ROLES = ["All", "Batter", "Bowler", "All-rounder"];
-const YEARS = ["All", "1st Year", "2nd Year", "3rd Year", "4th Year"];
-const SORTS = [
-  { key: "name", label: "A–Z" },
-  { key: "rating", label: "Rating" },
-];
-
 /** Fold accents and case so "Rathi" finds "rathi" and stray spacing is ignored. */
 function normalise(text) {
   return text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -32,9 +25,6 @@ function Skill({ label, value }) {
 
 export default function PlayersBrowser({ players }) {
   const [query, setQuery] = useState("");
-  const [role, setRole] = useState("All");
-  const [year, setYear] = useState("All");
-  const [sort, setSort] = useState("name");
 
   // Typing stays instant even while 96 rows re-filter: React renders the input
   // with the new value immediately and the list with the value it can keep up
@@ -49,16 +39,9 @@ export default function PlayersBrowser({ players }) {
 
   const results = useMemo(() => {
     const needle = normalise(deferredQuery.trim());
-    const list = indexed.filter(
-      (player) =>
-        (!needle || player.search.includes(needle)) &&
-        (role === "All" || player.role === role) &&
-        (year === "All" || player.year === year)
-    );
-    return sort === "rating"
-      ? [...list].sort((a, b) => b.rating - a.rating || a.name.localeCompare(b.name))
-      : list;
-  }, [indexed, deferredQuery, role, year, sort]);
+    if (!needle) return indexed;
+    return indexed.filter((player) => player.search.includes(needle));
+  }, [indexed, deferredQuery]);
 
   return (
     <>
@@ -84,49 +67,6 @@ export default function PlayersBrowser({ players }) {
           )}
         </div>
 
-        <div className="finder-filters">
-          <div className="tabs" role="group" aria-label="Role">
-            {ROLES.map((option) => (
-              <button
-                key={option}
-                type="button"
-                className="tab"
-                aria-pressed={role === option}
-                onClick={() => setRole(option)}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-
-          <div className="tabs tabs-secondary" role="group" aria-label="Year of study">
-            {YEARS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                className="tab"
-                aria-pressed={year === option}
-                onClick={() => setYear(option)}
-              >
-                {option === "All" ? "All years" : option.replace(" Year", "")}
-              </button>
-            ))}
-          </div>
-
-          <div className="tabs tabs-secondary" role="group" aria-label="Sort">
-            {SORTS.map((option) => (
-              <button
-                key={option.key}
-                type="button"
-                className="tab"
-                aria-pressed={sort === option.key}
-                onClick={() => setSort(option.key)}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* aria-live means a screen reader hears the count change as you type,
@@ -139,7 +79,7 @@ export default function PlayersBrowser({ players }) {
 
       {results.length === 0 ? (
         <p className="finder-empty">
-          No player matches “{query}”. Check the spelling, or clear the filters.
+          No player matches “{query}”. Check the spelling.
         </p>
       ) : (
         <ol className="roster">

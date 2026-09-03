@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * `sections` arrives as a prop rather than being imported from lib/cplData —
  * that import chain ends at a 300KB JSON file, and this only needs five labels.
  */
-export default function Navbar({ sections, nextDate, registerUrl }) {
+export default function Navbar({ sections, nextDate }) {
   const [stuck, setStuck] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -154,22 +154,17 @@ export default function Navbar({ sections, nextDate, registerUrl }) {
             ))}
           </nav>
 
-          {/* The register button lived here. A dead call to action is worse
-              than none, so the space carries the next real date and a link to
-              something a visitor can actually do. */}
           <p className="nav-status">
             <span className="dot" aria-hidden="true" />
             {nextDate}
           </p>
 
-          <a
-            className="btn btn-primary nav-cta"
-            href={registerUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Enter
-          </a>
+          {/* One call to action on the whole site. The forms live in the
+              lobby, so this is the only door and there is nothing to choose
+              between. */}
+          <Link className="btn btn-primary nav-cta" href="/lobby">
+            Lobby
+          </Link>
 
           <button
             type="button"
@@ -203,7 +198,7 @@ export default function Navbar({ sections, nextDate, registerUrl }) {
             </a>
           ))}
           <Link
-            href="/players"
+            href="/lobby/players"
             style={{ "--delay": `${0.05 + sections.length * 0.05}s` }}
             onClick={() => setOpen(false)}
           >

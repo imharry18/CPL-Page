@@ -15,7 +15,6 @@ import ScrubVideo from "@/components/ScrubVideo";
 import HeroSection from "@/components/sections/HeroSection";
 import MomentsSection from "@/components/sections/MomentsSection";
 import ScheduleSection from "@/components/sections/ScheduleSection";
-import TeamsSection from "@/components/sections/TeamsSection";
 import AboutSection from "@/components/sections/AboutSection";
 import ChampionsSection from "@/components/sections/ChampionsSection";
 import StatsSection from "@/components/sections/StatsSection";
@@ -23,9 +22,6 @@ import RecordsSection from "@/components/sections/RecordsSection";
 import ClosingSection from "@/components/sections/ClosingSection";
 import { CPL_TEAMS } from "@/data/cplTeams";
 import {
-  ENTRY_FEE,
-  PAYMENT_URL,
-  REGISTER_URL,
   SEASON_4,
   SECTIONS,
   getAllSeasonStats,
@@ -53,30 +49,19 @@ export default function Home() {
 
       <Navbar
         sections={SECTIONS}
-        registerUrl={REGISTER_URL}
         nextDate={`Auction ${SEASON_4[0].day} ${SEASON_4[0].month}`}
       />
       <RevealOnScroll />
 
       <main className="shell">
-        <HeroSection
-          totals={highlights.totals}
-          dates={SEASON_4}
-          registerUrl={REGISTER_URL}
-        />
-        <ScheduleSection dates={SEASON_4} registerUrl={REGISTER_URL} />
+        <HeroSection totals={highlights.totals} dates={SEASON_4} />
+        <ScheduleSection dates={SEASON_4} />
         <MomentsSection />
-        <AboutSection registerUrl={REGISTER_URL} />
-        <TeamsSection teams={CPL_TEAMS} />
+        <AboutSection />
         <ChampionsSection champions={champions} />
-        <StatsSection seasons={seasons} />
+        <StatsSection seasons={seasons} teams={CPL_TEAMS} />
         <RecordsSection highlights={highlights} />
-        <ClosingSection
-          dates={SEASON_4}
-          registerUrl={REGISTER_URL}
-          paymentUrl={PAYMENT_URL}
-          fee={ENTRY_FEE}
-        />
+        <ClosingSection dates={SEASON_4} />
       </main>
     </>
   );

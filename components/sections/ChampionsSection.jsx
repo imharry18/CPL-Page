@@ -43,7 +43,7 @@ export default function ChampionsSection({ champions }) {
           <div className="champ-open reveal">
             <div>
               <p className="champ-open-title">Season 04 — unclaimed</p>
-              <p className="champ-open-note">Entries open · decided 27 September</p>
+              <p className="champ-open-note">Entries closed · decided 20 September</p>
             </div>
           </div>
         </div>
