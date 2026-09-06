@@ -1,18 +1,5 @@
 [
  {
-  "name": "Aadesh Thakre",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Best",
-  "allround": "Good",
-  "rating": 10,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
   "name": "Aditya Pandey",
   "year": "2nd Year",
   "hostellite": true,
@@ -36,7 +23,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Aishwary Chandela",
@@ -49,20 +37,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Alay Chilbule",
-  "year": "1st Year",
-  "hostellite": false,
-  "bat": "Okay",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 6,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Aman Singh",
@@ -75,20 +51,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Amogh Pravin Jawanjal",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Aniruddha Balsaraf",
@@ -115,7 +79,8 @@
   "role": "All-rounder",
   "prefers": "",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Ansh Chowdhary",
@@ -128,7 +93,8 @@
   "role": "Bowler",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Ansh Dogra",
@@ -168,7 +134,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Arjit Shahu",
@@ -181,7 +148,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Aryan Gulhare",
@@ -194,7 +162,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Aryan Gupta",
@@ -234,20 +203,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Aum Vishwakarma",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 9,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Ayan Singh",
@@ -287,7 +244,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Dhruv Chore",
@@ -299,33 +257,7 @@
   "rating": 9,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Divyansh Sharma",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Average",
-  "allround": "Okay",
-  "rating": 6,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Ekshwaaku Choudhari",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Best",
-  "bowl": "Okay",
-  "allround": "Good",
-  "rating": 8,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
+  "paid": true,
   "team": ""
  },
  {
@@ -339,7 +271,8 @@
   "rating": 12,
   "role": "All-rounder",
   "paid": true,
-  "team": "Rajputana Rifles"
+  "team": "Rajputana Rifles",
+  "viceCaptain": false
  },
  {
   "name": "Harsh Atara",
@@ -352,8 +285,8 @@
   "role": "Batter",
   "prefers": "",
   "paid": true,
-  "team": "The Godfathers",
-  "viceCaptain": true
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Harsh Vardhan Khajuria",
@@ -366,7 +299,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Harshit Sewaiwar",
@@ -379,7 +313,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Harshit Upadhyay",
@@ -392,7 +327,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Hemang Suhas Pachpande",
@@ -405,33 +341,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Ishaan Bansal",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Ishank Lilhare",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Average",
-  "allround": "Average",
-  "rating": 7,
-  "role": "Batter",
-  "prefers": "",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Jayesh Popli",
@@ -444,20 +355,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Kanishk Rajesh Mantri",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Average",
-  "rating": 8,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Keshav Gupta",
@@ -483,8 +382,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "The Overlords",
-  "viceCaptain": true
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Kishan Bhattad",
@@ -497,8 +396,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "Blazing Blades",
-  "viceCaptain": true
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Krish Sharma",
@@ -513,19 +412,6 @@
   "paid": true,
   "team": "",
   "viceCaptain": false
- },
- {
-  "name": "Krishna Shonka",
-  "year": "3rd Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 8,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
  },
  {
   "name": "Kshitij Pal",
@@ -551,20 +437,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Kunal Vinod Jagdale",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Best",
-  "bowl": "Best",
-  "allround": "Best",
-  "rating": 12,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Kunj Rathi",
@@ -590,33 +464,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Laksh Bhattad",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Madhav Rathi",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Average",
-  "allround": "Average",
-  "rating": 6,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Manish Tajane",
@@ -628,20 +477,7 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Manthan Gandhi",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 10,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
+  "paid": true,
   "team": ""
  },
  {
@@ -655,7 +491,8 @@
   "role": "All-rounder",
   "prefers": "",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Mohit Bhabhra",
@@ -681,8 +518,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "Bajrang United",
-  "viceCaptain": true
+  "team": "Blazing Blades",
+  "viceCaptain": false
  },
  {
   "name": "Neel Dorle",
@@ -695,20 +532,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Om Mamidwar",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Average",
-  "bowl": "Average",
-  "allround": "Average",
-  "rating": 6,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Om More",
@@ -721,20 +546,8 @@
   "role": "All-rounder",
   "prefers": "",
   "paid": true,
-  "team": "Mavericks XI"
- },
- {
-  "name": "Omsai Gagare",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Average",
-  "allround": "Average",
-  "rating": 6,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
+  "team": "Mavericks XI",
+  "viceCaptain": false
  },
  {
   "name": "Paras Bhongade",
@@ -747,7 +560,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "Bajrang United"
+  "team": "Bajrang United",
+  "viceCaptain": false
  },
  {
   "name": "Paras Sharma",
@@ -773,7 +587,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Parth Gawande",
@@ -790,32 +605,6 @@
   "viceCaptain": false
  },
  {
-  "name": "Parth Patil",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Good",
-  "allround": "Best",
-  "rating": 11,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Pawan Swami",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Okay",
-  "bowl": "Good",
-  "allround": "Average",
-  "rating": 6,
-  "role": "Bowler",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
   "name": "Prasad Akle",
   "year": "4th Year",
   "hostellite": false,
@@ -826,20 +615,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Prem Wasalu",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Average",
-  "allround": "Best",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Priyanshu Khatri",
@@ -852,7 +629,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Rajveer Singh",
@@ -865,7 +643,8 @@
   "role": "Batter",
   "prefers": "",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Ram Mandvikar",
@@ -892,21 +671,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": "Rajputana Rifles",
-  "viceCaptain": true
- },
- {
-  "name": "Raunak Bhutada",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Rishi Anand Rathi",
@@ -919,8 +685,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": "Storm Breakers",
-  "viceCaptain": true
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Rishi Sharma",
@@ -933,7 +699,8 @@
   "role": "All-rounder",
   "prefers": "",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Rounak Nagwani",
@@ -946,7 +713,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Rounak Urade",
@@ -958,7 +726,7 @@
   "rating": 9,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": false,
+  "paid": true,
   "team": ""
  },
  {
@@ -972,7 +740,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Rushil",
@@ -985,20 +754,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Sahil Kulkarni",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Good",
-  "allround": "Okay",
-  "rating": 8,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Sai Kashinath Doifode",
@@ -1011,7 +768,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Sanidhya Gautam",
@@ -1024,7 +782,7 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": "",
+  "team": "Storm Breakers",
   "viceCaptain": false
  },
  {
@@ -1038,7 +796,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Sarvagya Patni",
@@ -1051,7 +810,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "The Overlords"
+  "team": "The Overlords",
+  "viceCaptain": false
  },
  {
   "name": "Saurabh Khambalkar",
@@ -1063,7 +823,7 @@
   "rating": 6,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": false,
+  "paid": true,
   "team": ""
  },
  {
@@ -1077,7 +837,8 @@
   "role": "All-rounder",
   "prefers": "",
   "paid": true,
-  "team": "The Godfathers"
+  "team": "The Godfathers",
+  "viceCaptain": false
  },
  {
   "name": "Shashwat S Gawande",
@@ -1090,8 +851,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "Mavericks XI",
-  "viceCaptain": true
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Shikhar Karengulwar",
@@ -1107,19 +868,6 @@
   "team": ""
  },
  {
-  "name": "Shiv Zanwar",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 8,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
- },
- {
   "name": "Shourya Pandey",
   "year": "1st Year",
   "hostellite": true,
@@ -1130,7 +878,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Shreyash Jaiswal",
@@ -1143,7 +892,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": "Vajra Strikers"
+  "team": "Vajra Strikers",
+  "viceCaptain": false
  },
  {
   "name": "Shridhar Mishra",
@@ -1156,7 +906,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Siddharth Rajendraprasad Pandey",
@@ -1169,20 +920,8 @@
   "role": "Batter",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Sumeer Sachin Harkanth",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Swarit Kokas",
@@ -1195,20 +934,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Tanay Dongre",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Tanishq Vijay Dodeja",
@@ -1224,19 +951,6 @@
   "team": ""
  },
  {
-  "name": "Trishal Raghuwanshi",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Okay",
-  "allround": "Average",
-  "rating": 5,
-  "role": "Batter",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
   "name": "Tushar Sharma",
   "year": "3rd Year",
   "hostellite": true,
@@ -1247,8 +961,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "Vajra Strikers",
-  "viceCaptain": true
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Uddhav Bajaj",
@@ -1261,7 +975,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Utkarsh Borkar",
@@ -1273,7 +988,7 @@
   "rating": 8,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": false,
+  "paid": true,
   "team": ""
  },
  {
@@ -1290,45 +1005,6 @@
   "team": ""
  },
  {
-  "name": "Vedang Khedikar",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Best",
-  "allround": "Good",
-  "rating": 10,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Vineet Shah",
-  "year": "3rd Year",
-  "hostellite": false,
-  "bat": "Okay",
-  "bowl": "Good",
-  "allround": "Okay",
-  "rating": 5,
-  "role": "Bowler",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Vinit Bhandari",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 8,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
- },
- {
   "name": "Yash Amit Taori",
   "year": "1st Year",
   "hostellite": true,
@@ -1339,20 +1015,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
- },
- {
-  "name": "Yash Mahajan",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Yojya Tembhre",
@@ -1365,6 +1029,7 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  }
 ]

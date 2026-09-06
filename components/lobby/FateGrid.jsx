@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import FateScene from "@/components/lobby/FateScene";
+
 const SPIN_SECONDS = 10;
 
 /**
@@ -122,53 +124,16 @@ export default function FateGrid({ sides, players, admin = false }) {
         </>
       ) : (
         <>
-          {/* Two columns while the board is at rest; the same cards are thrown
-              onto the rings once it starts, so nothing is created or destroyed
-              by the spin — it is the same eight and eight, moving. */}
-          <div className={`fate-arena${spinning ? " is-spinning" : ""}`}>
-            <div className="fate-ring fate-ring-teams" aria-hidden={spinning}>
-              {sides.map((side, i) => (
-                <article
-                  className="fate-card is-team"
-                  key={side.name}
-                  style={{
-                    "--i": i,
-                    "--n": sides.length,
-                    "--team": side.color,
-                    "--team-lit": side.colorLit,
-                  }}
-                >
-                  <span
-                    className="fate-card-art"
-                    style={{ backgroundImage: `url("${side.logo}")` }}
-                    aria-hidden="true"
-                  />
-                  <b>{side.name}</b>
-                </article>
-              ))}
-            </div>
-
-            <div className="fate-ring fate-ring-players" aria-hidden={spinning}>
-              {players.map((player, i) => (
-                <article
-                  className="fate-card is-player"
-                  key={player.name}
-                  style={{ "--i": i, "--n": players.length }}
-                >
-                  <span
-                    className="fate-card-art"
-                    style={
-                      player.photo
-                        ? { backgroundImage: `url("${player.photo}")` }
-                        : undefined
-                    }
-                    aria-hidden="true"
-                  />
-                  <b>{player.name}</b>
-                  <em className="num">Iconic</em>
-                </article>
-              ))}
-            </div>
+          {/* The spectacle is WebGL — sixteen textured planes on two rings.
+              The readable result underneath stays DOM, because a grid of
+              names is a document, not a scene. */}
+          <div className="fate-arena">
+            <FateScene
+              sides={sides}
+              players={players}
+              phase={phase}
+              pairs={pairs}
+            />
 
             {/* The middle of the rings: the countdown while it runs, the
                 trigger before it does. */}
@@ -176,7 +141,7 @@ export default function FateGrid({ sides, players, admin = false }) {
               {phase === "ready" ? (
                 <button type="button" className="fate-go" onClick={draw}>
                   <span className="fate-go-tag num">Eight draws</span>
-                  <span className="fate-go-word display">Spin</span>
+                  <span className="fate-go-word display">Believe</span>
                 </button>
               ) : (
                 <p className="fate-count display" aria-live="off">

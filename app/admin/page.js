@@ -1,4 +1,5 @@
 import AuctionConsole from "@/components/admin/AuctionConsole";
+import { SEASON_4_ICONIC } from "@/data/season4Iconic";
 import { SEASON_4_SIDES } from "@/data/season4Sides";
 import { isAdmin } from "@/lib/admin";
 import { photoFor, photoIndex, readOrder, readState } from "@/lib/auction";
@@ -49,6 +50,7 @@ export default async function AdminPage() {
       players={pool}
       initial={state}
       order={order}
+      iconic={SEASON_4_ICONIC}
     />
   );
 }

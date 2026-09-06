@@ -24,6 +24,21 @@ DATA = os.path.join(HERE, "..", "data")
 PLAYERS = os.path.join(DATA, "season4Players.json")
 OUT = os.path.join(DATA, "season4Auction.json")
 PHOTO_INDEX = os.path.join(HERE, "..", "public", "players", "index.json")
+ICONIC = os.path.join(DATA, "season4Iconic.js")
+
+
+def iconic_names():
+    """The eight names out of data/season4Iconic.js.
+
+    Read with a regex rather than duplicated into Python: one list, so the
+    auction and the FateGrid can never disagree about who is iconic."""
+    try:
+        with open(ICONIC) as handle:
+            body = handle.read()
+    except OSError:
+        return set()
+    inside = re.search(r"SEASON_4_ICONIC\s*=\s*\[(.*?)\]", body, re.S)
+    return set(re.findall(r'"([^"]+)"', inside.group(1))) if inside else set()
 
 # Every player enters at the same price; the bidding is what separates them.
 BASE_PRICE = 20000
@@ -108,13 +123,21 @@ def main():
         with open(OUT) as handle:
             existing = {lot["name"]: lot for lot in json.load(handle)}
 
-    photos = photo_lookup([p["name"] for p in players if p.get("paid")])
+    # Who actually goes under the hammer. A captain is on his side by hand and
+    # an iconic player is allotted by the FateGrid, so neither is a lot — and a
+    # player already carrying a side is one or the other.
+    iconic = iconic_names()
+    for_sale = [
+        p
+        for p in players
+        if p.get("paid") and not p.get("team") and p["name"] not in iconic
+    ]
+    held = sum(1 for p in players if p.get("paid")) - len(for_sale)
+
+    photos = photo_lookup([p["name"] for p in for_sale])
     lots, without_photo = [], []
 
-    for player in players:
-        if not player.get("paid"):
-            continue
-
+    for player in for_sale:
         photo = photos.get(player["name"])
         if not photo:
             without_photo.append(player["name"])
@@ -143,7 +166,8 @@ def main():
         handle.write("\n")
 
     sold = sum(1 for lot in lots if lot["soldPrice"] is not None)
-    print(f"{len(lots)} lots (paid players only, of {len(players)} in the pool)")
+    print(f"{len(lots)} lots, of {len(players)} in the pool")
+    print(f"  {held} held back — captains, vice captains and the iconic eight")
     print(f"  base price Rs{BASE_PRICE:,} each")
     print(f"  {len(lots) - len(without_photo)} with a photo, {len(without_photo)} without")
     print(f"  {sold} already sold, {len(lots) - sold} still to go")

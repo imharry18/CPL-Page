@@ -21,7 +21,13 @@ import { SQUAD_MAX, SQUAD_MIN, money, nextBid, purses } from "@/lib/auctionMoney
    arrives; short enough that the night keeps moving. */
 const SOLD_PAUSE = 2000;
 
-export default function AuctionConsole({ sides, players, initial, order: initialOrder = [] }) {
+export default function AuctionConsole({
+  sides,
+  players,
+  initial,
+  order: initialOrder = [],
+  iconic = [],
+}) {
   const [order, setOrder] = useState(initialOrder);
   const [state, setState] = useState(initial);
   const [busy, setBusy] = useState(false);
@@ -53,13 +59,23 @@ export default function AuctionConsole({ sides, players, initial, order: initial
      down, not a chooser. Anyone paid but missing from the file is appended, so
      a late entrant is never silently dropped from the night. */
   const running = useMemo(() => {
-    const listed = order.filter((name) => byName.has(name));
+    const listed = order.filter(
+      (name) => byName.has(name) && !new Set(iconic).has(name)
+    );
     // Only players who have paid go under the hammer, so only they can be
     // appended — otherwise a missing order file turns the night into the whole
     // 104-name pool instead of the 70 who are actually in it.
     const listedSet = new Set(listed);
+    /* Anyone paid but not in the file, except those who are not for sale: a
+       captain is on his side by hand and an iconic player is allotted by the
+       FateGrid. The iconic eight have to be named here rather than inferred
+       from a side — until the grid is drawn they carry no team, and without
+       this they walk straight back into the order. */
+    const spokenFor = new Set(iconic);
     const missing = players
-      .filter((p) => p.paid && !listedSet.has(p.name))
+      .filter(
+        (p) => p.paid && !p.team && !spokenFor.has(p.name) && !listedSet.has(p.name)
+      )
       .map((p) => p.name);
     return [...listed, ...missing].map((name, i) => ({
       name,

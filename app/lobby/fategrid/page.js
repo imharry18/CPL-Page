@@ -1,5 +1,6 @@
 import FateGrid from "@/components/lobby/FateGrid";
 import LobbySub from "@/components/lobby/LobbySub";
+import { SEASON_4_ICONIC } from "@/data/season4Iconic";
 import { SEASON_4_SIDES } from "@/data/season4Sides";
 import { isAdmin } from "@/lib/admin";
 import { photoFor, photoIndex } from "@/lib/auction";
@@ -12,8 +13,8 @@ export const metadata = {
     "Eight iconic players drawn to eight sides, decided on the spin.",
 };
 
-// The iconic eight are drawn fresh on every load, so the page cannot be
-// prerendered with one set baked into it.
+// The roster is read on every load, so an allotment made by the grid shows up
+// without a rebuild.
 export const dynamic = "force-dynamic";
 
 export default async function FateGridPage() {
@@ -23,21 +24,31 @@ export default async function FateGridPage() {
     isAdmin(),
   ]);
 
-  /* The iconic eight. Marked at random for now — swap this for a flag on the
-     player once the real list exists, and nothing else here has to change. */
-  const pool = players.filter((player) => player.paid);
-  const deck = [...pool];
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
+  /* The iconic eight, named in data/season4Iconic.js rather than drawn at
+     random: the same eight face the grid on every load, and the auction knows
+     to leave them alone. What the spin decides is which side each one goes to,
+     not who is in the draw.
 
-  const iconic = deck.slice(0, SEASON_4_SIDES.length).map((player) => ({
-    name: player.name,
-    role: player.role,
-    rating: player.rating,
-    photo: photoFor(photos, player.name),
-  }));
+     A name that no longer matches the roster is dropped rather than rendered
+     as a blank card — better eight minus one than a hole on the screen. */
+  const byName = new Map(players.map((player) => [player.name, player]));
+  const missing = SEASON_4_ICONIC.filter((name) => !byName.has(name));
+
+  const iconic = SEASON_4_ICONIC.filter((name) => byName.has(name)).map(
+    (name) => {
+      const player = byName.get(name);
+      return {
+        name: player.name,
+        role: player.role,
+        rating: player.rating,
+        photo: photoFor(photos, player.name),
+      };
+    }
+  );
+
+  if (missing.length) {
+    console.warn("[fategrid] not in the roster:", missing.join(", "));
+  }
 
   return (
     <LobbySub

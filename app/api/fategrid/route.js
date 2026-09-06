@@ -1,6 +1,7 @@
 import { readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { SEASON_4_SIDES } from "@/data/season4Sides";
 import { isAdmin } from "@/lib/admin";
 
 /**
@@ -29,6 +30,30 @@ export async function POST(request) {
   const players = JSON.parse(await readFile(FILE, "utf8"));
   const byName = new Map(players.map((player) => [player.name, player]));
 
+  /* A captain is never a vice captain. Checked here as well as in the page
+     that builds the draw, because this route rewrites the same field the
+     captains live in — and the cleanup below would clear a captain's side if
+     one had ever been flagged. */
+  const captains = new Set(
+    SEASON_4_SIDES.map((side) => {
+      const match = players.find(
+        (player) =>
+          player.team === side.name &&
+          side.captain &&
+          player.name.split(" ")[0].toLowerCase() === side.captain.toLowerCase()
+      );
+      return match?.name;
+    }).filter(Boolean)
+  );
+
+  const clash = pairs.filter(({ player }) => captains.has(player));
+  if (clash.length) {
+    return Response.json(
+      { error: `captain cannot be a vice captain: ${clash.map((c) => c.player).join(", ")}` },
+      { status: 409 }
+    );
+  }
+
   const missing = pairs.filter(({ player }) => !byName.has(player));
   if (missing.length) {
     return Response.json(
@@ -41,7 +66,7 @@ export async function POST(request) {
   // set by hand and a bought player's by the auction, and neither is this
   // route's to undo.
   for (const player of players) {
-    if (player.viceCaptain) {
+    if (player.viceCaptain && !captains.has(player.name)) {
       player.viceCaptain = false;
       player.team = "";
     }

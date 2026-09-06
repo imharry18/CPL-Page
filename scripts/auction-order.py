@@ -9,27 +9,60 @@ The console calls players in exactly this order, so the auctioneer never picks
 who is next: the file decides, and the night runs down it. Reorder the list by
 hand any time — the console reads it fresh on every load.
 
-Only players who have paid go in. Re-running keeps the order already there and
-appends anyone new at the end, so a late entrant does not reshuffle a list
-people have already seen.
+Only players who have paid go in, and only those still to be won. A captain is
+on his side by hand and an iconic player is allotted by the FateGrid, so
+neither goes under the hammer — they are dropped from the order rather than
+called and skipped on the night.
+
+Re-running keeps the order already there and appends anyone new at the end, so
+a late entrant does not reshuffle a list people have already seen.
 """
 
 import json
 import os
 import random
+import re
 import sys
 
 HERE = os.path.dirname(__file__)
 DATA = os.path.join(HERE, "..", "data")
 PLAYERS = os.path.join(DATA, "season4Players.json")
 OUT = os.path.join(DATA, "auctionOrder.json")
+ICONIC = os.path.join(DATA, "season4Iconic.js")
+
+
+def iconic_names():
+    """The eight names out of data/season4Iconic.js.
+
+    Read with a regex rather than imported: it is a JS module, and duplicating
+    the list into Python would give the auction and the grid two different
+    ideas of who is iconic."""
+    try:
+        with open(ICONIC) as handle:
+            body = handle.read()
+    except OSError:
+        return set()
+    inside = re.search(r"SEASON_4_ICONIC\s*=\s*\[(.*?)\]", body, re.S)
+    return set(re.findall(r'"([^"]+)"', inside.group(1))) if inside else set()
 
 
 def main(shuffle=False):
     with open(PLAYERS) as handle:
         players = json.load(handle)
 
-    paid = [p["name"] for p in players if p.get("paid")]
+    # A player already on a side is a captain or a vice captain; either way he
+    # is not for sale.
+    iconic = iconic_names()
+    paid = [
+        p["name"]
+        for p in players
+        if p.get("paid") and not p.get("team") and p["name"] not in iconic
+    ]
+    held = sum(
+        1
+        for p in players
+        if p.get("paid") and (p.get("team") or p["name"] in iconic)
+    )
 
     existing = []
     if os.path.exists(OUT) and not shuffle:
@@ -50,6 +83,7 @@ def main(shuffle=False):
         handle.write("\n")
 
     print(f"{len(order)} players in the running order")
+    print(f"  {held} held back — captains and the iconic eight")
     if shuffle:
         print("  drawn fresh at random")
     elif existing:
