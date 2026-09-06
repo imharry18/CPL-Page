@@ -1,10 +1,11 @@
 import LobbySub from "@/components/lobby/LobbySub";
+import { SEASON_4_RULES } from "@/data/season4Rules";
 import { REVEAL } from "@/lib/cplData";
 
 export const metadata = {
   title: "Rules — Season 4, Campus Premier League",
   description:
-    "The Season 4 playing conditions, read out at the Live Auction on 12 September.",
+    "The Season 4 playing conditions: umpiring, penalties, conduct, sledging and safety.",
 };
 
 export default function LobbyRulesPage() {
@@ -15,18 +16,42 @@ export default function LobbyRulesPage() {
       reveal={REVEAL}
       lock={false}
     >
-      <p className="soon display">
-        Will be shown on <span className="lit">{REVEAL.date}</span>
-      </p>
-      <p className="soon-sub num">
-        {REVEAL.time} · {REVEAL.note}
-      </p>
+      <div className="rules-page">
+        <p className="rules-lede">
+          Read these before you take the field. Penalties are awarded on the
+          day, and one player's fight can cost a side the tournament.
+        </p>
 
-      {/* The one rule that is not being held back. */}
-      <div className="rule-one">
-        <p className="rule-one-no num">Rule No. 1</p>
-        <p className="rule-one-text">
-          Have patience. There is something big coming.
+        <ol className="rulebook">
+          {SEASON_4_RULES.map((rule, i) => (
+            <li className="ruling" key={rule.title}>
+              <p className="ruling-no">{String(i + 1).padStart(2, "0")}</p>
+
+              <div className="ruling-body">
+                <h2 className="ruling-title">{rule.title}</h2>
+                <p className="ruling-text">{rule.body}</p>
+
+                {rule.points && (
+                  <ul className="ruling-points">
+                    {rule.points.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* The line of the rule that has to land, set apart so it is
+                    read even when the paragraph above it is not. */}
+                {rule.emphasis && (
+                  <p className="ruling-emphasis">{rule.emphasis}</p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <p className="rules-foot">
+          Anything not covered here is settled on the day by the organisers, the
+          umpires and both captains — the same three, together, as in rule 04.
         </p>
       </div>
     </LobbySub>

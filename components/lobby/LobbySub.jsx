@@ -19,6 +19,9 @@ export default function LobbySub({
   // countdown would only repeat it.
   lock = true,
   fill = false,
+  // A screen whose heading has to change while you watch it renders its own,
+  // and turns this one off — the auction's title follows the leading bidder.
+  head = true,
   children,
 }) {
   const body = (
@@ -28,14 +31,16 @@ export default function LobbySub({
       <main className="lobby">
         {/* Title left, countdown right — one row, so the clock reads as part of
             the heading rather than as a banner stretched across the page. */}
-        <div className="sub-head">
-          <div className="lobby-head">
-            <p className="eyebrow">{eyebrow}</p>
-            <h1 className="display lobby-title">{title}</h1>
-          </div>
+        {head && (
+          <div className="sub-head">
+            <div className="lobby-head">
+              <p className="eyebrow">{eyebrow}</p>
+              <h1 className="display lobby-title">{title}</h1>
+            </div>
 
-          {lock && <RevealLock reveal={reveal} what={what} />}
-        </div>
+            {lock && <RevealLock reveal={reveal} what={what} />}
+          </div>
+        )}
 
         {children}
       </main>

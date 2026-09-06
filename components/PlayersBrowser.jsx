@@ -23,8 +23,25 @@ function Skill({ label, value }) {
   );
 }
 
-export default function PlayersBrowser({ players }) {
+export default function PlayersBrowser({ players, sides = [] }) {
   const [query, setQuery] = useState("");
+
+  /* A side names its captain by first name only, so the captain is the player
+     on that side whose first name matches. Keyed by player name, carrying the
+     side's own two colours so the row can wear them. */
+  const captains = useMemo(() => {
+    const map = new Map();
+    for (const side of sides) {
+      if (!side.name || !side.captain) continue;
+      const player = players.find(
+        (entry) =>
+          entry.team === side.name &&
+          entry.name.split(" ")[0].toLowerCase() === side.captain.toLowerCase()
+      );
+      if (player) map.set(player.name, side);
+    }
+    return map;
+  }, [sides, players]);
 
   // Typing stays instant even while 96 rows re-filter: React renders the input
   // with the new value immediately and the list with the value it can keep up
@@ -37,11 +54,16 @@ export default function PlayersBrowser({ players }) {
     [players]
   );
 
+  // Only players who have paid the entry fee. Everyone who entered stays in
+  // data/season4Players.json — this list is a view over it, not the record —
+  // so someone can be added back later by flipping their "paid" flag.
+  const paid = useMemo(() => indexed.filter((player) => player.paid), [indexed]);
+
   const results = useMemo(() => {
     const needle = normalise(deferredQuery.trim());
-    if (!needle) return indexed;
-    return indexed.filter((player) => player.search.includes(needle));
-  }, [indexed, deferredQuery]);
+    if (!needle) return paid;
+    return paid.filter((player) => player.search.includes(needle));
+  }, [paid, deferredQuery]);
 
   return (
     <>
@@ -74,7 +96,7 @@ export default function PlayersBrowser({ players }) {
       <p className="finder-count" aria-live="polite">
         <span className="num">{String(results.length).padStart(2, "0")}</span>
         {results.length === 1 ? " player" : " players"}
-        {results.length !== players.length && ` of ${players.length}`}
+        {results.length !== paid.length && ` of ${paid.length}`}
       </p>
 
       {results.length === 0 ? (
@@ -84,7 +106,18 @@ export default function PlayersBrowser({ players }) {
       ) : (
         <ol className="roster">
           {results.map((player, i) => (
-            <li className="player" key={`${player.name}-${i}`}>
+            <li
+              className={`player${captains.has(player.name) ? " is-captain" : ""}`}
+              key={`${player.name}-${i}`}
+              style={
+                captains.has(player.name)
+                  ? {
+                      "--team": captains.get(player.name).color,
+                      "--team-lit": captains.get(player.name).colorLit,
+                    }
+                  : undefined
+              }
+            >
               <span className="player-no num">{String(i + 1).padStart(2, "0")}</span>
 
               <span className="player-id">
@@ -94,6 +127,16 @@ export default function PlayersBrowser({ players }) {
                   {player.hostellite && " · Hostellite"}
                   {player.prefers && ` · Prefers ${player.prefers.toLowerCase()}`}
                 </small>
+                {/* Set at the auction. Until a side calls the player, there is
+                    nothing to show rather than an empty placeholder. */}
+                {player.team && (
+                  <span className="player-team">
+                    {captains.has(player.name) && (
+                      <b className="player-captain">Captain</b>
+                    )}
+                    {player.team}
+                  </span>
+                )}
               </span>
 
               <span className={`player-role role-${player.role.toLowerCase().replace("-", "")}`}>

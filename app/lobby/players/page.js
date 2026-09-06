@@ -1,6 +1,7 @@
 import Link from "next/link";
 import LobbySub from "@/components/lobby/LobbySub";
 import PlayersBrowser from "@/components/PlayersBrowser";
+import { SEASON_4_SIDES } from "@/data/season4Sides";
 import { REVEAL, SEASON_4 } from "@/lib/cplData";
 import { getPlayers } from "@/lib/players";
 
@@ -43,7 +44,7 @@ export default async function PlayersPage() {
             ends up where.
           </p>
 
-          <PlayersBrowser players={players} />
+          <PlayersBrowser players={players} sides={SEASON_4_SIDES} />
 
           <p className="players-back">
             <Link className="btn" href="/lobby">

@@ -1,0 +1,96 @@
+{
+ "current": "Om More",
+ "bid": 2000000,
+ "leader": null,
+ "bids": [],
+ "notice": null,
+ "sold": null,
+ "pass": 1,
+ "history": [
+  {
+   "name": "Kunj Rathi",
+   "team": "Bajrang United",
+   "price": 4000000
+  },
+  {
+   "name": "Kunal Sanjay Rai",
+   "team": "Vajra Strikers",
+   "price": 4000000
+  },
+  {
+   "name": "Rishi Anand Rathi",
+   "team": "Vajra Strikers",
+   "price": 6000000
+  },
+  {
+   "name": "Shourya Pandey",
+   "team": "Rajputana Rifles",
+   "price": 2000000
+  },
+  {
+   "name": "Krish Sharma",
+   "team": "Vajra Strikers",
+   "price": 2000000
+  },
+  {
+   "name": "Shikhar Karengulwar",
+   "team": "Storm Breakers",
+   "price": 2000000
+  },
+  {
+   "name": "Yojya Tembhre",
+   "team": "Storm Breakers",
+   "price": 2000000
+  },
+  {
+   "name": "Rishi Sharma",
+   "team": "Storm Breakers",
+   "price": 2000000
+  },
+  {
+   "name": "Vaibhav Jagtap",
+   "team": "Blazing Blades",
+   "price": 2000000
+  },
+  {
+   "name": "Manthan Gandhi",
+   "team": "Blazing Blades",
+   "price": 2000000
+  },
+  {
+   "name": "Ishaan Bansal",
+   "team": "The Godfathers",
+   "price": 2000000
+  },
+  {
+   "name": "Harsh Atara",
+   "team": "Rajputana Rifles",
+   "price": 6000000
+  },
+  {
+   "name": "Keshav Gupta",
+   "team": "Storm Breakers",
+   "price": 2000000
+  },
+  {
+   "name": "Shreyash Jaiswal",
+   "team": "Blazing Blades",
+   "price": 4000000
+  },
+  {
+   "name": "Shashwat S Gawande",
+   "team": "Rajputana Rifles",
+   "price": 8000000
+  },
+  {
+   "name": "Jayesh Popli",
+   "team": "Storm Breakers",
+   "price": 2000000
+  },
+  {
+   "name": "Tanishq Vijay Dodeja",
+   "team": "Rajputana Rifles",
+   "price": 6000000
+  }
+ ]
+}

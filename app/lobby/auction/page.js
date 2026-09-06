@@ -1,18 +1,39 @@
-import AuctionLot from "@/components/lobby/AuctionLot";
+import AuctionLive from "@/components/lobby/AuctionLive";
 import LobbySub from "@/components/lobby/LobbySub";
-import { AUCTION_BASE, REVEAL } from "@/lib/cplData";
+import { SEASON_4_SIDES } from "@/data/season4Sides";
+import { photoFor, photoIndex, readState } from "@/lib/auction";
+import { REVEAL } from "@/lib/cplData";
 import { getPlayers } from "@/lib/players";
 
 export const metadata = {
   title: "Auction — Season 4, Campus Premier League",
   description:
-    "The Season 4 auction. Every player in the pool goes under the hammer at the Live Auction on 12 September.",
+    "The Season 4 auction, live. Every player in the pool goes under the hammer on 12 September.",
 };
 
+// The board is the state of the room; it must never come from a cache.
+export const dynamic = "force-dynamic";
+
 export default async function LobbyAuctionPage() {
-  // One lot per entrant, so the count is the pool itself rather than a number
-  // that has to be kept in step by hand.
-  const { players } = await getPlayers();
+  const [{ players }, state, photos] = await Promise.all([
+    getPlayers(),
+    readState(),
+    photoIndex(),
+  ]);
+
+  // The whole pool goes down with the page so that the board can change lot
+  // without a round trip for the player — only the state is polled.
+  const pool = players.map((player) => ({
+    name: player.name,
+    year: player.year,
+    role: player.role,
+    prefers: player.prefers,
+    bat: player.bat,
+    bowl: player.bowl,
+    allround: player.allround,
+    rating: player.rating,
+    photo: photoFor(photos, player.name),
+  }));
 
   return (
     <LobbySub
@@ -20,9 +41,15 @@ export default async function LobbyAuctionPage() {
       title="Auction"
       what="The lots"
       reveal={REVEAL}
+      lock={false}
+      head={false}
       fill
     >
-      <AuctionLot total={players.length} basePrice={AUCTION_BASE} />
+      <AuctionLive
+        sides={SEASON_4_SIDES}
+        players={pool}
+        initial={state}
+      />
     </LobbySub>
   );
 }

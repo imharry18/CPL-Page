@@ -1,18 +1,5 @@
 [
  {
-  "name": "Aadesh Thakre",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Best",
-  "allround": "Good",
-  "rating": 10,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
   "name": "Aditya Pandey",
   "year": "2nd Year",
   "hostellite": true,
@@ -22,7 +9,9 @@
   "rating": 7,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/aditya-pandey.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -35,7 +24,9 @@
   "rating": 11,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": null,
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -48,20 +39,9 @@
   "rating": 4,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Alay Chilbule",
-  "year": "1st Year",
-  "hostellite": false,
-  "bat": "Okay",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 6,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/aishwary-chandela.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -74,20 +54,9 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Amogh Pravin Jawanjal",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/aman-singh.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -100,9 +69,10 @@
   "rating": 5,
   "role": "Batter",
   "prefers": "",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "photo": "/players/aniruddha-balsaraf.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Anirudh",
@@ -114,7 +84,9 @@
   "rating": 3,
   "role": "All-rounder",
   "prefers": "",
-  "paid": true,
+  "photo": "/players/anirudh-sandel.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -127,7 +99,9 @@
   "rating": 8,
   "role": "Bowler",
   "prefers": "Bowling",
-  "paid": true,
+  "photo": "/players/ansh-chowdhary.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -140,9 +114,10 @@
   "rating": 3,
   "role": "All-rounder",
   "prefers": "",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "photo": "/players/ansh-dogra.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Ansh Thakur",
@@ -154,7 +129,9 @@
   "rating": 9,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
+  "photo": "/players/ansh-thakur.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -167,7 +144,9 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/anshul-ghate.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -180,7 +159,9 @@
   "rating": 6,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/arjit-shahu.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -193,7 +174,9 @@
   "rating": 6,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/aryan-gulhare.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -206,9 +189,10 @@
   "rating": 7,
   "role": "Batter",
   "prefers": "",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "photo": "/players/aryan-gupta.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Aryan Singh",
@@ -220,7 +204,9 @@
   "rating": 3,
   "role": "All-rounder",
   "prefers": "",
-  "paid": true,
+  "photo": "/players/aryan-singh.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -233,20 +219,9 @@
   "rating": 3,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Aum Vishwakarma",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 9,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/atharva-yadav.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -259,9 +234,10 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "photo": "/players/ayan-singh.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Bhavishya Nilesh Agrawal",
@@ -273,7 +249,9 @@
   "rating": 9,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
+  "photo": null,
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -286,46 +264,9 @@
   "rating": 6,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Dhruv Chore",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Divyansh Sharma",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Average",
-  "allround": "Okay",
-  "rating": 6,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Ekshwaaku Choudhari",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Best",
-  "bowl": "Okay",
-  "allround": "Good",
-  "rating": 8,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/devansh-rusia.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -335,11 +276,13 @@
   "bat": "Best",
   "bowl": "Best",
   "allround": "Best",
-  "prefers": "",
   "rating": 12,
   "role": "All-rounder",
-  "paid": true,
-  "team": "Rajputana Rifles"
+  "prefers": "",
+  "photo": null,
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Harsh Atara",
@@ -351,9 +294,10 @@
   "rating": 9,
   "role": "Batter",
   "prefers": "",
-  "paid": true,
-  "team": "The Godfathers",
-  "viceCaptain": true
+  "photo": "/players/harsh-atara.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Harsh Vardhan Khajuria",
@@ -365,7 +309,9 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
+  "photo": "/players/harsh-vardhan-khajuria.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -378,7 +324,9 @@
   "rating": 11,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/harshit-sewaiwar.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -391,7 +339,9 @@
   "rating": 6,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
+  "photo": "/players/harshit-upadhyay.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -404,33 +354,9 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Ishaan Bansal",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Ishank Lilhare",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Average",
-  "allround": "Average",
-  "rating": 7,
-  "role": "Batter",
-  "prefers": "",
-  "paid": false,
+  "photo": "/players/hemang-pachpande.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -443,20 +369,9 @@
   "rating": 9,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Kanishk Rajesh Mantri",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Average",
-  "rating": 8,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/jayesh-popli.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -469,7 +384,9 @@
   "rating": 7,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/keshav-gupta.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -482,9 +399,10 @@
   "rating": 8,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": "The Overlords",
-  "viceCaptain": true
+  "photo": "/players/keshav-panpalia.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Kishan Bhattad",
@@ -496,9 +414,10 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": "Blazing Blades",
-  "viceCaptain": true
+  "photo": "/players/kishan-bhattad.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Krish Sharma",
@@ -510,21 +429,9 @@
   "rating": 8,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
- },
- {
-  "name": "Krishna Shonka",
-  "year": "3rd Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 8,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/krish-sharma.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -537,7 +444,9 @@
   "rating": 7,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/kshitij-pal.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -550,20 +459,9 @@
   "rating": 7,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Kunal Vinod Jagdale",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Best",
-  "bowl": "Best",
-  "allround": "Best",
-  "rating": 12,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/kunal-rai.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -576,7 +474,9 @@
   "rating": 3,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
+  "photo": "/players/kunj-rathi.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -589,59 +489,9 @@
   "rating": 11,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Laksh Bhattad",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Madhav Rathi",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Average",
-  "allround": "Average",
-  "rating": 6,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Manish Tajane",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Best",
-  "allround": "Good",
-  "rating": 10,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Manthan Gandhi",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 10,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/kushal-bodade.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -654,7 +504,9 @@
   "rating": 6,
   "role": "All-rounder",
   "prefers": "",
-  "paid": true,
+  "photo": "/players/mitul-agrawal.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -667,7 +519,9 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
+  "photo": "/players/mohit-bhabhra.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -680,9 +534,10 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": "Bajrang United",
-  "viceCaptain": true
+  "photo": "/players/mukhtar-hussain.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Neel Dorle",
@@ -694,20 +549,9 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Om Mamidwar",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Average",
-  "bowl": "Average",
-  "allround": "Average",
-  "rating": 6,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/neel-dorle.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -720,20 +564,9 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "",
-  "paid": true,
-  "team": "Mavericks XI"
- },
- {
-  "name": "Omsai Gagare",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Average",
-  "allround": "Average",
-  "rating": 6,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": null,
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -746,8 +579,10 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": "Bajrang United"
+  "photo": "/players/paras-bhongade.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Paras Sharma",
@@ -759,7 +594,9 @@
   "rating": 9,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/paras-sharma.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -772,7 +609,9 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
+  "photo": "/players/prayas-wankhede.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -785,34 +624,9 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
- },
- {
-  "name": "Parth Patil",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Good",
-  "allround": "Best",
-  "rating": 11,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Pawan Swami",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Okay",
-  "bowl": "Good",
-  "allround": "Average",
-  "rating": 6,
-  "role": "Bowler",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/parth-gawande.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -825,20 +639,9 @@
   "rating": 6,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Prem Wasalu",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Average",
-  "allround": "Best",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/prasad-akle.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -851,7 +654,9 @@
   "rating": 9,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
+  "photo": null,
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -864,7 +669,9 @@
   "rating": 7,
   "role": "Batter",
   "prefers": "",
-  "paid": true,
+  "photo": null,
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -877,9 +684,10 @@
   "rating": 8,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "photo": "/players/ram-mandvikar.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Ramnayan Sharma",
@@ -891,21 +699,9 @@
   "rating": 7,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
-  "team": "Rajputana Rifles",
-  "viceCaptain": true
- },
- {
-  "name": "Raunak Bhutada",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/ramnayan-sharma.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -918,9 +714,10 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": "Storm Breakers",
-  "viceCaptain": true
+  "photo": "/players/rishi-rathi.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Rishi Sharma",
@@ -932,7 +729,9 @@
   "rating": 6,
   "role": "All-rounder",
   "prefers": "",
-  "paid": true,
+  "photo": "/players/rishi-sharma.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -945,20 +744,9 @@
   "rating": 9,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Rounak Urade",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Best",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 9,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/rounak-nagwani.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -971,7 +759,9 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/rudratej-harinkhede.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -984,20 +774,9 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Sahil Kulkarni",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Best",
-  "bowl": "Good",
-  "allround": "Okay",
-  "rating": 8,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/rushil-chandak.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1010,7 +789,9 @@
   "rating": 8,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/sai-doifode.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1023,9 +804,10 @@
   "rating": 6,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "photo": "/players/sanidhya-gautam.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Sarth Rajesh Shirbhate",
@@ -1037,7 +819,9 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
+  "photo": "/players/sarth-shirbhate.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1050,20 +834,9 @@
   "rating": 9,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": "The Overlords"
- },
- {
-  "name": "Saurabh Khambalkar",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Okay",
-  "allround": "Average",
-  "rating": 6,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/sarvagya-patni.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1076,8 +849,10 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "",
-  "paid": true,
-  "team": "The Godfathers"
+  "photo": "/players/shantanu-lacchhode.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Shashwat S Gawande",
@@ -1089,9 +864,10 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": "Mavericks XI",
-  "viceCaptain": true
+  "photo": "/players/shashwat-gawande.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Shikhar Karengulwar",
@@ -1103,20 +879,9 @@
   "rating": 9,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Shiv Zanwar",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Average",
-  "allround": "Good",
-  "rating": 8,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/shikhar-karengulwar.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1129,7 +894,9 @@
   "rating": 10,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/shourya-pandey.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1142,8 +909,10 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": "Vajra Strikers"
+  "photo": "/players/shreyash-jaiswal.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Shridhar Mishra",
@@ -1155,7 +924,9 @@
   "rating": 9,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/shridhar-mishra.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1168,20 +939,9 @@
   "rating": 4,
   "role": "Batter",
   "prefers": "Bowling",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Sumeer Sachin Harkanth",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/siddharth-pandey.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1194,20 +954,9 @@
   "rating": 12,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Tanay Dongre",
-  "year": "2nd Year",
-  "hostellite": false,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/swarit-kokas.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1220,20 +969,9 @@
   "rating": 11,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Trishal Raghuwanshi",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Okay",
-  "allround": "Average",
-  "rating": 5,
-  "role": "Batter",
-  "prefers": "Bowling",
-  "paid": false,
+  "photo": "/players/tanishq-dodeja.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1246,9 +984,10 @@
   "rating": 8,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": "Vajra Strikers",
-  "viceCaptain": true
+  "photo": "/players/tushar-sharma.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
  },
  {
   "name": "Uddhav Bajaj",
@@ -1260,20 +999,9 @@
   "rating": 3,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Utkarsh Borkar",
-  "year": "3rd Year",
-  "hostellite": false,
-  "bat": "Best",
-  "bowl": "Okay",
-  "allround": "Good",
-  "rating": 8,
-  "role": "Batter",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/uddhav-bjaaj.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1286,46 +1014,9 @@
   "rating": 9,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Vedang Khedikar",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Best",
-  "allround": "Good",
-  "rating": 10,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Vineet Shah",
-  "year": "3rd Year",
-  "hostellite": false,
-  "bat": "Okay",
-  "bowl": "Good",
-  "allround": "Okay",
-  "rating": 5,
-  "role": "Bowler",
-  "prefers": "Bowling",
-  "paid": false,
-  "team": ""
- },
- {
-  "name": "Vinit Bhandari",
-  "year": "1st Year",
-  "hostellite": true,
-  "bat": "Average",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 8,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/vaibhav-jagtap.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1338,20 +1029,9 @@
   "rating": 7,
   "role": "Batter",
   "prefers": "Batting",
-  "paid": true,
-  "team": ""
- },
- {
-  "name": "Yash Mahajan",
-  "year": "2nd Year",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Good",
-  "rating": 9,
-  "role": "All-rounder",
-  "prefers": "Batting",
-  "paid": false,
+  "photo": "/players/yash-taori.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  },
  {
@@ -1364,7 +1044,9 @@
   "rating": 11,
   "role": "All-rounder",
   "prefers": "Batting",
-  "paid": true,
+  "photo": "/players/yojya-tembhre.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
   "team": ""
  }
 ]
