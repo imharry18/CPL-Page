@@ -2,17 +2,39 @@
 
 import { useEffect, useRef } from "react";
 
-import { money } from "@/lib/auctionMoney";
+import { SQUAD_MAX, money } from "@/lib/auctionMoney";
 
 /**
- * One side's squad, over the top of the teams grid.
+ * One side's squad, as a team photograph rather than a list.
+ *
+ * Ten places on the grass, and the side fills them as the night goes on: a
+ * silhouette and a name where someone has been won, an empty shirt and a
+ * question mark where nobody has. The point of drawing it this way is that the
+ * gaps are the information — a captain looking at this should see at a glance
+ * how many places he still has to fill and how much he has left to fill them
+ * with, which a list of the players he already owns does not tell him.
+ *
+ * Deliberately no photographs. Not every player has one, and a lineup where
+ * some faces are portraits and the rest are placeholders looks broken; eleven
+ * identical silhouettes look like a team sheet.
  *
  * Themed with the side's own two colours, passed down as custom properties so
- * the stylesheet never has to know the eight teams exist.
- *
- * Squads are empty until the auction: every player carries a `team` in
- * data/season4Players.json, blank until a side calls them.
+ * the stylesheet never has to know the eight sides exist.
  */
+
+/** A standing figure. One shape, drawn once, used ten times. */
+function Figure() {
+  return (
+    <svg className="peg-body" viewBox="0 0 40 74" aria-hidden="true">
+      {/* Head, then shoulders falling into a torso, then two legs. Kept as one
+          filled path so it reads as a shape at any size rather than as an
+          illustration that falls apart when it is small. */}
+      <circle cx="20" cy="9" r="7.4" />
+      <path d="M20 18.5c-7.2 0-12.4 4.3-13.4 11L4.4 43.2c-.3 2 1.1 3.6 3 3.6h1.5l1.2 22.6c.1 2 1.7 3.5 3.6 3.5s3.5-1.5 3.6-3.5l1-18.6h2.4l1 18.6c.1 2 1.7 3.5 3.6 3.5s3.5-1.5 3.6-3.5l1.2-22.6h1.5c1.9 0 3.3-1.6 3-3.6l-2.2-13.7c-1-6.7-6.2-11-13.4-11Z" />
+    </svg>
+  );
+}
+
 export default function SquadPopup({ side, players, paid = {}, onClose }) {
   const panel = useRef(null);
 
@@ -28,6 +50,29 @@ export default function SquadPopup({ side, players, paid = {}, onClose }) {
   }, [onClose]);
 
   const squad = players.filter((player) => player.team === side.name);
+
+  /* Ten places, in the order a side is built: the captain first because he was
+     there before the auction, then the vice captain the grid drew him, then
+     everyone bought, in the order they were bought. The rest stand empty. */
+  const ranked = [...squad].sort((a, b) => {
+    const rank = (p) => {
+      const first = p.name.split(" ")[0].toLowerCase();
+      if (side.captain && first === side.captain.toLowerCase()) return 0;
+      if (p.viceCaptain) return 1;
+      return 2;
+    };
+    return rank(a) - rank(b);
+  });
+
+  const places = Array.from({ length: SQUAD_MAX }, (_, i) => ranked[i] ?? null);
+  const short = SQUAD_MAX - squad.length;
+
+  function roleOf(player) {
+    const first = player.name.split(" ")[0].toLowerCase();
+    if (side.captain && first === side.captain.toLowerCase()) return "Captain";
+    if (player.viceCaptain) return "Vice captain";
+    return paid[player.name] != null ? money(paid[player.name]) : player.role;
+  }
 
   return (
     <div
@@ -53,9 +98,8 @@ export default function SquadPopup({ side, players, paid = {}, onClose }) {
             {side.name}
           </h2>
           <p className="squad-count num">
-            {squad.length === 0
-              ? "No squad yet"
-              : `${squad.length} ${squad.length === 1 ? "player" : "players"}`}
+            {squad.length} of {SQUAD_MAX}
+            {short > 0 && <span> · {short} to fill</span>}
           </p>
 
           {/* What is left to spend, and what has gone. Only shown once the
@@ -84,35 +128,42 @@ export default function SquadPopup({ side, players, paid = {}, onClose }) {
           </button>
         </header>
 
-        {squad.length === 0 ? (
-          <p className="squad-empty">
-            Squads are built from scratch at the Live Auction. Nobody has been
-            called for {side.name} yet.
-          </p>
-        ) : (
-          <ol className="squad-list">
-            {squad.map((player, i) => (
-              <li key={player.name}>
-                <span className="squad-no num">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="squad-player">
-                  <b>{player.name}</b>
-                  <small>
-                    {player.year}
-                    {player.prefers && ` · Prefers ${player.prefers.toLowerCase()}`}
-                  </small>
-                </span>
-                <span className="squad-buy">
-                  {paid[player.name] != null && (
-                    <b className="squad-price num">{money(paid[player.name])}</b>
-                  )}
-                  <span className="squad-role">{player.role}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        )}
+        {/* The lineup. Two rows of five, the way a team stands for a
+            photograph — ten in a single row would leave no width for names. */}
+        <ol className="squad-lineup">
+          {places.map((player, i) => (
+            <li
+              className={`peg${player ? " is-filled" : ""}`}
+              key={player?.name ?? `empty-${i}`}
+              /* Each figure rises a beat after the one before it, so the side
+                 assembles rather than appearing. */
+              style={{ "--i": i }}
+            >
+              <span className="peg-shape">
+                <Figure />
+                {!player && (
+                  <span className="peg-mark num" aria-hidden="true">
+                    ?
+                  </span>
+                )}
+              </span>
+
+              <span className="peg-no num">{String(i + 1).padStart(2, "0")}</span>
+
+              {player ? (
+                <>
+                  <b className="peg-name">{player.name}</b>
+                  <small className="peg-meta num">{roleOf(player)}</small>
+                </>
+              ) : (
+                <>
+                  <b className="peg-name is-empty">Open</b>
+                  <small className="peg-meta num">Not yet won</small>
+                </>
+              )}
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   );

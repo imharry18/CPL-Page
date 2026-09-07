@@ -38,8 +38,10 @@ export default async function LobbyAuctionPage() {
     year: player.year,
     role: player.role,
     prefers: player.prefers,
-    // Carried so the squad panel can list who a side already holds.
+    // Carried so the squad panel can list who a side already holds, and mark
+    // the one the FateGrid drew them.
     team: player.team ?? "",
+    viceCaptain: Boolean(player.viceCaptain),
     bat: player.bat,
     bowl: player.bowl,
     allround: player.allround,

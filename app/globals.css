@@ -3000,15 +3000,39 @@ img {
 }
 .squad {
   position: relative;
-  width: min(34rem, 100%);
-  max-height: min(80vh, 44rem);
+  /* Wider than it was: this holds a lineup of five across now, not a list. */
+  width: min(64rem, 100%);
+  max-height: min(86vh, 48rem);
   overflow-y: auto;
   border: 1px solid color-mix(in srgb, var(--team) 45%, transparent);
-  /* Opaque, not tinted: the cards behind are busy artwork and read straight
-     through anything translucent. */
-  background: #07090a;
   box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.7);
   outline: none;
+
+  /* The ground the side stands on.
+
+     Three layers over one photograph: the side's own colour graded across it
+     so each of the eight reads as its own place, a dark wash under the text so
+     names stay legible over grass and crowd, and the picture itself. It is
+     pinned to the bottom because the grass is at the bottom of the frame and
+     that is where the figures stand. */
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(4, 6, 7, 0.94) 0%,
+      rgba(4, 6, 7, 0.82) 42%,
+      rgba(4, 6, 7, 0.55) 68%,
+      rgba(4, 6, 7, 0.72) 100%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--team) 55%, transparent),
+      transparent 55%
+    ),
+    url("/lobby/stadium.webp");
+  background-size: cover, cover, cover;
+  background-position: center, center, center bottom;
+  background-repeat: no-repeat;
+  background-color: #07090a;
 }
 /* The side's own two colours, as the band across the top of the panel. */
 .squad-head {
@@ -3061,63 +3085,107 @@ img {
   border-color: var(--team-lit);
 }
 .squad-empty {
-  padding: 2.5rem 1.5rem;
-  text-align: center;
-  color: var(--seam-70);
-}
-.squad-list {
-  display: grid;
-  gap: 1px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  background: var(--seam-06);
-}
-.squad-list li {
-  display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.8rem 1.5rem;
-  background: #07090a;
-}
-.squad-no {
-  font-size: 0.68rem;
-  color: var(--team-lit);
-}
-.squad-player {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-.squad-player b {
-  font-size: 0.95rem;
-  color: var(--seam);
-}
-.squad-player small {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
+  padding: 1.5rem;
   color: var(--seam-45);
 }
-.squad-role {
-  padding: 0.25rem 0.6rem;
-  border: 1px solid color-mix(in srgb, var(--team) 55%, transparent);
-  border-radius: 999px;
-  font-family: var(--mono);
-  font-size: 0.54rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--team-lit);
+
+/* The lineup: ten places on the grass, two rows of five the way a side stands
+   for a photograph. Ten across leaves no width for names. */
+.squad-lineup {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(0.4rem, 1.2vw, 1rem);
+  list-style: none;
+  margin: 0;
+  padding: clamp(1rem, 3vh, 2rem) clamp(1rem, 3vw, 2.25rem)
+    clamp(1.25rem, 4vh, 2.5rem);
+}
+.peg {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  text-align: center;
+  min-width: 0;
+  animation: peg-in 0.42s var(--ease-out) both;
+  animation-delay: calc(var(--i) * 45ms);
+}
+@keyframes peg-in {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to { opacity: 1; transform: none; }
 }
 
-@keyframes squad-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.peg-shape {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  width: 100%;
+  height: clamp(48px, 9vh, 84px);
+}
+.peg-body {
+  width: auto;
+  height: 100%;
+  /* An empty place is a shirt nobody is wearing: the same figure, drawn as an
+     outline in the side's colour instead of filled with it. */
+  fill: none;
+  stroke: color-mix(in srgb, var(--team-lit) 42%, transparent);
+  stroke-width: 1.4;
+  transition: fill 0.3s var(--ease-out), stroke 0.3s var(--ease-out);
+}
+.peg.is-filled .peg-body {
+  fill: var(--team-lit);
+  stroke: none;
+  /* Lit from the side, so the row reads as figures standing in a stadium
+     rather than as icons printed on it. */
+  filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--team) 70%, transparent));
+}
+/* The question mark sits inside the empty shirt. */
+.peg-mark {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(1.1rem, 2.6vh, 1.7rem);
+  color: color-mix(in srgb, var(--team-lit) 85%, transparent);
+}
+
+.peg-no {
+  margin-top: 0.3rem;
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  color: color-mix(in srgb, var(--team-lit) 60%, transparent);
+}
+.peg-name {
+  font-size: clamp(0.68rem, 0.95vw, 0.9rem);
+  line-height: 1.2;
+  color: var(--seam);
+  overflow-wrap: anywhere;
+  /* The photograph behind has a floodlit crowd and a scoreboard in it, and a
+     name can land on any of them. A tight shadow holds the letters against
+     whatever is underneath without drawing a box. */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8);
+}
+.peg-name.is-empty {
+  color: var(--seam-45);
+  font-weight: 400;
+}
+.peg-meta {
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+}
+.peg-no {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+}
+
+@media (max-width: 620px) {
+  .squad-lineup {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .squad-scrim { animation: none; }
+  .peg { animation: none; }
 }
 
 /* --------------------------------------------------------------------------
@@ -6408,5 +6476,113 @@ kbd {
   .stamp-next,
   .deck-btn.is-go {
     animation: none;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   The lobby reticle
+
+   A dot exactly under the pointer so clicking still feels precise, and a ring
+   a few frames behind it so the hand has weight. Both are painted above
+   everything and neither can ever be hit — a cursor that swallows a click is
+   worse than no cursor at all.
+
+   The ring is two elements: an outer one that only ever carries the position,
+   and an inner one that only ever carries the look. CSS applies `rotate` after
+   `transform`, so turning the element that holds the translate rotates the
+   coordinate system with it and the reticle swings away across the screen.
+   Keeping the two on separate elements is what makes the sight turn on the
+   spot.
+   -------------------------------------------------------------------------- */
+.reticle,
+.reticle-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-out);
+}
+/* Shown only once the pointer has actually moved: a reticle sitting in the
+   middle of the screen before anyone has touched the mouse is a bug on screen. */
+body.has-reticle .reticle,
+body.has-reticle .reticle-dot {
+  opacity: 1;
+}
+
+.reticle-dot {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--reticle, var(--blood-lit));
+  transition: opacity 0.2s var(--ease-out), background 0.2s linear;
+}
+
+/* Scaled rather than resized: a width change is layout on every frame of the
+   transition, a scale is not, and scaling keeps it centred for free. */
+.reticle-ring {
+  --r: 0deg;
+  --s: 1;
+  position: absolute;
+  top: -17px;
+  left: -17px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid
+    color-mix(in srgb, var(--reticle, var(--blood-lit)) 55%, transparent);
+  border-radius: 50%;
+  transform: rotate(var(--r)) scale(var(--s));
+  transition: transform 0.24s var(--ease-out), border-color 0.2s linear;
+}
+
+/* Four ticks rather than a closed ring: a solid circle reads as a loading
+   spinner, a broken one reads as a sight. */
+.reticle-tick {
+  position: absolute;
+  width: 1px;
+  height: 6px;
+  background: var(--reticle, var(--blood-lit));
+  transition: background 0.2s linear;
+}
+.reticle-tick:nth-child(1) { top: -4px; left: 50%; }
+.reticle-tick:nth-child(3) { bottom: -4px; left: 50%; }
+.reticle-tick:nth-child(2) { right: -4px; top: 50%; width: 6px; height: 1px; }
+.reticle-tick:nth-child(4) { left: -4px; top: 50%; width: 6px; height: 1px; }
+
+/* Over anything pressable the sight opens and turns onto its corners. */
+.reticle.is-hot .reticle-ring {
+  --r: 45deg;
+  --s: 1.6;
+  border-color: color-mix(in srgb, var(--reticle, var(--blood-lit)) 85%, transparent);
+}
+/* And closes as the click lands. */
+.reticle.is-down .reticle-ring {
+  --s: 0.75;
+}
+
+/* The native arrow goes only where the reticle actually replaces it, and only
+   on a device that has one. Text still gets a caret: a reticle over an input
+   with no caret is a field you cannot tell is focused. */
+@media (pointer: fine) {
+  body.has-reticle .lobby-shell,
+  body.has-reticle .lobby,
+  body.has-reticle .lobby * {
+    cursor: none;
+  }
+  body.has-reticle input,
+  body.has-reticle textarea {
+    cursor: text;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reticle-ring {
+    transition: border-color 0.2s linear;
+  }
+  .reticle.is-hot .reticle-ring {
+    --r: 0deg;
   }
 }
