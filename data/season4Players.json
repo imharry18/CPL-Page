@@ -359,6 +359,19 @@
   "viceCaptain": false
  },
  {
+  "name": "Kanishk Rajesh Mantri",
+  "year": "1st Year",
+  "hostellite": true,
+  "bat": "Good",
+  "bowl": "Good",
+  "allround": "Average",
+  "rating": 8,
+  "role": "All-rounder",
+  "prefers": "Batting",
+  "paid": true,
+  "team": ""
+ },
+ {
   "name": "Keshav Gupta",
   "year": "3rd Year",
   "hostellite": true,
@@ -862,6 +875,19 @@
   "bowl": "Good",
   "allround": "Good",
   "rating": 9,
+  "role": "All-rounder",
+  "prefers": "Batting",
+  "paid": true,
+  "team": ""
+ },
+ {
+  "name": "Shiv Zanwar",
+  "year": "2nd Year",
+  "hostellite": false,
+  "bat": "Good",
+  "bowl": "Average",
+  "allround": "Good",
+  "rating": 8,
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
