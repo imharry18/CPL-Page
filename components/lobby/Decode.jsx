@@ -23,6 +23,10 @@ import { useEffect, useRef, useState } from "react";
  *
  * Layout never moves: the width is held by the final string from the first
  * frame, because the scramble is the same length as the text it resolves to.
+ *
+ * The whole string resolves at once rather than left to right. Settling letter
+ * by letter reads as typing, and the eye follows the front of the word instead
+ * of reading the word.
  */
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -73,21 +77,21 @@ export default function Decode({
     const tick = () => {
       const progress = Math.min((performance.now() - start) / duration, 1);
 
-      /* Left to right, because that is the direction the eye is already
-         travelling. Everything past the front is still running. */
-      const settled = Math.floor(progress * chars.length);
-
+      /* The whole string runs together and lands together. Resolving letter
+         by letter from the left turns a name into something being typed out,
+         and the eye follows the front of it instead of reading the name; this
+         way the room sees one word arrive. */
       setShown(
         chars
-          .map((char, i) => {
-            if (i < settled || FIXED.has(char)) return char;
+          .map((char) => {
+            if (FIXED.has(char)) return char;
             /* In a figure only the numerals move. Letting "Cr" roll through
                digits turned "₹99.8 Cr" into "₹99.8 88" halfway, which reads as
                a broken number rather than as one being counted. */
             if (digits && !/[0-9]/.test(char)) return char;
             const glyph = pool[Math.floor(Math.random() * pool.length)];
-            // A scrambling letter takes the case of the letter it will become,
-            // so the word keeps its silhouette while it resolves.
+            // A scrambling letter takes the case of the letter it will
+            // become, so the word keeps its silhouette while it resolves.
             return char === char.toLowerCase() && !digits
               ? glyph.toLowerCase()
               : glyph;
