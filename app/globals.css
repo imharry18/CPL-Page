@@ -4568,6 +4568,35 @@ img {
 .stage.is-themed .stage-wash {
   opacity: 1;
 }
+/* Who is coming, in the bottom-left corner.
+   Taken out of the flow: the board is sized to the last pixel of a 16:9 share,
+   so a line that pushed the lot up would cost the bid its place on screen.
+   It sits in the breathing room under the board instead. */
+.stage-next {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  max-width: 60%;
+  min-width: 0;
+}
+.stage-next-tag {
+  flex: none;
+  font-size: clamp(0.5rem, 0.8vw, 0.72rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+.stage-next-name {
+  font-size: clamp(0.85rem, min(1.7vw, 2.6svh), 1.7rem);
+  color: var(--seam);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .stage-title {
   font-size: clamp(2rem, 1rem + 5.5vw, 6rem);
   line-height: 0.92;
@@ -4710,6 +4739,25 @@ img {
 /* A column of eight beside the board needs width the phone has not got, so
    there the rail goes under it, four across and two deep. */
 @media (max-width: 900px) {
+  /* And on a phone the board scrolls.
+
+     This screen is built for the one at the front of the hall: a photograph,
+     a card of stats, the bid in type readable across a room, and now eight
+     sides. There is no arrangement of those that fits a phone at a size worth
+     reading — and anyone watching remotely is watching the shared call, not
+     this page. So here it is allowed to run past the fold rather than every
+     figure on it shrinking to nothing. */
+  .lobby-shell:has(.stage) .lobby {
+    overflow-y: auto;
+  }
+  .stage {
+    min-height: auto;
+  }
+  .stage-next {
+    position: static;
+    max-width: none;
+    margin-top: 0.5rem;
+  }
   .stage-body {
     grid-template-columns: minmax(0, 1fr);
     align-content: center;

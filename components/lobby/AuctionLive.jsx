@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import SkillMeter from "@/components/SkillMeter";
 import { SQUAD_MAX, money, nextBid, purses } from "@/lib/auctionMoney";
+import { nextInQueue, queueFor } from "@/lib/auctionQueue";
 
 /**
  * The room's view of the auction.
@@ -18,7 +19,14 @@ import { SQUAD_MAX, money, nextBid, purses } from "@/lib/auctionMoney";
  * the button rather than up to a poll behind it. `poll` is only the fallback
  * for a stream that never opens.
  */
-export default function AuctionLive({ sides, players, initial, eyebrow, poll = 1500 }) {
+export default function AuctionLive({
+  sides,
+  players,
+  initial,
+  eyebrow,
+  order = [],
+  poll = 1500,
+}) {
   const [state, setState] = useState(initial);
 
   /* The stamp is not a timer any more. It is up for exactly as long as the
@@ -91,6 +99,16 @@ export default function AuctionLive({ sides, players, initial, eyebrow, poll = 1
   // What the next bid would cost, so a side that cannot cover it can be shown
   // as out of this lot rather than merely quiet.
   const asking = nextBid(state.bid, Boolean(state.leader));
+
+  /* Who is coming. Worked out with the same rule the console uses, from the
+     same running order and the same ledger, so the screen at the front of the
+     hall cannot name someone other than the one about to be called. Anyone
+     watching on a call has no room to read, and this is how they know to get
+     ready. */
+  const upNext = nextInQueue(
+    queueFor({ order, history: state.history, pass: state.pass }),
+    state.current
+  );
 
   // The page's colour: whoever currently holds the bid, the buyer while the
   // stamp is up over a cleared board, the house red when nobody has bid.
@@ -239,6 +257,17 @@ export default function AuctionLive({ sides, players, initial, eyebrow, poll = 1
         })}
         </aside>
       </div>
+
+      {/* Who is coming, small, in the bottom corner. It is a footnote to the
+          lot rather than part of it — the room is looking at the man under the
+          hammer, and this is only for anyone who wants to get ready. Taken out
+          of the layout altogether so it costs the board no height. */}
+      {upNext && (
+        <p className="stage-next num">
+          <span className="stage-next-tag">Next</span>
+          <b className="stage-next-name">{upNext}</b>
+        </p>
+      )}
 
       {/* The sale itself. Held over the board rather than replacing it, so the
           player who has just gone is still on screen underneath. */}

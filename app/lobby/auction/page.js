@@ -1,7 +1,7 @@
 import AuctionLive from "@/components/lobby/AuctionLive";
 import LobbySub from "@/components/lobby/LobbySub";
 import { SEASON_4_SIDES } from "@/data/season4Sides";
-import { photoFor, photoIndex, readState } from "@/lib/auction";
+import { photoFor, photoIndex, readOrder, readState } from "@/lib/auction";
 import { REVEAL } from "@/lib/cplData";
 import { getPlayers } from "@/lib/players";
 
@@ -15,10 +15,14 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function LobbyAuctionPage() {
-  const [{ players }, state, photos] = await Promise.all([
+  const [{ players }, state, photos, order] = await Promise.all([
     getPlayers(),
     readState(),
     photoIndex(),
+    // The running order is public — the rules say so — and the board uses it
+    // to tell the room who is coming, which matters most to anyone watching
+    // on a call rather than sitting in the hall.
+    readOrder(),
   ]);
 
   // The whole pool goes down with the page so that the board can change lot
@@ -49,6 +53,7 @@ export default async function LobbyAuctionPage() {
         sides={SEASON_4_SIDES}
         players={pool}
         initial={state}
+        order={order}
       />
     </LobbySub>
   );

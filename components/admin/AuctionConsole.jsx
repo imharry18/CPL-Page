@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SQUAD_MAX, SQUAD_MIN, money, nextBid, purses } from "@/lib/auctionMoney";
+import { nextInQueue } from "@/lib/auctionQueue";
 
 /**
  * The auction console.
@@ -122,9 +123,14 @@ export default function AuctionConsole({
   const remaining = live;
 
   const at = live.findIndex((row) => row.name === state.current);
-  const upNext =
-    live.find((row, i) => i > at && row.name !== state.current) ??
-    live.find((row) => row.name !== state.current);
+  /* Shared with the board, which now prints the same name to the room — the
+     rule for "who is next" has to have one home or the screen at the front of
+     the hall will eventually contradict the console. */
+  const upNextName = nextInQueue(
+    live.map((row) => row.name),
+    state.current
+  );
+  const upNext = live.find((row) => row.name === upNextName);
 
   // Unsold names sit at the foot of the list, after everyone still to come.
   const queue = useMemo(
