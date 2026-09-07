@@ -52,6 +52,38 @@ function serialise(work) {
   return run;
 }
 
+/**
+ * How many players a side actually holds: the ones already on it before the
+ * auction — the captain, and the vice captain the FateGrid drew — plus
+ * everyone bought tonight.
+ *
+ * Read from the roster rather than assumed to be two, because before the grid
+ * has run a side has a captain and nobody else, and it should not be held a
+ * place short on that account.
+ */
+async function squadCount(team, history) {
+  const bought = history.filter((sale) => sale.team === team);
+  const boughtNames = new Set(bought.map((sale) => sale.name));
+
+  let standing = 0;
+  try {
+    const roster = JSON.parse(
+      await readFile(
+        path.join(process.cwd(), "data", "season4Players.json"),
+        "utf8"
+      )
+    );
+    standing = roster.filter(
+      (player) => player.team === team && !boughtNames.has(player.name)
+    ).length;
+  } catch {
+    // No roster to read is not a reason to let a side bid past its ten; the
+    // purchases alone still cap it.
+  }
+
+  return standing + bought.length;
+}
+
 export async function POST(request) {
   if (!(await isAdmin())) {
     return Response.json({ error: "not admin" }, { status: 403 });
@@ -198,11 +230,17 @@ async function handle({ action, name, team, notice, names, pass }) {
         );
       }
 
-      // A full squad is out of the bidding. Checked here rather than only in
-      // the console, because a bid a side cannot be allowed to win would still
-      // push the price up on everyone else.
-      const held = state.history.filter((sale) => sale.team === team).length;
-      if (held >= SQUAD_MAX) {
+      /* A full squad is out of the bidding. Checked here rather than only on
+         the board, because a bid a side cannot be allowed to win would still
+         push the price up on everyone else.
+
+         The captain and the vice captain count towards the ten. They are on
+         their side before a bid is made — one by hand, one by the FateGrid —
+         so they are counted off the roster rather than the ledger, and what a
+         side has left to buy is the ten minus whoever is already standing
+         there. Counting only purchases let a side reach twelve. */
+      const squad = await squadCount(team, state.history);
+      if (squad >= SQUAD_MAX) {
         return Response.json(
           { error: `${team} already has ${SQUAD_MAX} players` },
           { status: 409 }

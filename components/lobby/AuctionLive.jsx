@@ -1,14 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import SkillMeter from "@/components/SkillMeter";
 import AuctionGuide from "@/components/lobby/AuctionGuide";
+import AuctionLedger from "@/components/lobby/AuctionLedger";
 import Decode from "@/components/lobby/Decode";
 import SquadPopup from "@/components/lobby/SquadPopup";
 import StageFX from "@/components/lobby/StageFX";
 import { SQUAD_MAX, money, nextBid, purses } from "@/lib/auctionMoney";
-import { nextInQueue, queueFor } from "@/lib/auctionQueue";
+import { nextInQueue, outcomes, queueFor } from "@/lib/auctionQueue";
 
 /**
  * The room's view of the auction.
@@ -58,6 +59,7 @@ export default function AuctionLive({
   const [squad, setSquad] = useState(null);
   const [confirmRestart, setConfirmRestart] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [ledgerOpen, setLedgerOpen] = useState(false);
 
   /* The stamp is not a timer any more. It is up for exactly as long as the
      ledger says a sale is being announced, and the console takes it down by
@@ -151,6 +153,36 @@ export default function AuctionLive({
      history the board is already being sent. Nothing new is fetched and no
      second source of truth is kept — the same derivation the console uses. */
   const table = purses(sides, state.history);
+
+  /* The roster with tonight's sales folded in.
+
+     The list this page was given is what the roster said when it loaded, and
+     the ledger arrives afterwards over the stream — so a player bought five
+     minutes ago is still shown unattached unless the two are merged. Doing it
+     here means the rail and the squad panel both count the same squads. */
+  const livePlayers = useMemo(() => {
+    const won = new Map(
+      state.history.filter((sale) => sale.team).map((sale) => [sale.name, sale.team])
+    );
+    if (won.size === 0) return players;
+    return players.map((player) =>
+      won.has(player.name) ? { ...player, team: won.get(player.name) } : player
+    );
+  }, [players, state.history]);
+
+  /* How many each side actually holds. The captain and the vice captain stand
+     on their side before a bid is made and count towards the ten, so this is
+     everyone carrying the side's name — not just the ones bought. Counting
+     purchases alone let a side reach twelve. */
+  const held = useMemo(() => {
+    const count = new Map(sides.map((side) => [side.name, 0]));
+    for (const player of livePlayers) {
+      if (player.team && count.has(player.team)) {
+        count.set(player.team, count.get(player.team) + 1);
+      }
+    }
+    return count;
+  }, [livePlayers, sides]);
   // What the next bid would cost, so a side that cannot cover it can be shown
   // as out of this lot rather than merely quiet.
   const asking = nextBid(state.bid, Boolean(state.leader));
@@ -189,6 +221,28 @@ export default function AuctionLive({
   const reoffer = queueFor({ order, history: state.history, pass: 2 });
   const secondPassReady =
     state.pass !== 2 && stillToCall.length === 0 && reoffer.length > 0;
+  // Nothing left in either round.
+  const complete = stillToCall.length === 0 && reoffer.length === 0;
+
+  /* The two columns the ledger panel shows.
+
+     Built from the LAST word on each player rather than from every line in the
+     history: a name refused in the first round and bought in the second is in
+     the ledger twice, and walking the lines would leave him sitting in the
+     unsold column after he had been sold. */
+  const { soldList, unsoldList } = useMemo(() => {
+    const last = [...outcomes(state.history).values()];
+    return {
+      soldList: last.filter((entry) => entry.team),
+      unsoldList: last.filter((entry) => !entry.team),
+    };
+  }, [state.history]);
+
+  // The five after the one on screen — the lot under the hammer is not
+  // "upcoming", it is here.
+  const upcoming = navQueue
+    .filter((name) => name !== state.current)
+    .slice(0, 5);
 
   /* The keyboard is the console.
 
@@ -207,7 +261,15 @@ export default function AuctionLive({
      in the gap. */
   const live = useRef(null);
   useEffect(() => {
-    live.current = { state, table, asking, announcing, busy, queue: navQueue };
+    live.current = {
+      state,
+      table,
+      asking,
+      announcing,
+      busy,
+      queue: navQueue,
+      advance,
+    };
   });
 
   useEffect(() => {
@@ -236,7 +298,7 @@ export default function AuctionLive({
         // An announcement is up: Enter takes it down and moves the night on,
         // which is the same key doing the same job — finish with this lot.
         if (now.announcing) {
-          send({ action: "next" });
+          now.advance();
           return;
         }
         if (meta) {
@@ -296,6 +358,15 @@ export default function AuctionLive({
 
     return () => clearTimeout(id);
   }, [admin, state.current, state.notice, announcing, busy, upNext, send]);
+
+  /* Finish with this lot and start the next, in one press and one write.
+     Sending "next" on its own only took the stamp down, and the board then sat
+     on "the next lot is on its way" for a beat before the order called itself.
+     Putting the next name up IS what clears the stamp, so there is no gap to
+     look at. With nothing left to call it just clears. */
+  function advance() {
+    return send(upNext ? { action: "lot", name: upNext } : { action: "next" });
+  }
 
   // The page's colour: whoever currently holds the bid, the buyer while the
   // stamp is up over a cleared board, the house red when nobody has bid.
@@ -405,15 +476,45 @@ export default function AuctionLive({
             </div>
           </div>
         </div>
+      ) : secondPassReady ? (
+        /* The order has been walked to the end. Rather than a bare screen and
+           a small button somewhere, the room is shown exactly who is coming
+           back: this is the moment the captains look up and count what they
+           still need. */
+        <div className="interlude">
+          <p className="interlude-tag num">Round one complete</p>
+          <h2 className="interlude-line display">
+            {reoffer.length} went unsold
+          </h2>
+          <ul className="recall">
+            {reoffer.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
+          </ul>
+          {admin && (
+            <button
+              type="button"
+              className="stamp-next"
+              disabled={busy}
+              autoFocus
+              onClick={() =>
+                send({ action: "notice", notice: "unsold", pass: 2 })
+              }
+            >
+              Next: unsold players
+            </button>
+          )}
+        </div>
+      ) : complete ? (
+        <div className="interlude">
+          <p className="interlude-tag num">Every player allotted</p>
+          <h2 className="interlude-line display">Auction completed</h2>
+        </div>
       ) : (
-        // Neither announcement wants "the next lot is on its way" showing
-        // through it — the stamp is laid over the board, not instead of it.
-        !announcing && (
-          <div className="live-idle">
-            <p className="lot-tag num">Standing by</p>
-            <p className="display">The next lot is on its way.</p>
-          </div>
-        )
+        /* Nothing to say. The stamp is laid over the board rather than instead
+           of it, and between lots the next name is already on its way — a
+           "standing by" card only ever flashed up in the gap. */
+        null
       )}
         </div>
 
@@ -427,7 +528,10 @@ export default function AuctionLive({
       <aside className="rail" aria-label="The eight sides">
         {table.map((side) => {
           const bidding = state.leader === side.name;
-          const full = side.bought >= SQUAD_MAX;
+          // Named apart from the `squad` state above, which is the panel that
+          // is open — shadowing it here would be a trap for the next edit.
+          const squadSize = held.get(side.name) ?? side.bought;
+          const full = squadSize >= SQUAD_MAX;
           // Out of this lot: nothing left to spend on it, or no room for him.
           const out = !bidding && (full || side.left < asking);
           // A side already holding the bid cannot bid against itself, and one
@@ -461,7 +565,7 @@ export default function AuctionLive({
                   digits
                 />
                 <b className="rail-count num">
-                  {side.bought}
+                  {squadSize}
                   <i>/{SQUAD_MAX}</i>
                 </b>
               </div>
@@ -471,7 +575,7 @@ export default function AuctionLive({
                   numeral, and full is meant to read at a glance. */}
               <span
                 className="rail-fill"
-                style={{ "--n": side.bought, "--max": SQUAD_MAX }}
+                style={{ "--n": squadSize, "--max": SQUAD_MAX }}
                 aria-hidden="true"
               />
             </>
@@ -580,7 +684,7 @@ export default function AuctionLive({
               className="stamp-next"
               disabled={busy}
               autoFocus
-              onClick={() => send({ action: "next" })}
+              onClick={advance}
             >
               Next player
             </button>
@@ -608,7 +712,7 @@ export default function AuctionLive({
               className="stamp-next"
               disabled={busy}
               autoFocus
-              onClick={() => send({ action: "next" })}
+              onClick={advance}
             >
               Next player
             </button>
@@ -621,7 +725,7 @@ export default function AuctionLive({
       {squad && (
         <SquadPopup
           side={squad}
-          players={players}
+          players={livePlayers}
           paid={paid}
           onClose={() => setSquad(null)}
         />
@@ -643,20 +747,26 @@ export default function AuctionLive({
             >
               Begin the round
             </button>
-          ) : (
-            secondPassReady && (
-              <button
-                type="button"
-                className="deck-btn is-go"
-                disabled={busy}
-                onClick={() =>
-                  send({ action: "notice", notice: "unsold", pass: 2 })
-                }
-              >
-                Start unsold · {reoffer.length}
-              </button>
-            )
-          )}
+          ) : null}
+
+          {/* Beside the guide, and the same shape: two things the auctioneer
+              opens between lots, neither of them part of the broadcast. */}
+          <button
+            type="button"
+            className="deck-guide"
+            onClick={() => setLedgerOpen(true)}
+            aria-label="Sold, unsold and what is coming"
+            title="Sold, unsold and what is coming"
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              {[3, 8, 13].map((y) => (
+                <g key={y} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                  <path d={`M1 ${y}h1.4`} />
+                  <path d={`M5.4 ${y}h9.6`} />
+                </g>
+              ))}
+            </svg>
+          </button>
 
           <button
             type="button"
@@ -670,6 +780,15 @@ export default function AuctionLive({
 
           {error && <p className="deck-error num">{error}</p>}
         </div>
+      )}
+
+      {ledgerOpen && (
+        <AuctionLedger
+          sold={soldList}
+          unsold={unsoldList}
+          upcoming={upcoming}
+          onClose={() => setLedgerOpen(false)}
+        />
       )}
 
       {guideOpen && (
