@@ -4891,41 +4891,81 @@ button.rail-side:disabled {
   gap: 0.3rem;
   padding: clamp(1rem, 4vh, 3rem);
   text-align: center;
+  /* Fixed to the viewport rather than to the board, and fading to nothing at
+     the edges. Held to the board it drew its own rectangle across the middle
+     of the screen — a hard black edge with the field still visible around it.
+     It has to darken enough to read the name against and no more: the burst
+     and the field behind are the point of the moment, and a flat scrim over
+     them throws the moment away. */
+  position: fixed;
   background: radial-gradient(
-    70% 60% at 50% 50%,
-    color-mix(in srgb, var(--team) 42%, rgba(7, 9, 10, 0.94)),
-    rgba(7, 9, 10, 0.96) 75%
+    58% 58% at 50% 48%,
+    color-mix(in srgb, var(--team) 30%, rgba(6, 8, 9, 0.86)),
+    rgba(6, 8, 9, 0.72) 62%,
+    rgba(6, 8, 9, 0.34) 84%,
+    transparent 100%
   );
   animation: sold-in 0.35s var(--ease-out) both;
+}
+/* Centred over the board, not over the window. The rail owns the right-hand
+   column all night, and a name centred on the viewport ran underneath it. */
+@media (min-width: 901px) {
+  .sold {
+    padding-right: calc(clamp(1rem, 4vh, 3rem) + clamp(8rem, 14vw, 12rem));
+  }
 }
 /* Sized against the viewport height as well as its width: the stamp shares the
    screen with the name, the side and the price, and a stamp tall enough to
    push those off the bottom is a stamp nobody can read the result from. */
+/* SOLD is a label, not the headline. The room can see that a lot has closed;
+   what it is straining to read is the name and the side. Set as a rule with
+   the word cut into it, so it still lands as a stamp at a tenth the size. */
 .sold-stamp {
-  margin: 0;
-  font-size: min(clamp(3rem, 1.5rem + 9vw, 9rem), 26vh);
-  line-height: 0.82;
-  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  margin: 0 0 clamp(0.5rem, 1.5vh, 1.25rem);
+  font-size: clamp(0.7rem, 1.1vw, 1rem);
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
   text-transform: uppercase;
   color: var(--team-lit);
-  /* Lands like a rubber stamp: oversized, rotated, snapping to size. */
-  transform-origin: center;
   animation: sold-stamp 0.5s cubic-bezier(0.2, 1.5, 0.35, 1) both;
+}
+.sold-stamp::before,
+.sold-stamp::after {
+  content: "";
+  width: clamp(2rem, 8vw, 7rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--team-lit), transparent);
 }
 /* The three facts the room shouts back: who, to whom, for how much. All sized
    off the shorter side of the screen as well as the wider one, so a long name
    on a short projector still fits inside the stamp. */
+/* The two facts the room shouts back — who, and to whom — carry the screen.
+   Both sized off the shorter side as well as the wider one, so a long name on
+   a short projector still lands inside the frame. */
 .sold-name {
-  font-size: min(clamp(2rem, 1rem + 4.5vw, 5rem), 11vh);
-  line-height: 1.02;
-  letter-spacing: -0.01em;
+  /* Held clear of the rail down the right and the edge of the screen: the
+     announcement is laid over the whole viewport, so without a width the
+     longest names ran straight under the eight sides. */
+  max-width: min(74vw, 58rem);
+  /* Scaled by how long the name actually is. A cap narrow enough for
+     "Bhavishya Nilesh Agrawal" wraps every short name into a small block in
+     the middle of a big screen; a cap wide enough for the short ones runs the
+     long ones under the rail. Sizing to the text does both. */
+  font-size: calc(min(clamp(2.2rem, 1rem + 6vw, 7rem), 15vh) * var(--fit, 1));
+  line-height: 0.98;
+  letter-spacing: -0.02em;
   text-wrap: balance;
   color: var(--seam);
   animation: sold-rise 0.45s var(--ease-out) 0.28s both;
 }
 .sold-to {
-  font-size: min(clamp(1rem, 0.7rem + 1.6vw, 2.1rem), 5vh);
-  letter-spacing: 0.14em;
+  margin: clamp(0.3rem, 1vh, 0.7rem) 0;
+  font-size: clamp(0.62rem, 0.9vw, 0.85rem);
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
   text-transform: uppercase;
   color: var(--seam-45);
   animation: sold-rise 0.45s var(--ease-out) 0.36s both;
@@ -4934,11 +4974,28 @@ button.rail-side:disabled {
   color: var(--team-lit);
 }
 .sold-price {
-  margin-top: 0.5rem;
-  font-size: min(clamp(2.4rem, 1.2rem + 6vw, 6.5rem), 14vh);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-top: clamp(0.5rem, 2vh, 1.5rem);
+  font-size: min(clamp(1.8rem, 1rem + 4vw, 4.6rem), 10vh);
   line-height: 1;
   color: var(--seam);
-  animation: sold-rise 0.45s var(--ease-out) 0.44s both;
+  animation: sold-rise 0.45s var(--ease-out) 0.52s both;
+}
+.sold-name.is-long,
+.sold-team.is-long {
+  --fit: 0.8;
+}
+.sold-name.is-longest,
+.sold-team.is-longest {
+  --fit: 0.62;
+}
+.sold-price-tag {
+  font-size: clamp(0.6rem, 0.85vw, 0.8rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--seam-45);
 }
 
 @keyframes sold-in {
@@ -5412,14 +5469,17 @@ button.rail-side:disabled {
   margin-top: 1.5rem;
 }
 
-/* The buying side, as loud as the player's name. */
+/* The buying side, as loud as the player's name and in its own colour — the
+   same colour already washing the screen and lighting the field behind it. */
 .sold-team {
   display: block;
-  margin-top: 0.15rem;
+  margin: 0;
+  max-width: min(74vw, 58rem);
   font-family: var(--display);
-  font-size: min(clamp(1.8rem, 1rem + 4vw, 4.4rem), 10vh);
+  font-size: calc(min(clamp(1.8rem, 1rem + 4.6vw, 5.5rem), 12vh) * var(--fit, 1));
   font-weight: 700;
   line-height: 1.02;
+  text-wrap: balance;
   letter-spacing: -0.01em;
   color: var(--team-lit);
 }

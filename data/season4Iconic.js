@@ -15,7 +15,7 @@ export const SEASON_4_ICONIC = [
   "Swarit Kokas",
   "Harshit Upadhyay",
   "Vaibhav Jagtap",
-  "Tanishq Vijay Dodeja",
+  "Tanishq Dodeja",
   "Atharva Yadav",
   "Shourya Pandey",
 ];

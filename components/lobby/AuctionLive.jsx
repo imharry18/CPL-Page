@@ -23,6 +23,21 @@ import { nextInQueue, queueFor } from "@/lib/auctionQueue";
  * the button rather than up to a poll behind it. `poll` is only the fallback
  * for a stream that never opens.
  */
+/**
+ * How hard to squeeze a name so it lands on one or two lines.
+ *
+ * The announcement has one width, and the names it has to carry run from
+ * "Anirudh" to "Bhavishya Nilesh Agrawal". A width narrow enough for the long
+ * ones leaves the short ones as a small block in the middle of a big screen;
+ * a width wide enough for the short ones runs the long ones under the rail.
+ * So the width stays and the type gives.
+ */
+function fitFor(name = "") {
+  if (name.length >= 20) return " is-longest";
+  if (name.length >= 14) return " is-long";
+  return "";
+}
+
 /* Long enough for the room to read a result before the next face arrives.
    Only used when nothing is being announced — an announcement waits for Next. */
 const CALL_PAUSE = 1200;
@@ -532,14 +547,33 @@ export default function AuctionLive({
           player who has just gone is still on screen underneath. */}
       {sold && (
         <div className="sold" role="status">
-          <p className="sold-stamp display">Sold</p>
-          <p className="sold-name display">{sold.name}</p>
+          {/* SOLD is the smallest thing here now. It says what happened, and
+              the room already knows what happened — what it wants is who, to
+              whom, and for how much. Those get the size. */}
+          <p className="sold-stamp num">Sold</p>
+
+          <Decode
+            as="p"
+            className={`sold-name display${fitFor(sold.name)}`}
+            key={sold.name}
+            text={sold.name}
+          />
+
+          <p className="sold-to num">to</p>
+
           {/* The buying side in its own colour — the same one already washing
-              the screen, so the name and the room agree. */}
-          <p className="sold-to num">
-            to <b className="sold-team">{sold.team}</b>
+              the screen and lighting the field behind it. */}
+          <Decode
+            as="p"
+            className={`sold-team display${fitFor(sold.team)}`}
+            key={sold.team}
+            text={sold.team}
+          />
+
+          <p className="sold-price display">
+            <span className="sold-price-tag num">for</span>
+            {money(sold.price)}
           </p>
-          <p className="sold-price display">{money(sold.price)}</p>
           {admin && (
             <button
               type="button"
@@ -559,8 +593,13 @@ export default function AuctionLive({
           quiet and the next face arriving. */}
       {state.unsold && (
         <div className="sold is-unsold" role="status">
-          <p className="sold-stamp display">Unsold</p>
-          <p className="sold-name display">{state.unsold.name}</p>
+          <p className="sold-stamp num">Unsold</p>
+          <Decode
+            as="p"
+            className={`sold-name display${fitFor(state.unsold.name)}`}
+            key={state.unsold.name}
+            text={state.unsold.name}
+          />
           <p className="sold-to num">No bids</p>
           <p className="sold-note num">He comes back in the second round</p>
           {admin && (

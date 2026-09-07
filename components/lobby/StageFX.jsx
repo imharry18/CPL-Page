@@ -37,9 +37,14 @@ export default function StageFX({ kind, color = "#c8102e" }) {
      here for the loop to pick up, not a reason to rebuild anything. */
   const shot = useRef({ id: 0, kind: null, colour: color });
   const tint = useRef(color);
+  /* Whether an announcement is on screen right now — null the moment Next is
+     pressed. The burst fires once per sale, but the waves keep going for as
+     long as the stamp is up, so they need to know when it comes down. */
+  const showing = useRef(null);
 
   useEffect(() => {
     tint.current = color;
+    showing.current = kind ?? null;
     if (kind) {
       shot.current = { id: shot.current.id + 1, kind, colour: color };
     }
@@ -113,17 +118,32 @@ export default function StageFX({ kind, color = "#c8102e" }) {
     const burst = new THREE.Points(burstGeo, burstMat);
     scene.add(burst);
 
+    /* Three shockwaves rather than one, leaving a beat apart and travelling at
+       different speeds. One ring reads as a diagram; three read as an impact,
+       and the gaps between them are what carry the sense of force. */
+    const RINGS = [
+      { delay: 0, speed: 13, weight: 0.5 },
+      { delay: 0.42, speed: 9, weight: 0.34 },
+      { delay: 0.84, speed: 5.5, weight: 0.22 },
+    ];
+    // How often each wave leaves again. The stamp can be up for a while — the
+    // room is cheering, and the auctioneer takes it down when it is ready —
+    // so the waves keep coming rather than the screen going still under it.
+    const CYCLE = 1.9;
     const ringGeo = new THREE.RingGeometry(1, 1.12, 96);
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(color),
-      transparent: true,
-      opacity: 0,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
+    const rings = RINGS.map((spec) => {
+      const mat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(color),
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const mesh = new THREE.Mesh(ringGeo, mat);
+      scene.add(mesh);
+      return { ...spec, mesh, mat };
     });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    scene.add(ring);
 
     /** Throw every point back to the middle and give it a new direction. */
     function arm(sold) {
@@ -146,6 +166,7 @@ export default function StageFX({ kind, color = "#c8102e" }) {
 
     let firing = null;
     let seen = 0;
+    let waves = 0;
 
     /* ---- the loop ------------------------------------------------------- */
     let last = performance.now();
@@ -165,10 +186,11 @@ export default function StageFX({ kind, color = "#c8102e" }) {
         seen = shot.current.id;
         const sold = shot.current.kind === "sold";
         firing = { sold, t: 0 };
+        waves = 0;
         arm(sold);
         const c = new THREE.Color(sold ? shot.current.colour : "#8a8f95");
         burstMat.color.copy(c);
-        ringMat.color.copy(c);
+        for (const r of rings) r.mat.color.copy(c);
       }
 
       // The field takes the leading side's colour, and eases into it rather
@@ -196,16 +218,39 @@ export default function StageFX({ kind, color = "#c8102e" }) {
         }
         burstGeo.attributes.position.needsUpdate = true;
 
-        burstMat.opacity = fade * (firing.sold ? 0.95 : 0.5);
-        const spread = 1 + life * (firing.sold ? 13 : 7);
-        ring.scale.set(spread, spread, 1);
-        ringMat.opacity = Math.max(0, (1 - life) * (firing.sold ? 0.5 : 0.2));
+        burstMat.opacity = fade * (firing.sold ? 1 : 0.5);
 
         if (life >= 1) {
+          // The light settles, but the waves carry on below for as long as the
+          // announcement is up.
           firing = null;
           burstMat.opacity = 0;
-          ringMat.opacity = 0;
         }
+      }
+
+      /* The waves, on their own repeating clock. They belong to the
+         announcement rather than to the burst: one set of rings and then a
+         still screen reads as something that finished, and the room is still
+         cheering. Three leave in sequence and the sequence goes round. */
+      const on = showing.current;
+      if (on) {
+        waves += step;
+        const sold = on === "sold";
+        for (const r of rings) {
+          const own = waves - r.delay;
+          if (own <= 0) {
+            r.mat.opacity = 0;
+            continue;
+          }
+          const reach = (own % CYCLE) / CYCLE;
+          const spread = 1 + reach * r.speed * (sold ? 1 : 0.55);
+          r.mesh.scale.set(spread, spread, 1);
+          // Fades as it travels, so each wave dies before the next arrives.
+          r.mat.opacity = Math.max(0, 1 - reach) * r.weight * (sold ? 1 : 0.4);
+        }
+      } else if (waves !== 0) {
+        waves = 0;
+        for (const r of rings) r.mat.opacity = 0;
       }
 
       renderer.render(scene, camera);
@@ -235,7 +280,7 @@ export default function StageFX({ kind, color = "#c8102e" }) {
       burstGeo.dispose();
       burstMat.dispose();
       ringGeo.dispose();
-      ringMat.dispose();
+      for (const r of rings) r.mat.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === mount) {
         mount.removeChild(renderer.domElement);
