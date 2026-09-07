@@ -1733,12 +1733,21 @@ img {
 .roster-group + .roster-group {
   margin-top: clamp(2rem, 5vh, 3rem);
 }
+/* Heading on the left, the block's one action pinned to the right edge, above
+   the list it acts on. */
 .roster-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+.roster-head-id {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.5rem 1rem;
-  margin-bottom: 0.9rem;
+  gap: 0.35rem 1rem;
+  min-width: 0;
 }
 .roster-title {
   font-size: 0.78rem;
@@ -1747,15 +1756,13 @@ img {
   color: var(--blood-lit);
 }
 .roster-note {
-  flex: 1;
-  min-width: 16ch;
   font-family: var(--mono);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
   color: var(--seam-45);
 }
 .roster-shuffle {
-  margin-left: auto;
+  flex: none;
 }
 
 .roster {
@@ -1792,12 +1799,6 @@ img {
   font-weight: 600;
   color: var(--seam);
 }
-.player-id small {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  color: var(--seam-45);
-}
 /* The side that bought the player, shown only once one has. Sits under the
    name with the year line, so an unsold player's row is unchanged. */
 .player-team {
@@ -1812,10 +1813,13 @@ img {
   color: var(--leather-lit);
 }
 
-/* A captain wears their side's colours: the team name in the lifted tone, a
+/* A player on a side wears its colours: the team name in the lifted tone, a
    bar down the left edge in the base one, and the faintest wash across the
-   row so the eight of them are findable while scrolling. */
-.player.is-captain {
+   row. It applies the moment a side is settled, however it was settled — the
+   captain appointed, the iconic player drawn, the rest bought — so the roster
+   fills with colour as the night goes on and an unallotted player is the one
+   row still in plain grey. */
+.player.is-team {
   border-left: 2px solid var(--team);
   background: linear-gradient(
     90deg,
@@ -1824,7 +1828,7 @@ img {
   ),
   rgba(7, 9, 10, 0.88);
 }
-.player.is-captain:hover {
+.player.is-team:hover {
   background: linear-gradient(
     90deg,
     color-mix(in srgb, var(--team) 22%, transparent),
@@ -1832,15 +1836,26 @@ img {
   ),
   rgba(18, 27, 22, 0.9);
 }
-.player.is-captain .player-team {
+.player.is-team .player-team {
   color: var(--team-lit);
 }
-.player-captain {
-  padding: 0.15rem 0.45rem;
-  border-radius: 999px;
-  background: var(--team);
-  font-weight: 600;
-  color: #fff;
+/* The captains' block: eight settled names, read at a glance rather than
+   studied, so the rows are shorter than the pool's. */
+.roster.is-tight .player {
+  padding: 0.45rem 1.25rem;
+}
+/* The side goes beside the name rather than under it, so the row is one line
+   deep instead of two. */
+.roster.is-tight .player-id {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+.roster.is-tight .player-id b {
+  font-size: 0.92rem;
+}
+.roster.is-tight .player-team {
+  margin-top: 0;
 }
 .player-role {
   justify-self: start;
@@ -4637,6 +4652,15 @@ img {
 }
 .stage-next-tag {
   align-self: center;
+}
+/* The site sets a wide, offset-free glow under every .display heading, which
+   on a flat dark page reads as the background being darker behind the words.
+   This board is not a flat dark page any more — it carries the leading side's
+   colour and a field of light behind it — and against that the glow reads as
+   exactly what it is: a black box sitting behind the text. Off, here only. */
+.stage .display,
+.stage-next-name {
+  text-shadow: none;
 }
 .stage-title {
   /* One line, always. "Campus Premier League" wants 1546px of width at 100px
