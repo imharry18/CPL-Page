@@ -330,6 +330,21 @@
   "team": ""
  },
  {
+  "name": "Kanishk Rajesh Mantri",
+  "year": "1st Year",
+  "hostellite": true,
+  "bat": "Good",
+  "bowl": "Good",
+  "allround": "Average",
+  "rating": 8,
+  "role": "All-rounder",
+  "prefers": "Batting",
+  "photo": "/players/kanishk-mantri.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
+ },
+ {
   "name": "Keshav Gupta",
   "year": "3rd Year",
   "hostellite": true,
@@ -775,6 +790,21 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "photo": "/players/shikhar-karengulwar.webp",
+  "basePrice": 20000,
+  "soldPrice": null,
+  "team": ""
+ },
+ {
+  "name": "Shiv Zanwar",
+  "year": "2nd Year",
+  "hostellite": false,
+  "bat": "Good",
+  "bowl": "Average",
+  "allround": "Good",
+  "rating": 8,
+  "role": "All-rounder",
+  "prefers": "Batting",
+  "photo": "/players/shiv-zanwar.webp",
   "basePrice": 20000,
   "soldPrice": null,
   "team": ""
