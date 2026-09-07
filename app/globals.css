@@ -2670,12 +2670,15 @@ img {
   flex: 1;
   min-height: 0;
 }
-/* The photo takes whatever height is left after the text rather than the card
-   growing to fit the photo, so the board always fits the screen. */
+/* A portrait frame, not whatever height the text column happens to leave: the
+   photographs are taken portrait, and a shot squashed to the height of a name
+   and a bid crops the player's head off. It drives its own height from its
+   width at 3:4 and is capped in svh below, so the card is taller without the
+   bid falling off the bottom of a 16:9 share. */
 .lobby-shell .live-shot {
-  height: 100%;
+  height: auto;
   min-height: 0;
-  aspect-ratio: auto;
+  aspect-ratio: 3 / 4;
 }
 .auction-nav {
   align-self: center;
@@ -4610,7 +4613,10 @@ img {
    -------------------------------------------------------------------------- */
 .live {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  /* The text takes the larger share. The name is capped by the width it has,
+     not by the height — so the only way to set it bigger is to give it more
+     column, and the photograph is limited by height anyway. */
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
   gap: clamp(1.25rem, 3vw, 2.5rem);
   align-items: center;
   /* Vertical padding is charged against the height of a 16:9 share, which is
@@ -4627,8 +4633,9 @@ img {
   aspect-ratio: 4 / 5;
   /* A portrait frame as wide as its column is taller than a 16:9 screen has
      to spare, and it was pushing the bid off the bottom. The image covers, so
-     capping the height crops rather than distorts. */
-  max-height: 52svh;
+     capping the height crops rather than distorts. The cap leaves room for the
+     run-of-play strip that now sits under the card. */
+  max-height: 58svh;
   overflow: hidden;
   background: rgba(7, 9, 10, 0.6);
   border: 1px solid var(--seam-06);
@@ -4645,10 +4652,20 @@ img {
   /* Sized against the height as well as the width: a three-line name and the
      bid beneath it have to finish above the foot of a 720p share, which is
      what a screen-shared window usually is. */
-  font-size: clamp(1.9rem, min(7vw, 6.4svh), 5.75rem);
+  font-size: calc(min(clamp(1.9rem, 9vw, 8rem), 10svh) * var(--fit, 1));
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--seam);
+}
+/* Scaled to the length of the name so it always lands on one line. Measured in
+   the board's own column: fourteen characters fit across at 57px, seventeen at
+   44px, nineteen at 40px. A name that never wraps is what leaves the room for
+   the price below it. */
+.live-name.is-long {
+  --fit: 0.76;
+}
+.live-name.is-longest {
+  --fit: 0.68;
 }
 /* The bid is the number the room is watching, so it gets the leading side's
    colour and the largest type on the card. */
@@ -4659,7 +4676,10 @@ img {
 }
 .live-figure {
   margin: 0.2rem 0 0.1rem;
-  font-size: clamp(2.2rem, min(8.5vw, 8svh), 7.25rem);
+  /* The biggest thing on the board, and it should be: the price is what the
+     room is actually watching. Half again the size it was, paid for by the
+     name above never wrapping. */
+  font-size: min(clamp(2.4rem, 12vw, 11rem), 15svh);
   line-height: 1;
   color: var(--team-lit, var(--seam));
 }
@@ -4743,49 +4763,106 @@ img {
    Taken out of the flow: the board is sized to the last pixel of a 16:9 share,
    so a line that pushed the lot up would cost the bid its place on screen.
    It sits in the breathing room under the board instead. */
-.stage-next {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  z-index: 2;
+/* The run of play, under the lot: four results, the man on the block, then the
+   one after him. This replaced a bare "Next — name" in the corner, which told
+   the room where the night was going but never where it had just been. */
+.strip-run {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  flex: none;
+  margin-top: clamp(0.5rem, 1.4vh, 1rem);
+  list-style: none;
+  background: var(--seam-06);
+  border: 1px solid var(--seam-06);
+}
+.run-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: clamp(0.35rem, 1vh, 0.6rem) clamp(0.4rem, 0.9vw, 0.8rem);
+  background: rgba(9, 12, 13, 0.9);
+  /* The colour each cell is written in: the side that bought the player, the
+     side leading the bid, or green for the one still to come. Set per cell so
+     one rule below can paint all three. */
+  border-top: 2px solid var(--cell, transparent);
+}
+.run-cell b {
+  overflow: hidden;
+  font-size: clamp(0.62rem, min(1.05vw, 1.7svh), 1rem);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--seam);
+}
+.run-note {
   display: flex;
   align-items: baseline;
-  gap: 0.55rem;
-  max-width: 60%;
+  gap: 0.4rem;
   min-width: 0;
-}
-.stage-next-tag {
-  flex: none;
-  font-size: clamp(0.5rem, 0.8vw, 0.72rem);
-  letter-spacing: 0.22em;
+  font-size: clamp(0.45rem, min(0.68vw, 1.1svh), 0.64rem);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  color: var(--cell, var(--seam-45));
+}
+.run-team {
+  overflow: hidden;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.run-price {
+  flex: none;
+  margin-left: auto;
+  color: var(--seam);
+}
+
+/* Behind us. Sunk into the strip and written quieter than the two live cells,
+   so the four read as history without needing a label saying so. */
+.run-cell.is-past {
+  --cell: var(--team-lit);
+  background: rgba(5, 7, 8, 0.92);
+  box-shadow: inset 0 6px 12px -8px rgba(0, 0, 0, 0.9);
+}
+.run-cell.is-past b {
   color: var(--seam-45);
 }
-.stage-next-name {
-  /* Bigger than a footnote. Anyone on the call uses this to know whether the
-     next name is one they are bidding for, and it was too quiet to serve that
-     at the back of a hall. */
-  font-size: clamp(1rem, min(2.3vw, 3.4svh), 2.3rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--seam);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* Held on the baseline while the characters resolve, so a decoding name
-     never nudges the line it sits on. */
-  font-variant-numeric: tabular-nums;
+/* Nobody bid. Red, because on this board red is the thing that did not land. */
+.run-cell.is-past.is-unsold {
+  --cell: var(--blood-lit);
 }
-.stage-next-tag {
-  align-self: center;
+
+/* The lot on the block, in the colour the bid itself is written in — so when a
+   side takes the lead, the figure and this cell turn over together. */
+.run-cell.is-now {
+  /* Exactly what .live-figure resolves to, fallback and all, so the cell and
+     the bid are never two different colours. */
+  --cell: var(--team-lit, var(--seam));
+  background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--team, var(--blood)) 24%, transparent),
+      transparent
+    ),
+    rgba(11, 15, 16, 0.9);
+}
+.run-cell.is-now b {
+  color: var(--seam);
+}
+
+/* The only cell about the future, and the only green on the board. */
+.run-cell.is-next {
+  --cell: #6fca9b;
+}
+.run-cell.is-next b {
+  color: #cfeede;
 }
 /* The site sets a wide, offset-free glow under every .display heading, which
    on a flat dark page reads as the background being darker behind the words.
    This board is not a flat dark page any more — it carries the leading side's
    colour and a field of light behind it — and against that the glow reads as
    exactly what it is: a black box sitting behind the text. Off, here only. */
-.stage .display,
-.stage-next-name {
+.stage .display {
   text-shadow: none;
 }
 .stage-title {
@@ -6363,7 +6440,27 @@ kbd {
 .ledger-list {
   max-height: 38svh;
   overflow-y: auto;
+  /* Room for the bar to sit in. Without it the page's own 8px scrollbar lands
+     on top of the price column and clips it. */
+  padding-right: 0.9rem;
   list-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--seam-22) transparent;
+}
+/* Thinner and quieter than the page's, which is the league's red: inside a
+   panel this is furniture, not something to read. */
+.ledger-list::-webkit-scrollbar {
+  width: 4px;
+}
+.ledger-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ledger-list::-webkit-scrollbar-thumb {
+  background: var(--seam-22);
+  border-radius: 4px;
+}
+.ledger-list::-webkit-scrollbar-thumb:hover {
+  background: var(--seam-45);
 }
 .ledger-row {
   display: grid;

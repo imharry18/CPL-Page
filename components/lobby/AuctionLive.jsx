@@ -5,11 +5,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SkillMeter from "@/components/SkillMeter";
 import AuctionGuide from "@/components/lobby/AuctionGuide";
 import AuctionLedger from "@/components/lobby/AuctionLedger";
+import AuctionStrip from "@/components/lobby/AuctionStrip";
 import Decode from "@/components/lobby/Decode";
 import SquadPopup from "@/components/lobby/SquadPopup";
 import StageFX from "@/components/lobby/StageFX";
 import { SQUAD_MAX, money, nextBid, purses } from "@/lib/auctionMoney";
-import { nextInQueue, outcomes, queueFor } from "@/lib/auctionQueue";
+import { nextInQueue, outcomes, queueFor, roundName } from "@/lib/auctionQueue";
 
 /**
  * The room's view of the auction.
@@ -36,6 +37,19 @@ import { nextInQueue, outcomes, queueFor } from "@/lib/auctionQueue";
 function fitFor(name = "") {
   if (name.length >= 20) return " is-longest";
   if (name.length >= 14) return " is-long";
+  return "";
+}
+
+/**
+ * A first guess at how hard to squeeze the lot's name, used for the very first
+ * paint before it can be measured. Character count is only a rough proxy —
+ * "Aryan Gulhare" and "Aditya Pandey" are both thirteen characters and one of
+ * them is a good deal wider — so the real work is done by measurement in the
+ * component. This only has to stop the first frame arriving badly wrong.
+ */
+function lotFit(name = "") {
+  if (name.length >= 18) return " is-longest";
+  if (name.length >= 15) return " is-long";
   return "";
 }
 
@@ -124,7 +138,14 @@ export default function AuctionLive({
      what a bid costs or whether it is allowed. The board takes back whatever
      the ledger says and never guesses — a bid refused for want of purse simply
      does not move the screen. */
-  const send = useCallback(async (body) => {
+  /* `quiet` is for the changes the board makes on its own rather than because
+     somebody pressed something. This screen is projected in a hall: a red line
+     across it explaining that a name the ORDER chose cannot go up is not an
+     instruction to the auctioneer, it is the board talking to itself in front
+     of the room. Refusals that answer a press — a purse that cannot cover the
+     bid, a full squad — are still said, because those the auctioneer has to
+     act on. */
+  const send = useCallback(async (body, { quiet = false } = {}) => {
     setBusy(true);
     setError(null);
     try {
@@ -138,7 +159,7 @@ export default function AuctionLive({
       setState(data);
       return data;
     } catch (problem) {
-      setError(problem.message);
+      if (!quiet) setError(problem.message);
       return null;
     } finally {
       setBusy(false);
@@ -205,9 +226,6 @@ export default function AuctionLive({
     state.history.filter((sale) => sale.team).map((sale) => [sale.name, sale.price])
   );
 
-  /* Whether the first pass is done and there are players owed a second call.
-     Same rule as the queue itself, so the button appears exactly when the
-     round it opens has somebody in it. */
   /* What the arrows walk: everyone still to be called in the round the night
      is in, with the lot on screen kept in place so stepping has a position to
      step from. */
@@ -217,12 +235,18 @@ export default function AuctionLive({
     pass: state.pass,
   });
 
-  const stillToCall = queueFor({ order, history: state.history, pass: 1 });
-  const reoffer = queueFor({ order, history: state.history, pass: 2 });
-  const secondPassReady =
-    state.pass !== 2 && stillToCall.length === 0 && reoffer.length > 0;
-  // Nothing left in either round.
-  const complete = stillToCall.length === 0 && reoffer.length === 0;
+  /* Where the night stands, asked of the round it is actually in rather than
+     of round one and round two by name. The same rule as the queue itself, so
+     the button to open the next round appears exactly when that round has
+     somebody in it — and, on the last round, never. */
+  const round = state.pass ?? 1;
+  // Empty of its own accord once the last round has been run — queueFor owns
+  // the cap, so there is nothing to check for here.
+  const reoffer = queueFor({ order, history: state.history, pass: round + 1 });
+  const roundOver = navQueue.length === 0;
+  const nextRoundReady = roundOver && reoffer.length > 0;
+  // Nobody left to call in this round, and nobody owed another one.
+  const complete = roundOver && reoffer.length === 0;
 
   /* The two columns the ledger panel shows.
 
@@ -238,11 +262,20 @@ export default function AuctionLive({
     };
   }, [state.history]);
 
-  // The five after the one on screen — the lot under the hammer is not
-  // "upcoming", it is here.
-  const upcoming = navQueue
-    .filter((name) => name !== state.current)
-    .slice(0, 5);
+  /* The five after the one on screen.
+
+     Walked from where the lot under the hammer sits in the queue, not from the
+     head of it — the same rule nextInQueue uses, and for the same reason, so
+     the first of these five is exactly the name the board is showing as NEXT.
+     Taking the head instead would have the panel and the board naming two
+     different players after an out-of-order call. A lot that is not in the
+     queue at all (between lots) falls back to the head, as it does there. */
+  const upcoming = useMemo(() => {
+    const at = navQueue.indexOf(state.current);
+    return navQueue
+      .filter((name, i) => i > at && name !== state.current)
+      .slice(0, 5);
+  }, [navQueue, state.current]);
 
   /* The keyboard is the console.
 
@@ -351,13 +384,45 @@ export default function AuctionLive({
 
     const id = setTimeout(() => {
       calling.current = true;
-      send({ action: "lot", name: upNext }).finally(() => {
+      // Nobody pressed this; the order did. If the name it picked cannot go
+      // up, the effect simply runs again on the next name.
+      send({ action: "lot", name: upNext }, { quiet: true }).finally(() => {
         calling.current = false;
       });
     }, CALL_PAUSE);
 
     return () => clearTimeout(id);
   }, [admin, state.current, state.notice, announcing, busy, upNext, send]);
+
+  /* The name, sized to the column it actually has.
+
+     Every name in the pool must land on ONE line: a wrap costs the height of a
+     whole line, and that height is what the price below is spending. Character
+     count cannot predict the width — two names of the same length differ by a
+     fifth — so the text is measured against the column and the type scaled by
+     whatever it is over. Cheap: one read on a change of lot, not per frame. */
+  const nameRef = useRef(null);
+  useEffect(() => {
+    const el = nameRef.current;
+    if (!el) return;
+
+    el.style.setProperty("--fit", "1");
+    const room = el.clientWidth;
+    if (!room) return;
+
+    // Width of the name set on a single line, whatever the wrapping would be.
+    const was = el.style.whiteSpace;
+    el.style.whiteSpace = "nowrap";
+    const needs = el.scrollWidth;
+    el.style.whiteSpace = was;
+
+    /* Floored: past a point a name is better allowed to wrap than shrunk to
+       something nobody can read across a hall. Nothing in the pool reaches it. */
+    el.style.setProperty(
+      "--fit",
+      needs > room ? String(Math.max(0.55, room / needs)) : "1"
+    );
+  }, [lot?.name]);
 
   /* Finish with this lot and start the next, in one press and one write.
      Sending "next" on its own only took the stamp down, and the board then sat
@@ -413,10 +478,10 @@ export default function AuctionLive({
             one and stretch across the screen. */}
         <div className="stage-board">
           {state.notice === "unsold" ? (
-        /* The pause between the two passes. Everything the auction knows is
-           held back so the room has one thing to read. */
+        /* The pause between two rounds. Everything the auction knows is held
+           back so the room has one thing to read. */
         <div className="interlude">
-          <p className="interlude-tag num">Round two</p>
+          <p className="interlude-tag num">Round {roundName(round)}</p>
           <h2 className="interlude-line display">
             Now it&rsquo;s the unsold players&rsquo; turn
           </h2>
@@ -439,7 +504,8 @@ export default function AuctionLive({
                 rather than the text simply swapping under the room's eyes. */}
             <Decode
               as="h2"
-              className="live-name display"
+              ref={nameRef}
+              className={`live-name display${lotFit(lot.name)}`}
               key={lot.name}
               text={lot.name}
             />
@@ -476,13 +542,15 @@ export default function AuctionLive({
             </div>
           </div>
         </div>
-      ) : secondPassReady ? (
-        /* The order has been walked to the end. Rather than a bare screen and
+      ) : nextRoundReady ? (
+        /* The round has been walked to the end. Rather than a bare screen and
            a small button somewhere, the room is shown exactly who is coming
            back: this is the moment the captains look up and count what they
            still need. */
         <div className="interlude">
-          <p className="interlude-tag num">Round one complete</p>
+          <p className="interlude-tag num">
+            Round {roundName(round)} complete
+          </p>
           <h2 className="interlude-line display">
             {reoffer.length} went unsold
           </h2>
@@ -498,10 +566,10 @@ export default function AuctionLive({
               disabled={busy}
               autoFocus
               onClick={() =>
-                send({ action: "notice", notice: "unsold", pass: 2 })
+                send({ action: "notice", notice: "unsold", pass: round + 1 })
               }
             >
-              Next: unsold players
+              Next: round {roundName(round + 1)}
             </button>
           )}
         </div>
@@ -516,6 +584,17 @@ export default function AuctionLive({
            "standing by" card only ever flashed up in the gap. */
         null
       )}
+
+          {/* The run of play, under the lot. Not shown across an interlude or
+              at the end of the night: those screens are one thing to read. */}
+          {(state.current || upNext) && !state.notice && !nextRoundReady && !complete && (
+            <AuctionStrip
+              past={state.history.slice(-4)}
+              current={state.current}
+              next={upNext}
+              sides={sides}
+            />
+          )}
         </div>
 
       {/* The eight sides, always up.
@@ -623,22 +702,6 @@ export default function AuctionLive({
         })}
         </aside>
       </div>
-
-      {/* Who is coming, small, in the bottom corner. It is a footnote to the
-          lot rather than part of it — the room is looking at the man under the
-          hammer, and this is only for anyone who wants to get ready. Taken out
-          of the layout altogether so it costs the board no height. */}
-      {upNext && (
-        <p className="stage-next num">
-          <span className="stage-next-tag">Next</span>
-          <Decode
-            as="b"
-            className="stage-next-name"
-            key={upNext}
-            text={upNext}
-          />
-        </p>
-      )}
 
       {/* The moment, in three dimensions, behind whichever stamp is up. Only
           mounted while one is — nothing renders on an ordinary lot. */}
