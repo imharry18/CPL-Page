@@ -3018,10 +3018,10 @@ img {
   background-image:
     linear-gradient(
       180deg,
-      rgba(4, 6, 7, 0.94) 0%,
-      rgba(4, 6, 7, 0.82) 42%,
-      rgba(4, 6, 7, 0.55) 68%,
-      rgba(4, 6, 7, 0.72) 100%
+      rgba(4, 6, 7, 0.95) 0%,
+      rgba(4, 6, 7, 0.88) 40%,
+      rgba(4, 6, 7, 0.74) 66%,
+      rgba(4, 6, 7, 0.8) 100%
     ),
     linear-gradient(
       180deg,
@@ -3047,10 +3047,10 @@ img {
   border-bottom: 1px solid color-mix(in srgb, var(--team) 40%, transparent);
 }
 .squad-captain {
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--team-lit);
+  color: rgba(255, 255, 255, 0.72);
 }
 .squad-name {
   margin: 0.35rem 0 0;
@@ -3060,10 +3060,10 @@ img {
 }
 .squad-count {
   margin-top: 0.5rem;
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--seam-45);
+  color: rgba(255, 255, 255, 0.8);
 }
 .squad-close {
   position: absolute;
@@ -3119,60 +3119,107 @@ img {
   display: grid;
   place-items: end center;
   width: 100%;
-  height: clamp(48px, 9vh, 84px);
+  height: clamp(72px, 13vh, 118px);
+  isolation: isolate;
+}
+/* A restrained stadium light and a grounding shadow make the player feel like
+   part of the lineup instead of an icon floating above the name. */
+.peg-shape::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  left: 50%;
+  bottom: 4%;
+  width: 90%;
+  height: 82%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    color-mix(in srgb, var(--team-lit) 18%, transparent),
+    transparent 67%
+  );
+}
+.peg-shape::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: 0;
+  width: min(5rem, 72%);
+  height: 0.45rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.72);
+  transform: translateX(-50%);
+  filter: blur(3px);
 }
 .peg-body {
-  width: auto;
+  display: block;
+  width: 100%;
   height: 100%;
-  /* An empty place is a shirt nobody is wearing: the same figure, drawn as an
-     outline in the side's colour instead of filled with it. */
-  fill: none;
-  stroke: color-mix(in srgb, var(--team-lit) 42%, transparent);
-  stroke-width: 1.4;
-  transition: fill 0.3s var(--ease-out), stroke 0.3s var(--ease-out);
+  background: color-mix(in srgb, var(--team-lit) 23%, #171a1b);
+  -webkit-mask: url("/lobby/cricket-player-silhouette.png") center bottom / contain no-repeat;
+  mask: url("/lobby/cricket-player-silhouette.png") center bottom / contain no-repeat;
+  opacity: 0.46;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
+  transition: opacity 0.3s var(--ease-out), filter 0.3s var(--ease-out);
 }
 .peg.is-filled .peg-body {
-  fill: var(--team-lit);
-  stroke: none;
-  /* Lit from the side, so the row reads as figures standing in a stadium
-     rather than as icons printed on it. */
-  filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--team) 70%, transparent));
+  background:
+    linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.32) 50%, transparent 62%),
+    linear-gradient(160deg, var(--team-lit) 4%, var(--team) 72%);
+  opacity: 1;
+  filter:
+    drop-shadow(0 3px 5px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 0 8px color-mix(in srgb, var(--team-lit) 42%, transparent));
 }
 /* The question mark sits inside the empty shirt. */
 .peg-mark {
   position: absolute;
-  top: 38%;
+  top: 42%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: clamp(1.1rem, 2.6vh, 1.7rem);
-  color: color-mix(in srgb, var(--team-lit) 85%, transparent);
+  font-size: clamp(1.3rem, 3vh, 2rem);
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 
+/* Every word on the lineup is white, whichever side is open.
+
+   The number and the role were set in the side's own colour, which is the
+   right instinct and the wrong result: eight sides means eight colours, and
+   several of them — the blues, the deep red — have nothing like enough
+   contrast against a floodlit crowd to be read at a glance. The silhouette
+   carries the side's identity. The text only has to be legible. */
 .peg-no {
-  margin-top: 0.3rem;
-  font-size: 0.52rem;
+  margin-top: 0.35rem;
+  font-size: clamp(0.6rem, 0.8vw, 0.76rem);
   letter-spacing: 0.18em;
-  color: color-mix(in srgb, var(--team-lit) 60%, transparent);
+  color: rgba(255, 255, 255, 0.62);
 }
 .peg-name {
-  font-size: clamp(0.68rem, 0.95vw, 0.9rem);
-  line-height: 1.2;
-  color: var(--seam);
+  font-size: clamp(0.9rem, 1.25vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+  color: #fff;
   overflow-wrap: anywhere;
   /* The photograph behind has a floodlit crowd and a scoreboard in it, and a
      name can land on any of them. A tight shadow holds the letters against
      whatever is underneath without drawing a box. */
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8);
 }
+/* An open place is still white, just quieter — a grey name on a grey crowd
+   disappeared altogether. */
 .peg-name.is-empty {
-  color: var(--seam-45);
-  font-weight: 400;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 600;
 }
 .peg-meta {
-  font-size: 0.5rem;
-  letter-spacing: 0.12em;
+  font-size: clamp(0.58rem, 0.75vw, 0.72rem);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--seam-45);
+  color: rgba(255, 255, 255, 0.7);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
 }
 .peg-no {
@@ -3182,6 +3229,9 @@ img {
 @media (max-width: 620px) {
   .squad-lineup {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .peg-shape {
+    height: clamp(78px, 14vh, 108px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -5112,15 +5162,19 @@ button.rail-side:disabled {
   border-top: 1px solid color-mix(in srgb, var(--team) 35%, transparent);
 }
 .squad-purse dt {
-  font-size: 0.52rem;
+  font-size: 0.6rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--seam-45);
+  color: rgba(255, 255, 255, 0.6);
 }
+/* The purse is a figure someone reads across a table, and it was set in the
+   side's own colour — which for half the eight is too dark against the
+   photograph behind it to read at all. */
 .squad-purse dd {
   margin: 0.2rem 0 0;
-  font-size: 1rem;
-  color: var(--team-lit);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #fff;
 }
 .squad-buy {
   display: flex;
