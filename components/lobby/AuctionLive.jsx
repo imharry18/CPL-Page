@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import SkillMeter from "@/components/SkillMeter";
+import AuctionGuide from "@/components/lobby/AuctionGuide";
 import SquadPopup from "@/components/lobby/SquadPopup";
+import StageFX from "@/components/lobby/StageFX";
 import { SQUAD_MAX, money, nextBid, purses } from "@/lib/auctionMoney";
 import { nextInQueue, queueFor } from "@/lib/auctionQueue";
 
@@ -39,6 +41,7 @@ export default function AuctionLive({
   // Which side's squad is open, from a right-click on its cell in the rail.
   const [squad, setSquad] = useState(null);
   const [confirmRestart, setConfirmRestart] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
 
   /* The stamp is not a timer any more. It is up for exactly as long as the
      ledger says a sale is being announced, and the console takes it down by
@@ -157,6 +160,15 @@ export default function AuctionLive({
   /* Whether the first pass is done and there are players owed a second call.
      Same rule as the queue itself, so the button appears exactly when the
      round it opens has somebody in it. */
+  /* What the arrows walk: everyone still to be called in the round the night
+     is in, with the lot on screen kept in place so stepping has a position to
+     step from. */
+  const navQueue = queueFor({
+    order,
+    history: state.history,
+    pass: state.pass,
+  });
+
   const stillToCall = queueFor({ order, history: state.history, pass: 1 });
   const reoffer = queueFor({ order, history: state.history, pass: 2 });
   const secondPassReady =
@@ -179,7 +191,7 @@ export default function AuctionLive({
      in the gap. */
   const live = useRef(null);
   useEffect(() => {
-    live.current = { state, table, asking, announcing, busy };
+    live.current = { state, table, asking, announcing, busy, queue: navQueue };
   });
 
   useEffect(() => {
@@ -216,6 +228,24 @@ export default function AuctionLive({
           return;
         }
         if (now.state.current && now.state.leader) send({ action: "sold" });
+        return;
+      }
+
+      /* Stepping through the order without calling anyone. Nothing is
+         recorded, so a name arrowed past simply comes round again — this is
+         for looking ahead, not for skipping a player. */
+      if ((event.key === "ArrowRight" || event.key === "ArrowLeft") && !meta) {
+        if (now.announcing || now.state.notice) return;
+        const queue = now.queue;
+        if (queue.length === 0) return;
+        event.preventDefault();
+        const at = queue.indexOf(now.state.current);
+        const step = event.key === "ArrowRight" ? 1 : -1;
+        // Wraps, so the end of the order is not a dead end mid-auction.
+        const to = at === -1 ? 0 : (at + step + queue.length) % queue.length;
+        if (queue[to] !== now.state.current) {
+          send({ action: "lot", name: queue[to] });
+        }
         return;
       }
 
@@ -468,6 +498,13 @@ export default function AuctionLive({
         </p>
       )}
 
+      {/* The moment, in three dimensions, behind whichever stamp is up. Only
+          mounted while one is — nothing renders on an ordinary lot. */}
+      <StageFX
+        kind={sold ? "sold" : state.unsold ? "unsold" : null}
+        color={buyer?.colorLit ?? buyer?.color ?? "#c8102e"}
+      />
+
       {/* The sale itself. Held over the board rather than replacing it, so the
           player who has just gone is still on screen underneath. */}
       {sold && (
@@ -528,15 +565,13 @@ export default function AuctionLive({
         />
       )}
 
-      {/* Everything that is not a bid. Small, out of the way, and only on the
-          machine running the night. */}
+      {/* One button, and only on the machine running the night. Everything
+          else is a key, and the keys are behind it. The room is watching a
+          broadcast, not an application. */}
       {admin && (
         <div className="deck">
-          <p className="deck-keys num" aria-hidden="true">
-            <b>1</b>–<b>8</b> bid · <b>↵</b> sold · <b>⌘↵</b> unsold ·{" "}
-            <b>⌘Z</b> back
-          </p>
-
+          {/* The one control that is a moment rather than a habit: the round
+              only opens once, and it opens in front of everybody. */}
           {state.notice ? (
             <button
               type="button"
@@ -563,38 +598,28 @@ export default function AuctionLive({
 
           <button
             type="button"
-            className="deck-btn"
-            disabled={busy || !state.current}
-            onClick={() => send({ action: "unsold" })}
+            className="deck-guide"
+            onClick={() => setGuideOpen(true)}
+            aria-label="How to run the auction"
+            title="How to run the auction"
           >
-            Unsold
-          </button>
-          <button
-            type="button"
-            className="deck-btn"
-            disabled={busy}
-            onClick={() => send({ action: "back" })}
-          >
-            Back
-          </button>
-          <button
-            type="button"
-            className="deck-btn"
-            disabled={busy}
-            onClick={() => send({ action: "shuffle" })}
-          >
-            Shuffle
-          </button>
-          <button
-            type="button"
-            className="deck-btn is-danger"
-            onClick={() => setConfirmRestart(true)}
-          >
-            Restart
+            ?
           </button>
 
           {error && <p className="deck-error num">{error}</p>}
         </div>
+      )}
+
+      {guideOpen && (
+        <AuctionGuide
+          busy={busy}
+          onClose={() => setGuideOpen(false)}
+          onShuffle={() => send({ action: "shuffle" })}
+          onRestart={() => {
+            setGuideOpen(false);
+            setConfirmRestart(true);
+          }}
+        />
       )}
 
       {confirmRestart && (

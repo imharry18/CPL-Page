@@ -5841,43 +5841,50 @@ button.rail-side:disabled {
 /* --------------------------------------------------------------------------
    The auction board's own controls
 
-   The console used to be its own page. It is here now, because the auctioneer
-   watches the same screen the room does and should not have to keep two in
-   step. Everything below is rendered only on the machine holding the .admin
-   file — a visitor gets the board and nothing to press.
+   The console used to be its own page, then a row of buttons along the foot of
+   this one. It is one button now. Everything frequent is a key and everything
+   rare is behind the guide, because this screen is projected in a hall and
+   shared to a call: it should read as a broadcast, not as an application.
    -------------------------------------------------------------------------- */
 .deck {
   position: absolute;
   right: 0;
   bottom: 0;
-  z-index: 3;
+  z-index: 6;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  max-width: 70%;
+  gap: 0.6rem;
 }
-.deck-keys {
-  margin-right: 0.4rem;
-  font-size: clamp(0.48rem, 0.72vw, 0.68rem);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--seam-25, rgba(240, 235, 225, 0.28));
-}
-.deck-keys b {
+.deck-guide {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: rgba(12, 17, 16, 0.6);
+  border: 1px solid var(--seam-10);
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 0.85rem;
   color: var(--seam-45);
-  font-weight: 400;
+  cursor: pointer;
+  transition: color 0.25s var(--ease-out), border-color 0.25s var(--ease-out),
+    transform 0.25s var(--ease-out);
+}
+.deck-guide:hover {
+  color: var(--seam);
+  border-color: var(--seam-25, rgba(240, 235, 225, 0.3));
+  transform: translateY(-1px);
 }
 .deck-btn {
   appearance: none;
-  padding: 0.3rem 0.6rem;
+  padding: 0.35rem 0.75rem;
   background: rgba(12, 17, 16, 0.75);
   border: 1px solid var(--seam-10);
   border-radius: 2px;
   font-family: var(--mono);
-  font-size: clamp(0.48rem, 0.72vw, 0.68rem);
-  letter-spacing: 0.14em;
+  font-size: clamp(0.5rem, 0.74vw, 0.7rem);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--seam-45);
   cursor: pointer;
@@ -5891,19 +5898,168 @@ button.rail-side:disabled {
   opacity: 0.35;
   cursor: default;
 }
+/* The one button that is a moment: it pulses so it is not missed, and it is
+   the only thing on the board that asks to be pressed. */
 .deck-btn.is-go {
   color: var(--blood-lit);
   border-color: var(--blood);
+  animation: deck-pulse 2.4s var(--ease-out) infinite;
+}
+@keyframes deck-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--blood) 45%, transparent); }
+  50% { box-shadow: 0 0 0 6px transparent; }
 }
 .deck-btn.is-danger:hover:not(:disabled) {
   color: var(--blood-lit);
   border-color: var(--blood);
 }
 .deck-error {
-  flex-basis: 100%;
-  text-align: right;
+  position: absolute;
+  right: 0;
+  bottom: 2.4rem;
+  white-space: nowrap;
   font-size: 0.62rem;
   color: var(--blood-lit);
+}
+
+/* --------------------------------------------------------------------------
+   The moment — WebGL behind the stamp
+   -------------------------------------------------------------------------- */
+.stage-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.stage-fx canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   The guide
+   -------------------------------------------------------------------------- */
+.guide-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vh, 3rem);
+  background: rgba(4, 6, 7, 0.82);
+  backdrop-filter: blur(6px);
+  animation: fade-in 0.22s var(--ease-out) both;
+}
+.guide {
+  position: relative;
+  width: min(62rem, 100%);
+  max-height: 86svh;
+  overflow-y: auto;
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  background: linear-gradient(
+      180deg,
+      rgba(20, 26, 30, 0.96),
+      rgba(10, 13, 15, 0.96)
+    );
+  border: 1px solid var(--seam-10);
+  border-top: 2px solid var(--blood);
+  animation: guide-rise 0.3s var(--ease-out) both;
+}
+@keyframes guide-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+.guide-head {
+  position: relative;
+  margin-bottom: clamp(1rem, 2.5vh, 1.75rem);
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--seam-06);
+}
+.guide-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--blood-lit);
+}
+.guide-head h2 {
+  margin-top: 0.3rem;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  color: var(--seam);
+}
+.guide-close {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.35rem;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: 1px solid var(--seam-10);
+  border-radius: 50%;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--seam-45);
+  cursor: pointer;
+}
+.guide-close:hover {
+  color: var(--seam);
+  border-color: var(--seam-25, rgba(240, 235, 225, 0.3));
+}
+.guide-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: clamp(1rem, 2.5vw, 2rem);
+}
+.guide-sub {
+  margin-bottom: 0.6rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+.guide-keys > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem;
+  align-items: start;
+  margin-bottom: 0.7rem;
+}
+.guide-keys dt {
+  display: flex;
+  gap: 0.2rem;
+  flex: none;
+}
+.guide-keys dd {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--seam-45);
+}
+kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.55rem;
+  padding: 0.2rem 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--seam-10);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--seam);
+}
+.guide-note {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--seam-45);
+}
+.guide-foot {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: clamp(1rem, 3vh, 2rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--seam-06);
 }
 
 /* The button that takes an announcement down. Inside the stamp so the hand
@@ -5975,5 +6131,140 @@ button.rail-side:disabled {
   .stage-small p {
     max-width: 26ch;
     color: var(--seam-45);
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   Broadcast dress for the auction board
+
+   Everything here is atmosphere. It has to survive a video codec and it has to
+   never, ever cost a frame during a live raise — so it is all compositor work
+   (transform and opacity), nothing that forces layout, and all of it stops
+   dead for anyone who has asked for reduced motion.
+   -------------------------------------------------------------------------- */
+
+/* A slow horizon behind the whole board: two broad sweeps of the leading
+   side's colour, drifting against each other. On a still frame it reads as a
+   lit room rather than a flat page. */
+.stage-wash::after {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(
+      36% 44% at 22% 32%,
+      color-mix(in srgb, var(--team, var(--blood)) 22%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      30% 38% at 78% 68%,
+      color-mix(in srgb, var(--team-lit, var(--blood-lit)) 14%, transparent),
+      transparent 68%
+    );
+  animation: stage-drift 26s var(--ease-in-out) infinite alternate;
+}
+@keyframes stage-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); }
+  to { transform: translate3d(3%, 2%, 0) scale(1.08); }
+}
+
+/* The scan: one thin band of light crossing the board every few seconds. It is
+   the single most "broadcast" thing on the screen and it costs one transform. */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.028) 50%,
+    transparent 58%
+  );
+  background-size: 260% 100%;
+  animation: stage-scan 7.5s linear infinite;
+}
+@keyframes stage-scan {
+  from { background-position: 160% 0; }
+  to { background-position: -60% 0; }
+}
+
+/* A new lot arrives rather than appearing: the photograph wipes in from the
+   side it sits on and the text lifts under it, staggered so the eye lands on
+   the face and then the name. Keyed to the player's name so every call
+   replays it. */
+.live-shot {
+  animation: lot-shot-in 0.62s var(--ease-out) both;
+}
+@keyframes lot-shot-in {
+  from { opacity: 0; transform: translate3d(-2.5%, 0, 0) scale(1.04); }
+  to { opacity: 1; transform: none; }
+}
+.live-who > * {
+  animation: lot-line-in 0.5s var(--ease-out) both;
+}
+.live-who > *:nth-child(1) { animation-delay: 0.06s; }
+.live-who > *:nth-child(2) { animation-delay: 0.12s; }
+.live-who > *:nth-child(3) { animation-delay: 0.19s; }
+.live-who > *:nth-child(4) { animation-delay: 0.25s; }
+.live-who > *:nth-child(5) { animation-delay: 0.31s; }
+.live-who > *:nth-child(6) { animation-delay: 0.37s; }
+@keyframes lot-line-in {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The price does not fade when it changes — it snaps, the way a number on a
+   scoreboard does. Keyed to the figure so every raise retriggers it. */
+.live-figure {
+  animation: bid-strike 0.34s var(--ease-out) both;
+}
+@keyframes bid-strike {
+  0% { opacity: 0; transform: translate3d(0, 6px, 0) scale(0.96); }
+  60% { transform: translate3d(0, 0, 0) scale(1.035); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* The side that has just taken the bid lifts out of the rail. */
+.rail-side.is-bidding {
+  animation: rail-take 0.4s var(--ease-out) both;
+}
+@keyframes rail-take {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  45% { transform: translate3d(-3px, 0, 0) scale(1.025); }
+  100% { transform: none; }
+}
+
+/* The stamp lands. Heavier and slower than anything else on the board,
+   because it is the only thing all night the room reacts to out loud. */
+.sold-stamp {
+  animation: stamp-land 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes stamp-land {
+  0% { opacity: 0; transform: scale(1.5) translate3d(0, -8px, 0); letter-spacing: 0.3em; }
+  100% { opacity: 1; transform: none; letter-spacing: normal; }
+}
+.sold-name { animation: lot-line-in 0.45s var(--ease-out) 0.14s both; }
+.sold-to { animation: lot-line-in 0.45s var(--ease-out) 0.2s both; }
+.sold-price, .sold-note { animation: lot-line-in 0.45s var(--ease-out) 0.26s both; }
+.stamp-next { animation: lot-line-in 0.45s var(--ease-out) 0.36s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-wash::after,
+  .stage::before,
+  .live-shot,
+  .live-who > *,
+  .live-figure,
+  .rail-side.is-bidding,
+  .sold-stamp,
+  .sold-name,
+  .sold-to,
+  .sold-price,
+  .sold-note,
+  .stamp-next,
+  .deck-btn.is-go {
+    animation: none;
   }
 }
