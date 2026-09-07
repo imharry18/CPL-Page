@@ -383,7 +383,6 @@ export default function AuctionLive({
                 className="live-figure display"
                 text={money(state.bid)}
                 digits
-                duration={380}
               />
               <p className="live-leader num">
                 {leader ? leader.name : "No bid yet"}
@@ -445,7 +444,6 @@ export default function AuctionLive({
                   className="rail-purse num"
                   text={money(side.left)}
                   digits
-                  duration={520}
                 />
                 <b className="rail-count num">
                   {side.bought}

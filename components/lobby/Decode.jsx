@@ -17,8 +17,9 @@ import { useEffect, useRef, useState } from "react";
  *
  *   - It runs on a change of text, never on a re-render. A raise redraws the
  *     whole board and only the figure that actually moved should scramble.
- *   - It is short. During a fast raise the price must be readable before the
- *     next bid lands, so this finishes well inside the time between presses.
+ *   - It resolves in a second. If a figure changes again while it is still
+ *     running, the run restarts on the new value rather than finishing the old
+ *     one — the board always ends on what is true now.
  *
  * Layout never moves: the width is held by the final string from the first
  * frame, because the scramble is the same length as the text it resolves to.
@@ -37,7 +38,7 @@ export default function Decode({
   // Money scrambles through digits alone; a name through letters. A price
   // rolling through letters reads as a fault rather than as a machine working.
   digits = false,
-  duration = 460,
+  duration = 1000,
   as: Tag = "span",
   ...rest
 }) {
