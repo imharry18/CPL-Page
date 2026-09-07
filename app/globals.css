@@ -4442,7 +4442,10 @@ img {
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: clamp(1.25rem, 3vw, 2.5rem);
   align-items: center;
-  padding: clamp(1rem, 2.5vw, 2rem);
+  /* Vertical padding is charged against the height of a 16:9 share, which is
+     the scarce dimension here; horizontal is not. */
+  padding: clamp(0.6rem, 1.6vh, 1.4rem) clamp(1rem, 2.5vw, 2rem);
+  min-height: 0;
   border: 1px solid var(--seam-10);
   border-left: 3px solid var(--team, var(--blood));
   background: rgba(12, 17, 16, 0.5);
@@ -4451,6 +4454,10 @@ img {
   display: grid;
   place-items: center;
   aspect-ratio: 4 / 5;
+  /* A portrait frame as wide as its column is taller than a 16:9 screen has
+     to spare, and it was pushing the bid off the bottom. The image covers, so
+     capping the height crops rather than distorts. */
+  max-height: 52svh;
   overflow: hidden;
   background: rgba(7, 9, 10, 0.6);
   border: 1px solid var(--seam-06);
@@ -4464,7 +4471,10 @@ img {
   margin: 0.35rem 0 0.5rem;
   /* Read from the back of the room, not from a laptop — every figure on this
      board is sized for a projector. */
-  font-size: clamp(1.9rem, min(7.5vw, 8svh), 6.5rem);
+  /* Sized against the height as well as the width: a three-line name and the
+     bid beneath it have to finish above the foot of a 720p share, which is
+     what a screen-shared window usually is. */
+  font-size: clamp(1.9rem, min(7vw, 6.4svh), 5.75rem);
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--seam);
@@ -4472,13 +4482,13 @@ img {
 /* The bid is the number the room is watching, so it gets the leading side's
    colour and the largest type on the card. */
 .live-bid {
-  margin-top: clamp(1rem, 3vh, 1.75rem);
-  padding-top: 1rem;
+  margin-top: clamp(0.5rem, 1.6vh, 1.5rem);
+  padding-top: clamp(0.5rem, 1.4vh, 1rem);
   border-top: 1px solid var(--seam-10);
 }
 .live-figure {
   margin: 0.2rem 0 0.1rem;
-  font-size: clamp(2.2rem, min(9.5vw, 9.5svh), 8rem);
+  font-size: clamp(2.2rem, min(8.5vw, 8svh), 7.25rem);
   line-height: 1;
   color: var(--team-lit, var(--seam));
 }
@@ -4565,6 +4575,154 @@ img {
   color: var(--team-lit, var(--seam));
   transition: color 0.16s linear;
   text-wrap: balance;
+}
+
+/* --------------------------------------------------------------------------
+   The rail — the eight sides along the foot of the board
+
+   Written for a screen share rather than a monitor. Video compression eats
+   thin strokes, low-contrast edges and small numerals first, so everything
+   here is a solid fill, a heavy weight or a bar: nothing that depends on a
+   hairline surviving the codec.
+   -------------------------------------------------------------------------- */
+/* Board left, rail right. The rail is given a fixed share of the width and the
+   board takes the rest, so adding it costs the lot nothing in height — the
+   type on the left is sized to be read across a hall and must not shrink. */
+.stage-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(8rem, 14vw, 12rem);
+  gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  align-items: center;
+  min-height: 0;
+}
+.stage-board {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  min-height: 0;
+}
+.rail {
+  /* Eight equal rows of whatever height the board has. Dividing the space
+     rather than stacking into it means the rail can never run off the bottom
+     of the screen, whatever the window is. */
+  display: grid;
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: clamp(0.15rem, 0.4vh, 0.4rem);
+  align-self: stretch;
+  min-height: 0;
+}
+.rail-side {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 0.1rem;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 clamp(0.35rem, 0.7vw, 0.7rem);
+  padding-top: 4px;
+  background: rgba(12, 17, 16, 0.55);
+  /* A side out of the running is dimmed rather than removed — the room still
+     needs to see that it is there and cannot answer. */
+  transition: opacity 0.16s linear, background 0.16s linear;
+}
+.rail-side.is-out {
+  opacity: 0.34;
+}
+/* Whoever holds the bid takes their own colour, which is the same colour
+   already washing the screen — the rail and the room agree. */
+.rail-side.is-bidding {
+  background: color-mix(in srgb, var(--team) 30%, rgba(12, 17, 16, 0.55));
+}
+/* The spine is the side's colour, and it is the one thing on the cell that is
+   pure fill — it reads at any distance and through any amount of compression. */
+.rail-spine {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--team, var(--blood));
+}
+.rail-side.is-bidding .rail-spine {
+  height: 6px;
+  background: var(--team-lit, var(--blood-lit));
+}
+.rail-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  font-family: var(--mono);
+  font-size: clamp(0.45rem, min(0.72vw, 1.1svh), 0.7rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rail-side.is-bidding .rail-name {
+  color: var(--seam);
+}
+.rail-flag {
+  flex: none;
+  font-style: normal;
+  color: var(--team-lit, var(--seam-45));
+}
+.rail-figs {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+/* The purse is the figure a viewer actually wants, so it is the largest thing
+   in the cell. */
+.rail-purse {
+  font-size: clamp(0.72rem, min(1.3vw, 2.1svh), 1.35rem);
+  line-height: 1.05;
+  color: var(--seam);
+  white-space: nowrap;
+}
+.rail-side.is-bidding .rail-purse {
+  color: var(--team-lit, var(--seam));
+}
+.rail-count {
+  flex: none;
+  font-size: clamp(0.45rem, min(0.75vw, 1.2svh), 0.72rem);
+  color: var(--seam-45);
+}
+.rail-count i {
+  font-style: normal;
+  color: rgba(240, 235, 225, 0.25);
+}
+.rail-fill {
+  position: relative;
+  display: block;
+  height: 3px;
+  background: var(--seam-10);
+}
+.rail-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--n) / var(--max) * 100%);
+  background: var(--team-lit, var(--blood-lit));
+  transition: width 0.2s var(--ease-out);
+}
+
+/* A column of eight beside the board needs width the phone has not got, so
+   there the rail goes under it, four across and two deep. */
+@media (max-width: 900px) {
+  .stage-body {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+  }
+  .rail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, auto));
+    align-self: auto;
+    gap: 0.3rem;
+  }
+  .rail-side {
+    padding-bottom: 0.35rem;
+  }
 }
 
 /* The sale. One movement: the stamp lands, the rest follows it up. */
