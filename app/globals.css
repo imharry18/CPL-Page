@@ -4598,12 +4598,19 @@ img {
   text-overflow: ellipsis;
 }
 .stage-title {
-  font-size: clamp(2rem, 1rem + 5.5vw, 6rem);
+  /* One line, always. "Campus Premier League" wants 1546px of width at 100px
+     of type and the board gives it 1152px, so it was breaking after "Campus"
+     and taking a second line of a screen that has no height to spare. Sized
+     off the viewport so the longest title on the board — the league's own
+     name, longer than any side's — still fits across at 1024px and up. */
+  font-size: clamp(1.5rem, 5.2vw, 6rem);
   line-height: 0.92;
   letter-spacing: -0.02em;
   color: var(--team-lit, var(--seam));
   transition: color 0.16s linear;
-  text-wrap: balance;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --------------------------------------------------------------------------
