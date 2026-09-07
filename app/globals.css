@@ -2235,6 +2235,15 @@ img {
   .lobby-title {
     font-size: clamp(2rem, 9vw, 3rem);
   }
+  /* Auction and Players share a row here, so each is about half a phone wide.
+     At the tall-tile size "Auction" wants 160px and has 126px, and the word
+     was being cut off on the lobby's own front screen. The padding keeps it
+     clear of the arrow in the corner, which the full-width tiles have room
+     for and these do not. */
+  .tile-half .tile-title {
+    font-size: clamp(0.95rem, 4.1vw, 1.9rem);
+    padding-right: 1.5rem;
+  }
 }
 
 /* Teams inside the archive panel. The grid itself is the same one the
@@ -5150,8 +5159,17 @@ img {
   min-height: 0;
   flex: 1;
 }
-.lobby-shell .side-lede {
+/* The lede sits inside .side-top now, and that is a row rather than the
+   column this rule was written for. `flex: none` there meant it would not
+   shrink, so the sentence held its full 510px and scrolled the whole teams
+   page sideways on a phone. The row is the thing that must not stretch in the
+   column; the sentence inside it has to be free to wrap. */
+.lobby-shell .side-top {
   flex: none;
+}
+.lobby-shell .side-lede {
+  flex: 1 1 18rem;
+  min-width: 0;
 }
 .lobby-shell .side-grid {
   flex: 1;

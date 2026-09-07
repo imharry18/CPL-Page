@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import LobbySub from "@/components/lobby/LobbySub";
@@ -20,33 +20,25 @@ export const dynamic = "force-dynamic";
 const FILE = path.join(process.cwd(), "data", "matches_round_1.json");
 
 /**
- * Read the Round 1 draw, and put it back to undrawn.
+ * Read the Round 1 draw.
  *
- * A refresh always starts from an empty grid: the draw is something you make
- * on the night, in front of everyone, not a result the page remembers. The
- * matches stay in the file as a record of the last draw — only the flag is
- * cleared.
+ * Reading only. This used to clear the `drawn` flag on the way past, which
+ * made a page load a write — including the one Next fires when a link is
+ * merely hovered — and meant the draw made in front of the room lasted
+ * exactly until the next person opened the page. The fixture is a fact about
+ * the night, so it is read the same way by everyone who asks.
  */
-async function readAndReset() {
-  let saved;
+async function readDraw() {
   try {
-    saved = JSON.parse(await readFile(FILE, "utf8"));
+    const saved = JSON.parse(await readFile(FILE, "utf8"));
+    return { drawn: Boolean(saved.drawn), matches: saved.matches ?? [] };
   } catch {
     return { drawn: false, matches: [] };
   }
-
-  if (saved.drawn) {
-    await writeFile(
-      FILE,
-      `${JSON.stringify({ ...saved, drawn: false }, null, 1)}\n`
-    );
-  }
-
-  return { drawn: false, matches: saved.matches ?? [] };
 }
 
 export default async function LobbyMatchesPage() {
-  const [round1, admin] = await Promise.all([readAndReset(), isAdmin()]);
+  const [round1, admin] = await Promise.all([readDraw(), isAdmin()]);
 
   return (
     <LobbySub

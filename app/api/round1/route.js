@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { SEASON_4_SIDES } from "@/data/season4Sides";
@@ -43,11 +43,25 @@ export async function POST(request) {
     );
   }
 
-  await writeFile(FILE, `${JSON.stringify({ drawn: true, matches }, null, 1)}\n`);
+  // Written the same way as the auction ledger: to a neighbour and renamed
+  // over the top, so a crash mid-save cannot leave the fixture truncated for
+  // every board that is about to read it.
+  const temp = `${FILE}.tmp`;
+  await writeFile(temp, `${JSON.stringify({ drawn: true, matches }, null, 1)}\n`);
+  await rename(temp, FILE);
 
   return Response.json({ drawn: true, matches });
 }
 
+/** The draw as it stands. Public: this is what is on the screen in the hall. */
 export async function GET() {
-  return Response.json(JSON.parse(await readFile(FILE, "utf8")));
+  try {
+    return Response.json(JSON.parse(await readFile(FILE, "utf8")), {
+      headers: { "Cache-Control": "no-store" },
+    });
+  } catch {
+    // No draw made yet. Every board polls this, and a 500 here would put an
+    // error in the console of every phone in the room.
+    return Response.json({ drawn: false, matches: [] });
+  }
 }

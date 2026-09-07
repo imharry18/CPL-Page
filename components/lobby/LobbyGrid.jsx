@@ -9,8 +9,17 @@ export default function LobbyGrid({ cards }) {
           <Link
             key={card.id}
             /* A two-row tile has the height for a much bigger title; a
-               one-row tile does not, and the type has to know which it is. */
-            className={rows === "2" ? "tile tile-tall" : "tile"}
+               one-row tile does not, and the type has to know which it is.
+               `tile-half` marks the narrow ones, which share a row once the
+               mosaic drops to two columns — on a phone they are half the width
+               of the others and the title has to come down to match. */
+            className={[
+              "tile",
+              rows === "2" ? "tile-tall" : "",
+              columns === "1" ? "tile-half" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
             href={card.href}
             style={{
               "--c": columns,

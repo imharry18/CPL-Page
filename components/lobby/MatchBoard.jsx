@@ -165,8 +165,19 @@ function SeededRound({ after }) {
 }
 
 export default function MatchBoard({ sides, initial, admin, crownedOn }) {
+  /* The draw that has actually been made, if one has. Every board starts here
+     rather than spinning from nothing: the fixture belongs to the night, not
+     to whoever happens to have the page open, and a phone opened after the
+     draw must show the same four ties as the screen at the front of the room. */
+  const saved =
+    initial?.drawn && initial.matches?.length === sides.length / 2
+      ? initial.matches
+      : null;
+
   const [round, setRound] = useState(0);
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState(saved ?? []);
+  // Whether what is on screen is the real draw rather than the spin.
+  const [official, setOfficial] = useState(Boolean(saved));
   /* For the auction machine the board is "spinning" from the moment the page
      loads and keeps hunting until Stop; "stopping" is the wind-down and
      "stopped" is a made draw. Everyone else starts — and stays — "idle": a
@@ -174,7 +185,7 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
   /* The board spins for everyone. The draw is the moment of the night, so a
      visitor watching on their own phone sees exactly what is on the screen at
      the front of the room — including the Stop button. */
-  const [phase, setPhase] = useState("spinning");
+  const [phase, setPhase] = useState(saved ? "stopped" : "spinning");
   const byName = new Map(sides.map((side) => [side.name, side]));
   const timers = useRef([]);
 
@@ -190,14 +201,16 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
-  function stop() {
-    if (phase !== "spinning") return;
+  /**
+   * Bring the wheel to rest on `final`.
+   *
+   * The result is decided before the wind-down starts; the slowing is theatre
+   * over a fixture that already exists, so what you watch land is exactly what
+   * gets saved and the animation can never disagree with the draw.
+   */
+  function settle(final, save) {
+    timers.current.forEach(clearTimeout);
     setPhase("stopping");
-
-    // The result is decided the moment you press Stop; the wind-down is
-    // theatre over it. That way what you watch land is exactly what gets
-    // saved — the animation can never disagree with the fixture.
-    const final = drawPairs(sides);
 
     // Each frame waits a little longer than the last, so it reads as a wheel
     // losing momentum rather than a list that simply stops updating.
@@ -219,6 +232,10 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
     timers.current.push(
       setTimeout(async () => {
         setPhase("stopped");
+        if (!save) {
+          setOfficial(true);
+          return;
+        }
         try {
           const response = await fetch("/api/round1", {
             method: "POST",
@@ -226,12 +243,45 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
             body: JSON.stringify({ matches: final }),
           });
           if (!response.ok) throw new Error(await response.text());
+          setOfficial(true);
         } catch (error) {
           console.error("[round1] could not save the draw:", error);
         }
       }, at + 220)
     );
   }
+
+  function stop() {
+    if (phase !== "spinning") return;
+    settle(drawPairs(sides), true);
+  }
+
+  /* Everyone else's board follows the draw rather than inventing one.
+     Only the auction machine can save a fixture, so a visitor pressing Stop
+     was landing on four ties of their own that nobody else could see. This
+     watches for the real draw and settles onto it the moment it exists —
+     whether this board is still spinning or has already stopped on a guess. */
+  useEffect(() => {
+    if (admin || official) return undefined;
+
+    const id = setInterval(async () => {
+      try {
+        const response = await fetch("/api/round1", { cache: "no-store" });
+        if (!response.ok) return;
+        const draw = await response.json();
+        if (!draw.drawn || draw.matches?.length !== sides.length / 2) return;
+        clearInterval(id);
+        settle(draw.matches, false);
+      } catch {
+        // The draw is not made yet, or the machine is between saves. Keep
+        // spinning and ask again — a board that gives up here is a board
+        // showing the wrong fixture for the rest of the night.
+      }
+    }, 2000);
+
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [admin, official, sides]);
 
   const slots =
     matches.length > 0 ? matches : Array.from({ length: 4 }, () => ({}));
@@ -269,12 +319,33 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
                 {phase === "spinning" ? "Stop" : "Stopping…"}
               </button>
             )}
+
+            {/* The draw now outlives the page, so the way back to a redraw has
+                to be a button rather than a refresh — and only on the machine
+                that can actually save one. */}
+            {phase === "stopped" && admin && (
+              <button
+                type="button"
+                className="shuffle"
+                onClick={() => {
+                  timers.current.forEach(clearTimeout);
+                  timers.current = [];
+                  setOfficial(false);
+                  setPhase("spinning");
+                }}
+              >
+                Draw again
+              </button>
+            )}
+
             <span className="fx-hint num">
               {phase === "spinning"
                 ? "Finding a combination"
                 : phase === "stopping"
                   ? "Settling"
-                  : "Draw made and saved"}
+                  : official
+                    ? "Draw made and saved"
+                    : "Waiting for the draw"}
             </span>
           </div>
 
