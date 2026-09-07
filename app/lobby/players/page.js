@@ -18,6 +18,11 @@ export const metadata = {
     "Every player in the Season 4 pool, with year and self-rated batting, bowling and all-round skill. Search by name.",
 };
 
+/* Squads are joined on from the auction ledger, which changes all night. Left
+   to itself Next prerenders this page at build time and it would show the
+   room a roster frozen at whatever the ledger said when the build ran. */
+export const dynamic = "force-dynamic";
+
 export default async function PlayersPage() {
   const { players } = await getPlayers();
 

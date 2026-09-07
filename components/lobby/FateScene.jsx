@@ -144,9 +144,13 @@ function cardTexture({ title, sub, image, colour, round }) {
 export default function FateScene({ sides, players, phase, pairs }) {
   const host = useRef(null);
   // The loop reads these rather than closing over props, so a phase change
-  // never rebuilds the scene.
+  // never rebuilds the scene. Kept up to date in an effect rather than during
+  // render — React 19 rejects the latter, and a frame drawn against the
+  // previous phase before the effect runs is not something an eye can catch.
   const live = useRef({ phase, pairs });
-  live.current = { phase, pairs };
+  useEffect(() => {
+    live.current = { phase, pairs };
+  }, [phase, pairs]);
 
   useEffect(() => {
     const mount = host.current;

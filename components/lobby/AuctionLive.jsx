@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import SkillMeter from "@/components/SkillMeter";
 import { money } from "@/lib/auctionMoney";
@@ -27,8 +27,10 @@ export default function AuctionLive({ sides, players, initial, eyebrow, poll = 1
      every board comes down together. */
   const sold = state.sold ?? null;
 
-  const apply = useRef(null);
-  apply.current = (next) => setState(next);
+  /* setState is stable, so the stream below can call it directly and the
+     effect never has to be torn down and rebuilt to keep up with a render.
+     This used to be a ref assigned during render, which React 19 rejects —
+     and it was never buying anything, because setState was all it held. */
 
   useEffect(() => {
     let alive = true;
@@ -43,7 +45,7 @@ export default function AuctionLive({ sides, players, initial, eyebrow, poll = 1
       source.onmessage = (event) => {
         if (!alive) return;
         try {
-          apply.current(JSON.parse(event.data));
+          setState(JSON.parse(event.data));
         } catch {
           // A malformed frame is skipped; the next change resends everything.
         }
@@ -57,7 +59,7 @@ export default function AuctionLive({ sides, players, initial, eyebrow, poll = 1
               const response = await fetch("/api/auction/state", {
                 cache: "no-store",
               });
-              if (response.ok && alive) apply.current(await response.json());
+              if (response.ok && alive) setState(await response.json());
             } catch {
               // Held state is better than a blank board.
             }
@@ -67,7 +69,7 @@ export default function AuctionLive({ sides, players, initial, eyebrow, poll = 1
     } catch {
       fallback = setInterval(async () => {
         const response = await fetch("/api/auction/state", { cache: "no-store" });
-        if (response.ok && alive) apply.current(await response.json());
+        if (response.ok && alive) setState(await response.json());
       }, poll);
     }
 

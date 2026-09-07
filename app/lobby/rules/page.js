@@ -19,7 +19,7 @@ export default function LobbyRulesPage() {
       <div className="rules-page">
         <p className="rules-lede">
           Read these before you take the field. Penalties are awarded on the
-          day, and one player's fight can cost a side the tournament.
+          day, and one player&rsquo;s fight can cost a side the tournament.
         </p>
 
         <ol className="rulebook">

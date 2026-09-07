@@ -13,6 +13,11 @@ export const metadata = {
     "The eight Season 4 sides. Squads are built from scratch at the auction on 12 September.",
 };
 
+/* Squads and purses come out of the auction ledger, so this page is only ever
+   as current as its last render. Prerendered at build time it would show the
+   eight sides empty for the whole night. */
+export const dynamic = "force-dynamic";
+
 export default async function LobbyTeamsPage() {
   const [{ players }, state] = await Promise.all([getPlayers(), readState()]);
 

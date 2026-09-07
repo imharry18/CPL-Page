@@ -37,7 +37,13 @@ export default function FateGrid({ sides, players, admin = false }) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
-    const chosen = sides.map((side, i) => ({ side, player: deck[i] }));
+    /* Fewer players than sides means the last sides draw nothing. The page
+       drops an iconic name that no longer matches the roster, so this is one
+       typo in season4Iconic.js away — and reading `.name` off a blank pairing
+       takes the whole screen down in front of the room. Better a short grid. */
+    const chosen = sides
+      .map((side, i) => ({ side, player: deck[i] }))
+      .filter((pair) => pair.player);
     setPairs(chosen);
 
     setPhase("spin");

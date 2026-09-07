@@ -59,8 +59,9 @@ export default function AuctionConsole({
      down, not a chooser. Anyone paid but missing from the file is appended, so
      a late entrant is never silently dropped from the night. */
   const running = useMemo(() => {
+    const notForSale = new Set(iconic);
     const listed = order.filter(
-      (name) => byName.has(name) && !new Set(iconic).has(name)
+      (name) => byName.has(name) && !notForSale.has(name)
     );
     // Only players who have paid go under the hammer, so only they can be
     // appended — otherwise a missing order file turns the night into the whole
@@ -71,7 +72,7 @@ export default function AuctionConsole({
        FateGrid. The iconic eight have to be named here rather than inferred
        from a side — until the grid is drawn they carry no team, and without
        this they walk straight back into the order. */
-    const spokenFor = new Set(iconic);
+    const spokenFor = notForSale;
     const missing = players
       .filter(
         (p) => p.paid && !p.team && !spokenFor.has(p.name) && !listedSet.has(p.name)
@@ -83,7 +84,7 @@ export default function AuctionConsole({
       player: byName.get(name),
       sale: outcome.get(name) ?? null,
     }));
-  }, [order, players, byName, outcome]);
+  }, [order, players, byName, outcome, iconic]);
 
   // Three states a name can be in, and every list on screen is one of them.
   const pending = useMemo(() => running.filter((row) => !row.sale), [running]);
@@ -96,6 +97,17 @@ export default function AuctionConsole({
     [running]
   );
 
+  /* Still owed a second call: unsold in the FIRST pass and not yet re-offered.
+     A name that goes unsold again in the second pass has had its two turns and
+     drops out here, which is what lets the night end — driving the round off
+     `passed` instead would put every re-unsold player straight back on the
+     list and call them round for ever. Entries written before the pass was
+     recorded count as the first pass, which is what they were. */
+  const reoffer = useMemo(
+    () => passed.filter((row) => (row.sale.pass ?? 1) < 2),
+    [passed]
+  );
+
   /* The second pass. Nobody is called twice in the first run down the order,
      so the players who went unsold wait at the foot of the list until the
      order is exhausted and the round is opened. Read from the ledger, not
@@ -103,10 +115,10 @@ export default function AuctionConsole({
      to resume the round it was in. */
   const secondPass = state.pass === 2;
   const firstPassDone = pending.length === 0;
-  const complete = firstPassDone && passed.length === 0;
+  const complete = firstPassDone && reoffer.length === 0;
 
   // What the console is working through right now.
-  const live = secondPass ? passed : pending;
+  const live = secondPass ? reoffer : pending;
   const remaining = live;
 
   const at = live.findIndex((row) => row.name === state.current);
@@ -451,7 +463,7 @@ export default function AuctionConsole({
                 captains talk while the screen says so. Pressing this puts the
                 notice up and stops the order calling itself; Begin clears it
                 and the unsold names start. */}
-            {firstPassDone && !secondPass && passed.length > 0 && (
+            {firstPassDone && !secondPass && reoffer.length > 0 && (
               <button
                 type="button"
                 className="btn-second"
@@ -460,7 +472,7 @@ export default function AuctionConsole({
                   send({ action: "notice", notice: "unsold", pass: 2 })
                 }
               >
-                Start unsold players · {passed.length}
+                Start unsold players · {reoffer.length}
               </button>
             )}
 

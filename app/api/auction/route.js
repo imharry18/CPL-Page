@@ -30,12 +30,38 @@ import {
  * Squads are joined back on at read time in lib/players.js.
  */
 
+/**
+ * One action at a time.
+ *
+ * Every case below reads the ledger, changes it, and writes it back. Two
+ * presses close enough together would both read the same ledger and the second
+ * would write over the first — a bid taken and then silently lost, which on
+ * the night looks like the board ignoring the auctioneer. Requests are queued
+ * against each other here so that cannot happen. At the rate a room bids, the
+ * wait is never measurable.
+ */
+let pending = Promise.resolve();
+
+function serialise(work) {
+  const run = pending.then(work, work);
+  // The chain must survive a rejection, or one failed action wedges the night.
+  pending = run.then(
+    () => undefined,
+    () => undefined
+  );
+  return run;
+}
+
 export async function POST(request) {
   if (!(await isAdmin())) {
     return Response.json({ error: "not admin" }, { status: 403 });
   }
 
-  const { action, name, team, notice, names, pass } = await request.json();
+  const body = await request.json();
+  return serialise(() => handle(body));
+}
+
+async function handle({ action, name, team, notice, names, pass }) {
   const state = await readState();
 
   switch (action) {
@@ -238,11 +264,22 @@ export async function POST(request) {
 
     // Unsold is recorded too, so the log is the whole story of the night and
     // Undo can walk back over it.
+    //
+    // The pass is recorded with it, and that is what ends the night: the
+    // second round is the players unsold in the FIRST one, so a name that goes
+    // unsold again is finished rather than going back on a list it would be
+    // called from for ever. Without this the console re-calls the same unsold
+    // players in a loop and "Auction completed" never arrives.
     case "unsold": {
       if (!state.current) {
         return Response.json({ error: "no lot" }, { status: 409 });
       }
-      state.history.push({ name: state.current, team: null, price: 0 });
+      state.history.push({
+        name: state.current,
+        team: null,
+        price: 0,
+        pass: state.pass ?? 1,
+      });
       state.current = null;
       state.bid = BASE_PRICE;
       state.leader = null;
