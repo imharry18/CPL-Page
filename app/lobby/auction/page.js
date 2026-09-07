@@ -1,6 +1,7 @@
 import AuctionLive from "@/components/lobby/AuctionLive";
 import LobbySub from "@/components/lobby/LobbySub";
 import { SEASON_4_SIDES } from "@/data/season4Sides";
+import { isAdmin } from "@/lib/admin";
 import { photoFor, photoIndex, readOrder, readState } from "@/lib/auction";
 import { REVEAL } from "@/lib/cplData";
 import { getPlayers } from "@/lib/players";
@@ -15,7 +16,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function LobbyAuctionPage() {
-  const [{ players }, state, photos, order] = await Promise.all([
+  const [{ players }, state, photos, order, admin] = await Promise.all([
     getPlayers(),
     readState(),
     photoIndex(),
@@ -23,6 +24,11 @@ export default async function LobbyAuctionPage() {
     // to tell the room who is coming, which matters most to anyone watching
     // on a call rather than sitting in the hall.
     readOrder(),
+    /* The controls live on this page now, but they are still decided on the
+       server: the board is public and shared to a call, and a visitor pressing
+       "3" must not be able to bid. Only the machine with a .admin file gets
+       them, and /api/auction refuses everyone else regardless. */
+    isAdmin(),
   ]);
 
   // The whole pool goes down with the page so that the board can change lot
@@ -32,6 +38,8 @@ export default async function LobbyAuctionPage() {
     year: player.year,
     role: player.role,
     prefers: player.prefers,
+    // Carried so the squad panel can list who a side already holds.
+    team: player.team ?? "",
     bat: player.bat,
     bowl: player.bowl,
     allround: player.allround,
@@ -54,6 +62,7 @@ export default async function LobbyAuctionPage() {
         players={pool}
         initial={state}
         order={order}
+        admin={admin}
       />
     </LobbySub>
   );

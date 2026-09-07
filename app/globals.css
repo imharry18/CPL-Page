@@ -4657,6 +4657,28 @@ img {
 .rail-side.is-out {
   opacity: 0.34;
 }
+/* A cell that can take a bid. Buttons carry browser chrome the board must not
+   inherit, so it is reset back to the plain cell it looks like. */
+button.rail-side {
+  appearance: none;
+  border: 0;
+  border-radius: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: default;
+}
+button.rail-side.is-live {
+  cursor: pointer;
+}
+button.rail-side.is-live:hover,
+button.rail-side.is-live:focus-visible {
+  background: color-mix(in srgb, var(--team) 22%, rgba(12, 17, 16, 0.55));
+  outline: none;
+}
+button.rail-side:disabled {
+  cursor: default;
+}
 /* Whoever holds the bid takes their own colour, which is the same colour
    already washing the screen — the rail and the room agree. */
 .rail-side.is-bidding {
@@ -4679,11 +4701,30 @@ img {
   align-items: baseline;
   gap: 0.4em;
   font-family: var(--mono);
-  font-size: clamp(0.45rem, min(0.72vw, 1.1svh), 0.7rem);
-  letter-spacing: 0.08em;
+  /* Bigger than it was: this is the name the auctioneer calls and the room
+     reads off a shared screen, not a caption. */
+  font-size: clamp(0.55rem, min(0.95vw, 1.5svh), 0.92rem);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--seam-45);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* The key that bids for this side. On the screen because the auctioneer's
+   hand is on the number, and the room should be able to see which is which. */
+.rail-no {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: clamp(0.55rem, min(0.95vw, 1.5svh), 0.92rem);
+  color: var(--team-lit, var(--seam));
+  background: color-mix(in srgb, var(--team) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--team-lit) 45%, transparent);
+}
+.rail-team {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -4739,29 +4780,11 @@ img {
 /* A column of eight beside the board needs width the phone has not got, so
    there the rail goes under it, four across and two deep. */
 @media (max-width: 900px) {
-  /* And on a phone the board scrolls.
-
-     This screen is built for the one at the front of the hall: a photograph,
-     a card of stats, the bid in type readable across a room, and now eight
-     sides. There is no arrangement of those that fits a phone at a size worth
-     reading — and anyone watching remotely is watching the shared call, not
-     this page. So here it is allowed to run past the fold rather than every
-     figure on it shrinking to nothing. */
-  .lobby-shell:has(.stage) .lobby {
-    overflow-y: auto;
-  }
-  .stage {
-    min-height: auto;
-  }
-  .stage-next {
-    position: static;
-    max-width: none;
-    margin-top: 0.5rem;
-  }
-  .stage-body {
-    grid-template-columns: minmax(0, 1fr);
-    align-content: center;
-  }
+  /* Below a tablet this board is not built at all — see .stage-small.
+     A photograph, a card of stats, the bid at a size readable across a hall,
+     eight sides and a set of controls have no arrangement that fits a phone,
+     and anyone watching remotely is watching the shared call rather than this
+     page. Tablets keep the board, with the rail moved underneath. */
   .rail {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, auto));
@@ -4778,6 +4801,11 @@ img {
   position: absolute;
   inset: 0;
   z-index: 5;
+  /* The stamp is laid over the whole board, so left to itself it swallows
+     every click underneath it — the controls, and a right-click on a side to
+     see its squad. It is something to read, not something to hit, so it takes
+     no pointer at all and only its own button does. */
+  pointer-events: none;
   display: grid;
   align-content: center;
   justify-items: center;
@@ -5807,4 +5835,145 @@ img {
   margin: 0.75rem 0 clamp(1.5rem, 4vh, 2.5rem);
   font-size: clamp(0.95rem, 1vw, 1.1rem);
   color: var(--seam-45);
+}
+
+
+/* --------------------------------------------------------------------------
+   The auction board's own controls
+
+   The console used to be its own page. It is here now, because the auctioneer
+   watches the same screen the room does and should not have to keep two in
+   step. Everything below is rendered only on the machine holding the .admin
+   file — a visitor gets the board and nothing to press.
+   -------------------------------------------------------------------------- */
+.deck {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 70%;
+}
+.deck-keys {
+  margin-right: 0.4rem;
+  font-size: clamp(0.48rem, 0.72vw, 0.68rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--seam-25, rgba(240, 235, 225, 0.28));
+}
+.deck-keys b {
+  color: var(--seam-45);
+  font-weight: 400;
+}
+.deck-btn {
+  appearance: none;
+  padding: 0.3rem 0.6rem;
+  background: rgba(12, 17, 16, 0.75);
+  border: 1px solid var(--seam-10);
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: clamp(0.48rem, 0.72vw, 0.68rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+  cursor: pointer;
+  transition: color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+}
+.deck-btn:hover:not(:disabled) {
+  color: var(--seam);
+  border-color: var(--seam-25, rgba(240, 235, 225, 0.28));
+}
+.deck-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.deck-btn.is-go {
+  color: var(--blood-lit);
+  border-color: var(--blood);
+}
+.deck-btn.is-danger:hover:not(:disabled) {
+  color: var(--blood-lit);
+  border-color: var(--blood);
+}
+.deck-error {
+  flex-basis: 100%;
+  text-align: right;
+  font-size: 0.62rem;
+  color: var(--blood-lit);
+}
+
+/* The button that takes an announcement down. Inside the stamp so the hand
+   goes where the eye already is. */
+.stamp-next {
+  pointer-events: auto;
+  margin-top: clamp(0.75rem, 2vh, 1.5rem);
+  padding: 0.55rem 1.4rem;
+  background: transparent;
+  border: 1px solid var(--team-lit, var(--blood));
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: clamp(0.6rem, 1vw, 0.8rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--team-lit, var(--blood-lit));
+  cursor: pointer;
+}
+.stamp-next:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--team-lit, var(--blood)) 18%, transparent);
+}
+
+/* A lot nobody wanted keeps the house red rather than a side's colour —
+   there is no side to carry. */
+.sold.is-unsold .sold-stamp {
+  color: var(--seam-45);
+}
+/* And the line under it is a sentence rather than a figure, so it is set like
+   one: at the size of the SOLD stamp it wrapped across the whole screen. */
+.sold-note {
+  margin-top: 0.4rem;
+  font-size: clamp(0.7rem, 1.2vw, 1rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+
+/* --------------------------------------------------------------------------
+   Not built for a phone
+   -------------------------------------------------------------------------- */
+.stage-small {
+  display: none;
+}
+@media (max-width: 700px) {
+  .stage {
+    display: none;
+  }
+  .stage-small {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.75rem;
+    min-height: 60svh;
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+  .stage-small-tag {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--blood-lit);
+  }
+  .stage-small h2 {
+    font-size: clamp(1.5rem, 7vw, 2.2rem);
+    line-height: 1.05;
+    color: var(--seam);
+  }
+  .stage-small p {
+    max-width: 26ch;
+    color: var(--seam-45);
+  }
 }

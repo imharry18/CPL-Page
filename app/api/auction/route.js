@@ -90,13 +90,15 @@ async function handle({ action, name, team, notice, names, pass }) {
       // A lot going up always takes the screen back from a notice or a stamp.
       state.notice = null;
       state.sold = null;
+      state.unsold = null;
       break;
     }
 
-    // Clear the SOLD stamp. Pressing Next in the console is the only thing
-    // that takes it down, so the announcement lasts as long as the room needs.
+    // Clear whichever announcement is up. Pressing Next is the only thing that
+    // takes one down, so it lasts as long as the room needs.
     case "next":
       state.sold = null;
+      state.unsold = null;
       break;
 
     // Hold a message up to the room instead of a lot. Nothing in the ledger
@@ -156,6 +158,7 @@ async function handle({ action, name, team, notice, names, pass }) {
       }
 
       state.sold = null;
+      state.unsold = null;
       state.current = null;
       state.bid = BASE_PRICE;
       state.leader = null;
@@ -255,6 +258,7 @@ async function handle({ action, name, team, notice, names, pass }) {
       state.history.push(sale);
       // Held up to the room until "Next" is pressed.
       state.sold = sale;
+      state.unsold = null;
       state.current = null;
       state.bid = BASE_PRICE;
       state.leader = null;
@@ -280,6 +284,10 @@ async function handle({ action, name, team, notice, names, pass }) {
         price: 0,
         pass: state.pass ?? 1,
       });
+      // Held up to the room the same way a sale is, and taken down by Next.
+      // A player nobody bid for is still a moment, and the room should be told
+      // rather than left watching the board go quietly blank.
+      state.unsold = { name: state.current };
       state.current = null;
       state.bid = BASE_PRICE;
       state.leader = null;
@@ -289,16 +297,56 @@ async function handle({ action, name, team, notice, names, pass }) {
 
     // Undo the last result and put that player back under the hammer, so the
     // correction is one press rather than a hunt through the pool.
+    /* Undo the last result and put that player back exactly as he stood the
+       instant before it was called — the sale reopened at the price it went
+       for, with the side that won him still holding the bid. Stepping back to
+       "no bid" instead would mean the auctioneer had to run the whole lot
+       again to correct one press. */
     case "undo": {
       const last = state.history.pop();
       if (!last) {
         return Response.json({ error: "nothing to undo" }, { status: 409 });
       }
       state.sold = null;
+      state.unsold = null;
       state.current = last.name;
       state.bid = last.price || BASE_PRICE;
-      state.leader = null;
-      state.bids = [];
+      state.leader = last.team ?? null;
+      // One bid, so a further step back takes the lot to nobody rather than
+      // leaving a leader with an empty ladder behind him.
+      state.bids = last.team ? [{ team: last.team, price: last.price }] : [];
+      break;
+    }
+
+    /* One step back, whatever the last step was.
+
+       The board has a single Undo rather than the console's two, because in
+       the room there is only ever one thing you meant to take back: the raise
+       just called, or — if no raise has been called on this lot — the result
+       before it. Deciding that here rather than in the browser keeps it one
+       press and one write, so it cannot race with the bid it is undoing. */
+    case "back": {
+      const bids = [...(state.bids ?? [])];
+
+      if (bids.length > 0) {
+        bids.pop();
+        const previous = bids[bids.length - 1];
+        state.bids = bids;
+        state.bid = previous ? previous.price : BASE_PRICE;
+        state.leader = previous ? previous.team : null;
+        break;
+      }
+
+      const last = state.history.pop();
+      if (!last) {
+        return Response.json({ error: "nothing to undo" }, { status: 409 });
+      }
+      state.sold = null;
+      state.unsold = null;
+      state.current = last.name;
+      state.bid = last.price || BASE_PRICE;
+      state.leader = last.team ?? null;
+      state.bids = last.team ? [{ team: last.team, price: last.price }] : [];
       break;
     }
 
