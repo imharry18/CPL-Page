@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import SkillMeter from "@/components/SkillMeter";
 import AuctionGuide from "@/components/lobby/AuctionGuide";
+import Decode from "@/components/lobby/Decode";
 import SquadPopup from "@/components/lobby/SquadPopup";
 import StageFX from "@/components/lobby/StageFX";
 import { SQUAD_MAX, money, nextBid, purses } from "@/lib/auctionMoney";
@@ -348,7 +349,14 @@ export default function AuctionLive({
 
           <div className="live-who">
             <p className="lot-tag num">Under the hammer</p>
-            <h2 className="live-name display">{lot.name}</h2>
+            {/* Keyed to the name so every new lot runs the characters again
+                rather than the text simply swapping under the room's eyes. */}
+            <Decode
+              as="h2"
+              className="live-name display"
+              key={lot.name}
+              text={lot.name}
+            />
             <p className="lot-meta num">
               {lot.year}
               {lot.prefers && ` · Prefers ${lot.prefers.toLowerCase()}`}
@@ -370,7 +378,13 @@ export default function AuctionLive({
 
             <div className="live-bid">
               <p className="bid-tag num">Current bid</p>
-              <p className="live-figure display">{money(state.bid)}</p>
+              <Decode
+                as="p"
+                className="live-figure display"
+                text={money(state.bid)}
+                digits
+                duration={380}
+              />
               <p className="live-leader num">
                 {leader ? leader.name : "No bid yet"}
               </p>
@@ -426,7 +440,13 @@ export default function AuctionLive({
                   the board between eight cells, so every row it does not need
                   is height the figures can have instead. */}
               <div className="rail-figs">
-                <b className="rail-purse num">{money(side.left)}</b>
+                <Decode
+                  as="b"
+                  className="rail-purse num"
+                  text={money(side.left)}
+                  digits
+                  duration={520}
+                />
                 <b className="rail-count num">
                   {side.bought}
                   <i>/{SQUAD_MAX}</i>
@@ -494,7 +514,12 @@ export default function AuctionLive({
       {upNext && (
         <p className="stage-next num">
           <span className="stage-next-tag">Next</span>
-          <b className="stage-next-name">{upNext}</b>
+          <Decode
+            as="b"
+            className="stage-next-name"
+            key={upNext}
+            text={upNext}
+          />
         </p>
       )}
 
@@ -614,7 +639,6 @@ export default function AuctionLive({
         <AuctionGuide
           busy={busy}
           onClose={() => setGuideOpen(false)}
-          onShuffle={() => send({ action: "shuffle" })}
           onRestart={() => {
             setGuideOpen(false);
             setConfirmRestart(true);

@@ -1728,6 +1728,36 @@ img {
   color: var(--seam-70);
 }
 
+/* The pool reads as three blocks — captains, iconic, then the lots — each
+   with its own heading and its own numbering from one. */
+.roster-group + .roster-group {
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+.roster-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.9rem;
+}
+.roster-title {
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--blood-lit);
+}
+.roster-note {
+  flex: 1;
+  min-width: 16ch;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--seam-45);
+}
+.roster-shuffle {
+  margin-left: auto;
+}
+
 .roster {
   display: grid;
   gap: 1px;
@@ -4591,11 +4621,22 @@ img {
   color: var(--seam-45);
 }
 .stage-next-name {
-  font-size: clamp(0.85rem, min(1.7vw, 2.6svh), 1.7rem);
+  /* Bigger than a footnote. Anyone on the call uses this to know whether the
+     next name is one they are bidding for, and it was too quiet to serve that
+     at the back of a hall. */
+  font-size: clamp(1rem, min(2.3vw, 3.4svh), 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--seam);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* Held on the baseline while the characters resolve, so a decoding name
+     never nudges the line it sits on. */
+  font-variant-numeric: tabular-nums;
+}
+.stage-next-tag {
+  align-self: center;
 }
 .stage-title {
   /* One line, always. "Campus Premier League" wants 1546px of width at 100px
@@ -4734,6 +4775,13 @@ button.rail-side:disabled {
 .rail-team {
   overflow: hidden;
   text-overflow: ellipsis;
+  /* The side's name is what the auctioneer says out loud; it carries the same
+     weight on screen as it does in the room. */
+  font-weight: 700;
+  color: var(--seam);
+}
+.rail-side.is-out .rail-team {
+  font-weight: 600;
 }
 .rail-side.is-bidding .rail-name {
   color: var(--seam);
@@ -5932,10 +5980,13 @@ button.rail-side:disabled {
 /* --------------------------------------------------------------------------
    The moment — WebGL behind the stamp
    -------------------------------------------------------------------------- */
+/* Behind the board, not over it: the field is depth for the room to sit in,
+   and the burst reads through the card because the card is half transparent.
+   Above the wash, below everything that has to be read. */
 .stage-fx {
   position: fixed;
   inset: 0;
-  z-index: 4;
+  z-index: 0;
   pointer-events: none;
 }
 .stage-fx canvas {
