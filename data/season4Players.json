@@ -481,6 +481,20 @@
   "viceCaptain": false
  },
  {
+  "name": "Lucky Baghel",
+  "year": "Warden",
+  "hostellite": true,
+  "bat": "Good",
+  "bowl": "Good",
+  "allround": "Best",
+  "rating": 10,
+  "role": "All-rounder",
+  "prefers": "Batting",
+  "paid": true,
+  "team": "",
+  "viceCaptain": false
+ },
+ {
   "name": "Manish Tajane",
   "year": "2nd Year",
   "hostellite": false,
@@ -974,7 +988,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Tushar Sharma",
@@ -1028,7 +1043,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": ""
+  "team": "",
+  "viceCaptain": false
  },
  {
   "name": "Yash Taori",
