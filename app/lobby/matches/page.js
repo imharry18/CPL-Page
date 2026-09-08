@@ -10,7 +10,7 @@ import { REVEAL, SEASON_4 } from "@/lib/cplData";
 export const metadata = {
   title: "Matches — Season 4, Campus Premier League",
   description:
-    "Twelve matches in a single day on 20 September. The draw is made at the Live Auction on 12 September.",
+    "Fourteen matches in a single day on 20 September. The draw is made at the Live Auction on 12 September, and every round after the first is seeded on the points table.",
 };
 
 // The file is read on every request, never cached — otherwise a fresh draw

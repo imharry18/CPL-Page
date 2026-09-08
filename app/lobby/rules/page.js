@@ -1,5 +1,10 @@
 import LobbySub from "@/components/lobby/LobbySub";
-import { SEASON_4_AUCTION_RULES, SEASON_4_RULES } from "@/data/season4Rules";
+import RevealOnScroll from "@/components/RevealOnScroll";
+import {
+  SEASON_4_AUCTION_RULES,
+  SEASON_4_RULES,
+  SEASON_4_RULES_CLOSING,
+} from "@/data/season4Rules";
 import { REVEAL } from "@/lib/cplData";
 
 export const metadata = {
@@ -16,6 +21,10 @@ export default function LobbyRulesPage() {
       reveal={REVEAL}
       lock={false}
     >
+      {/* Each rule arrives as it is scrolled to, rather than the whole page
+          being there at once — a rulebook read one rule at a time. */}
+      <RevealOnScroll />
+
       <div className="rules-page">
         <p className="rules-lede">
           Read these before you take the field. Penalties are awarded on the
@@ -24,7 +33,11 @@ export default function LobbyRulesPage() {
 
         <ol className="rulebook">
           {SEASON_4_RULES.map((rule, i) => (
-            <li className="ruling" key={rule.title}>
+            <li
+              className="ruling reveal"
+              key={rule.title}
+              style={{ "--i": i }}
+            >
               <p className="ruling-no">{String(i + 1).padStart(2, "0")}</p>
 
               <div className="ruling-body">
@@ -60,7 +73,11 @@ export default function LobbyRulesPage() {
 
         <ol className="rulebook">
           {SEASON_4_AUCTION_RULES.map((rule, i) => (
-            <li className="ruling" key={rule.title}>
+            <li
+              className="ruling reveal"
+              key={rule.title}
+              style={{ "--i": i }}
+            >
               <p className="ruling-no">{String(i + 1).padStart(2, "0")}</p>
 
               <div className="ruling-body">
@@ -83,10 +100,14 @@ export default function LobbyRulesPage() {
           ))}
         </ol>
 
-        <p className="rules-foot">
-          Anything not covered here is settled on the day by the organisers, the
-          umpires and both captains — the same three, together, as in rule 04.
-        </p>
+        {/* The last word, and the largest thing on the page after the title:
+            everything above is a starting point. */}
+        <section className="rules-close reveal">
+          <p className="rules-close-lead display">
+            {SEASON_4_RULES_CLOSING.lead}
+          </p>
+          <p className="rules-close-body">{SEASON_4_RULES_CLOSING.body}</p>
+        </section>
       </div>
     </LobbySub>
   );

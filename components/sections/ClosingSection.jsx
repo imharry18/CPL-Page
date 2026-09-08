@@ -16,7 +16,7 @@ export default function ClosingSection({ dates }) {
 
       <p className="lede reveal" style={{ "--delay": "0.2s" }}>
         Entries are closed. Teams, the auction on {dates[0].day}{" "}
-        {dates[0].month}, the full twelve-match day, the player pool and the
+        {dates[0].month}, the full fourteen-match day, the player pool and the
         fee are all in one place.
       </p>
 

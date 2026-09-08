@@ -10,83 +10,114 @@
  */
 export const SEASON_4_RULES = [
   {
-    title: "The umpire's word stands",
+    title: "The umpire's word is final",
     body:
-      "No arguing with the umpire. Raise a concern through your captain — never by surrounding the umpire.",
+      "Do not argue with an umpire. If you think something is wrong, your captain says so — nobody else, and never by crowding round.",
   },
   {
-    title: "Decisions can be reviewed — by umpires only",
+    title: "Only umpires change a decision",
     body:
-      "A decision may be changed, but only by the umpires conferring between themselves against the rulebook. If the batting side, the bowling side, or any other team interferes while that is happening, it becomes a penalty.",
+      "Umpires may talk it over between themselves and change a call. While they are deciding, everybody else stays quiet — batting side, bowling side, and anyone watching. Interrupting them is a penalty.",
   },
   {
-    title: "Penalties are not open to objection",
+    title: "A penalty is final once it is given",
     body:
-      "Once a penalty is awarded it is final. A penalty is set as n, where n is 1, 2 or 3, and is served in one of these forms:",
+      "Anyone may ask for one — an umpire, the committee, a player on the field, or another team. The organisers, the umpires and both captains decide it together. After that it is not up for discussion. A penalty is 1, 2 or 3 units, and is served one of three ways:",
     points: [
-      "The bowling side bowls n extra balls",
-      "The batting side receives n fewer balls",
-      "n × 2 runs awarded to the opposition, or n × 2 runs deducted",
+      "The bowling side bowls that many extra balls",
+      "The batting side gets that many fewer balls",
+      "Two runs a unit, given to the other side or taken off yours",
     ],
   },
   {
-    title: "Who can raise a penalty",
+    title: "Every match is filmed",
     body:
-      "Umpires, the committee, any player on the field, or any other team may raise one. It is decided by the organisers, the umpires and both captains together.",
+      "All of it goes out live on YouTube. If you think a run has been given wrongly, say so at any time — the video settles it.",
   },
   {
-    title: "Everything is on record",
+    title: "Ten players a side",
     body:
-      "Every match is streamed live on YouTube. If you believe a run has been scored wrongly, you may query it at any time — the footage settles it.",
+      "Captain and vice captain are two of the ten. A side that has ten is full.",
   },
   {
-    title: "Fights carry a team punishment",
+    title: "Nobody bowls more than two overs",
     body:
-      "No fighting during matches. Captains are responsible for pulling their own players back.",
-    emphasis: "One person's mistake can disqualify the entire team.",
+      "In a seven-over match, two bowlers bowl two overs each and three bowlers bowl one each. In a six-over match, two bowlers bowl two each and two bowlers bowl one each.",
+    emphasis: "Five bowlers in a seven-over game, four in a six.",
   },
   {
-    title: "Sledging — hard, but clean",
+    title: "Fourteen matches, all in one day",
     body:
-      "Sledging is allowed, and allowed to be sharp. The limits are absolute:",
+      "Eight sides, and every round after the first is seeded on the points table — so how you finish one round decides who you meet in the next.",
     points: [
-      "Sledge the player, not personally",
-      "No physical contact and no physical intimidation",
+      "Openers — 4 matches, the draw made on the night",
+      "Reckoning — 4 matches: 1st plays 2nd, 3rd plays 4th, and so on down",
+      "Last Stand — 2 matches: the top two are through, the bottom two are out, and the middle four cross over for the last places",
+      "Fantastic 4 — Qualifier 1, Eliminator, Qualifier 2, and the Final",
+    ],
+    emphasis: "Nothing is fixed in advance except the first four. The table decides the rest.",
+  },
+  {
+    title: "The squad you win is the squad you play",
+    body:
+      "The list at the end of the auction is the final list. No players added afterwards, no swaps, no trades — whoever you bought is who you have.",
+  },
+  {
+    title: "There are no automatic outs",
+    body:
+      "No local rules. Nothing like \u201cover that wall is out\u201d, \u201cone hand one bounce\u201d, or \u201cwhere the ball lands decides it\u201d. Only the laws of cricket, and only the umpire, give a batter out.",
+  },
+  {
+    title: "No fighting, ever",
+    body:
+      "Captains pull their own players back before it starts. There is no version of this that ends well for your side.",
+    emphasis: "One player losing his temper can disqualify the whole team.",
+  },
+  {
+    title: "Sledge the cricket, not the person",
+    body:
+      "Talk as much as you like, and make it sharp. Three lines you do not cross:",
+    points: [
+      "Nothing personal — play the batter, not the man",
       "Nothing about anyone's family",
+      "No pushing, no blocking, no hand laid on anyone",
     ],
   },
   {
-    title: "The batting side runs water and fetches the ball",
-    body: "While your side is batting, these are yours to handle:",
+    title: "The batting side looks after the ground",
+    body: "While your side is batting, these are yours:",
     points: [
       "Water for both teams",
       "Looking after the match ball",
-      "Chasing down every six",
+      "Fetching every six",
     ],
   },
   {
-    title: "Health comes before the tournament",
+    title: "Your health comes first",
     body:
-      "Nothing here is worth an injury. Run hard, but keep your head — don't collide, don't get hit, don't play through something serious.",
-    emphasis: "Your health matters more than any match.",
+      "Play hard, but do not get hurt for a match. Do not run into each other, and do not play on through anything serious.",
+    emphasis: "No game here is worth an injury.",
   },
   {
-    title: "Leave the place better than you found it",
+    title: "Leave it better than you found it",
     body:
-      "Build a good atmosphere. Make sure everyone enjoys it.",
+      "Make it a good day for everybody who turns up, not only for whoever wins.",
     emphasis: "Nobody gets left out.",
-  },,
+  },
 ];
 
 /**
- * The auction's own conditions, shown under their own heading after the
- * playing rules.
+ * The last word on the page, and set as large as the title.
  *
- * Every figure here is enforced by the auction itself — the purse, the squad
- * cap and the raise are in lib/auctionMoney.js, not just written down. If one
- * changes there, change it here too: a rule the room reads and a rule the
- * console applies must not disagree.
+ * It matters more than any single rule above it: everything here is a starting
+ * point, and the captains have a say in what it becomes.
  */
+export const SEASON_4_RULES_CLOSING = {
+  lead: "These rules are not fixed.",
+  body:
+    "More can be added, and any of them can change — before the tournament, or on the day if the conditions call for it. Nothing changes without the captains being asked first.",
+};
+
 export const SEASON_4_AUCTION_RULES = [
   {
     title: "Every side has ₹100 crore",
