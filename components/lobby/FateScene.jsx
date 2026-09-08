@@ -29,9 +29,14 @@ const CARD_H = 1.15;
    it is wider than the two it replaces and carries everything at once —
    the crest on the left, the side and the name it drew up the middle, and the
    player's own face on the right. */
-const RESULT_W = 5.4;
+/* Wider than it was, and deliberately so. The box height is fixed by having
+   to fit four rows in one frustum, and the width follows the height through
+   this ratio — so the only way to use the space left and right of the board
+   was to make the artwork itself wider. The middle grew with it, which is
+   where the two names live, so they are set larger as well. */
+const RESULT_W = 6.94;
 const RESULT_H = 1.45;
-const RTEX_W = 1400;
+const RTEX_W = 1800;
 const RTEX_H = 376;
 
 /* The world-space height the camera takes in at the cards' depth, and the
@@ -260,17 +265,17 @@ function resultTexture({ side, player, crest, photo, colour, colourLit }) {
   c.shadowBlur = 12;
 
   c.fillStyle = "#f4f0e6";
-  fit(side, 700, 54);
+  fit(side, 700, 62);
   c.fillText(side, x, RTEX_H / 2 - 74);
 
   c.shadowBlur = 0;
   c.fillStyle = tint(colourLit, 0.95);
-  c.font = "500 26px ui-monospace, monospace";
+  c.font = "500 30px ui-monospace, monospace";
   c.fillText("VICE CAPTAIN", x, RTEX_H / 2);
 
   c.shadowBlur = 12;
   c.fillStyle = colourLit;
-  fit(player, 700, 62);
+  fit(player, 700, 72);
   c.fillText(player, x, RTEX_H / 2 + 74);
   c.shadowBlur = 0;
 
@@ -392,18 +397,16 @@ export default function FateScene({ sides, players, phase, pairs }) {
     floor.renderOrder = -3;
     scene.add(floor);
 
-    // Fades the far end out, so the grid ends in distance rather than an edge.
-    const hazeGeo = new THREE.PlaneGeometry(GRID_COLS * GRID_STEP, 9);
-    const hazeMat = new THREE.MeshBasicMaterial({
-      color: "#07090a",
-      transparent: true,
-      opacity: 0.72,
-      depthWrite: false,
-    });
-    const haze = new THREE.Mesh(hazeGeo, hazeMat);
-    haze.position.set(0, -1.6, -GRID_ROWS * GRID_STEP + 6);
-    haze.renderOrder = -2;
-    scene.add(haze);
+    /* The far end of the grid is faded by fog rather than by a dark plane
+       standing in front of it. The plane worked, but it was a rectangle: 48
+       units by 9, and its edges landed on screen as a faint black box hanging
+       in the middle of the scene. Fog has no edges, costs nothing, and fades
+       the warp streaks into the distance for free.
+
+       Tuned to start well behind the cards — they sit within ten units of the
+       camera and the fog does not begin until twenty-six, so nothing the room
+       is meant to read is ever touched by it. */
+    scene.fog = new THREE.Fog(0x07090a, 26, 54);
 
     // ---- warp ------------------------------------------------------------
     const WARP = 220;
@@ -437,6 +440,53 @@ export default function FateScene({ sides, players, phase, pairs }) {
     warp.renderOrder = -3;
     scene.add(warp);
 
+    /* Where the eight results stand, measured from the camera rather than
+       fixed.
+
+       The board is two columns of four, and it should fill the screen it is
+       given — a hard-coded spacing that looks right on a wide share leaves a
+       margin on a projector and runs off the edge on a narrow window. So the
+       frame is measured at the plane the boxes stand on, the boxes are made as
+       large as fit inside it with a real gap between them, and the plane's own
+       proportions are kept so the artwork on it never stretches. */
+    const RESULT_RATIO = RESULT_W / RESULT_H;
+    /* Four rows have to share one frustum, so the box height and the gap
+       between rows come out of the same budget. The old board spent almost a
+       quarter of the height on margin and left a tenth of a unit between the
+       boxes, which is why they read as one block. Nearly all of the margin is
+       given back: the gap is five times what it was and the boxes are larger
+       with it. */
+    const GAP_X = 0.5;
+    const GAP_Y = 0.5;
+    const EDGE = 0.15;
+    const grid = { w: RESULT_W, h: RESULT_H, stepX: 6, stepY: 1.55 };
+
+    function measureGrid() {
+      // Half the world the camera takes in, at the depth the boxes sit.
+      const dist = camera.position.length();
+      const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * dist;
+      const halfW = halfH * camera.aspect;
+
+      // As wide as two columns and a gap will allow.
+      let w = (halfW * 2 - EDGE * 2 - GAP_X) / 2;
+      let h = w / RESULT_RATIO;
+
+      // ...unless four rows of that height would not fit, in which case the
+      // height decides and the width follows it.
+      const tall = h * 4 + GAP_Y * 3;
+      const room = halfH * 2 - EDGE * 2;
+      if (tall > room) {
+        h = (room - GAP_Y * 3) / 4;
+        w = h * RESULT_RATIO;
+      }
+
+      grid.w = w;
+      grid.h = h;
+      grid.stepX = w + GAP_X;
+      grid.stepY = h + GAP_Y;
+    }
+    measureGrid();
+
     let scroll = 0;
     let warpPull = 0;
 
@@ -457,7 +507,7 @@ export default function FateScene({ sides, players, phase, pairs }) {
         /* Travel towards the camera and wrap round behind, so it never empties.
            The modulo has to be forced positive: JavaScript keeps the sign of
            the dividend, so while (z + t·speed) is still negative this wrapped
-           to as far back as z -100 — behind the haze, invisible — and the
+           to as far back as z -100 — deep in the fog, invisible — and the
            field only filled in after the first few seconds. */
         const SPAN = 58;
         const travel = ((((z + t * (3 + warpPull * 60)) % SPAN) + SPAN) % SPAN) - 50;
@@ -604,13 +654,20 @@ export default function FateScene({ sides, players, phase, pairs }) {
            camera's own height. Hanging the four rows off 1.05 instead put the
            top one at +4.10 against a ceiling of +4.04 and ate the first pair.
            Centred here they run +3.05 to -3.05, a metre inside on both sides. */
-        target.set((col - 0.5) * 6.0, (1.5 - row) * 1.55, 0);
+        target.set((col - 0.5) * grid.stepX, (1.5 - row) * grid.stepY, 0);
         return target;
       }
 
-      // A result box has nowhere to be until there is a draw. Parked behind.
+      /* A result box has one place and never moves from it. It used to be
+         parked behind the scene until it was wanted, which meant it had to fly
+         forward as it faded up — and if its two cards landed first it became
+         visible while still on the way in, small and sliding. It is invisible
+         until its pair arrives, so standing it in its final spot from the
+         start costs nothing and cannot be seen travelling. */
       if (kind === "result") {
-        target.set(0, 0, -9);
+        const row = index % 4;
+        const col = Math.floor(index / 4);
+        target.set((col - 0.5) * 6.0, (1.5 - row) * 1.55, 0);
         return target;
       }
 
@@ -641,6 +698,10 @@ export default function FateScene({ sides, players, phase, pairs }) {
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      // The result board is sized off the frame, so it is re-measured whenever
+      // the frame changes — otherwise it keeps the proportions of whatever the
+      // window happened to be when the scene was built.
+      measureGrid();
     }
     resize();
     const observer = new ResizeObserver(resize);
@@ -670,7 +731,19 @@ export default function FateScene({ sides, players, phase, pairs }) {
         const mesh = new THREE.Mesh(geometry, material);
         // Always over the two cards it is taking the place of.
         mesh.renderOrder = 1;
-        mesh.userData = { kind: "result", index: i };
+        /* Held on to, so the box can watch the two cards it replaces and wait
+           for the slower of them rather than for the board as a whole. */
+        const playerAt = players.findIndex((p) => p.name === player.name);
+        mesh.userData = {
+          kind: "result",
+          index: i,
+          team: cards.find(
+            (m) => m.userData.kind === "team" && m.userData.index === i
+          ),
+          player: cards.find(
+            (m) => m.userData.kind === "player" && m.userData.index === playerAt
+          ),
+        };
         // Straight to its place rather than easing in from the parking spot
         // behind the camera, which would read as a card flying in backwards.
         mesh.position.copy(place(mesh, 0, 0));
@@ -711,19 +784,15 @@ export default function FateScene({ sides, players, phase, pairs }) {
       /* How far through the landing the pairs are, measured rather than timed:
          the handover happens when the cards have actually arrived, so it can
          never run ahead of the movement on a slow frame. */
-      let arrived = 0;
-      if ((now === "land" || now === "grid") && results.length) {
-        let sum = 0;
-        let n = 0;
-        for (const mesh of cards) {
-          if (mesh.userData.kind !== "team") continue;
-          sum += mesh.position.distanceTo(place(mesh, spin, t));
-          n += 1;
-        }
-        arrived = n
-          ? THREE.MathUtils.clamp(1 - sum / n / 1.8, 0, 1)
-          : 1;
-      }
+      /* Whether the cards are home, asked of each card separately.
+       *
+       * This used to be one number for the whole board, averaged over the side
+       * cards alone — so the boxes faded up on the side cards' progress while
+       * the player cards were still crossing the screen, and for a moment the
+       * room saw eight results AND eight players in two different places. Each
+       * card now gives up its own opacity as IT arrives, and a box waits for
+       * BOTH of its cards before showing at all. */
+      const landing = now === "land" || now === "grid";
 
       for (const mesh of cards) {
         const to = place(mesh, spin, t);
@@ -731,6 +800,10 @@ export default function FateScene({ sides, players, phase, pairs }) {
         // rather than snapping.
         const ease =
           now === "settle" || now === "land" || now === "grid" ? 2.4 : 6;
+        // Measured before the step, against where it is going.
+        mesh.userData.near = landing
+          ? THREE.MathUtils.clamp(1 - mesh.position.distanceTo(to) / 1.6, 0, 1)
+          : 0;
         mesh.position.lerp(to, Math.min(1, dt * ease));
         // Always square to the room: a spinning ring must not turn its
         // lettering away.
@@ -742,7 +815,7 @@ export default function FateScene({ sides, players, phase, pairs }) {
         /* Handed over to the result box as it lands: the two cards give up
            their opacity at exactly the rate the box takes it, in the same
            place, so the swap is a merge and never a cut. */
-        mesh.material.opacity = (0.34 + depth * 0.66) * (1 - arrived);
+        mesh.material.opacity = (0.34 + depth * 0.66) * (1 - mesh.userData.near);
         // Gone, not merely invisible: nothing to sort, nothing to fight with.
         mesh.visible = mesh.material.opacity > 0.01;
         /* In the ready columns the card shrinks to whatever the column can
@@ -762,13 +835,18 @@ export default function FateScene({ sides, players, phase, pairs }) {
         );
       }
 
-      // The result boxes: up as the cards come down, in their place.
+      // The result boxes: up as their own two cards come down, in their place.
       for (const mesh of results) {
         mesh.position.lerp(place(mesh, spin, t), Math.min(1, dt * 3));
         mesh.quaternion.copy(camera.quaternion);
-        mesh.material.opacity = arrived;
-        mesh.visible = arrived > 0.01;
-        const scale = 0.92 + arrived * 0.08;
+        /* The slower of the two. A box that appeared on the side card alone
+           would be standing there while its player was still in the air. */
+        const { team, player } = mesh.userData;
+        const shown = Math.min(team?.userData.near ?? 0, player?.userData.near ?? 0);
+        mesh.material.opacity = shown;
+        mesh.visible = shown > 0.01;
+        // Scaled to whatever the frame turned out to hold, not to a constant.
+        const scale = (grid.w / RESULT_W) * (0.92 + shown * 0.08);
         mesh.scale.setScalar(
           mesh.scale.x + (scale - mesh.scale.x) * Math.min(1, dt * 6)
         );
@@ -779,6 +857,15 @@ export default function FateScene({ sides, players, phase, pairs }) {
       backdrop(dt, t, THREE.MathUtils.clamp(speed / 5.4, 0, 1));
 
       renderer.render(scene, camera);
+    }
+
+    /* A hook for stepping the loop by hand.
+       The preview pane can be collapsed, and a collapsed pane suspends
+       requestAnimationFrame — so without this there is no way to watch the
+       landing from outside the browser. Dev only, and it only ever calls the
+       same frame the loop calls. */
+    if (process.env.NODE_ENV !== "production") {
+      window.__fate = { frame, cards, results, scene, camera, renderer };
     }
 
     if (!reduced) frame();
@@ -806,8 +893,6 @@ export default function FateScene({ sides, players, phase, pairs }) {
       textures.forEach((texture) => texture.dispose());
       gridGeo.dispose();
       gridMat.dispose();
-      hazeGeo.dispose();
-      hazeMat.dispose();
       warpGeo.dispose();
       warpMat.dispose();
       renderer.dispose();
