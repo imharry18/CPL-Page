@@ -308,6 +308,25 @@ function resultTexture({ side, player, crest, photo, colour, colourLit }) {
 
 export default function FateScene({ sides, players, phase, pairs }) {
   const host = useRef(null);
+
+  /* What the scene is built FROM, as a string.
+   *
+   * The scene is expensive to build — sixteen canvas textures and sixteen
+   * images — so it must only be rebuilt when the cast actually changes. Keying
+   * the effect on the arrays themselves rebuilds it whenever their identity
+   * changes, which is not the same thing at all: saving the draw writes
+   * data/season4Players.json, lib/players.js imports that file, and in
+   * development Next reacts to the write by re-rendering the page and handing
+   * this component freshly-built arrays with identical contents. The scene
+   * then tore itself down and rebuilt in front of the room, a second after the
+   * result had landed, which looked exactly like the draw running again.
+   *
+   * Comparing the contents instead means an unchanged cast is a no-op. */
+  const cast = `${sides
+    .map((side) => `${side.name}|${side.logo}|${side.color}`)
+    .join("~")}::${players
+    .map((player) => `${player.name}|${player.photo}`)
+    .join("~")}`;
   // The loop reads these rather than closing over props, so a phase change
   // never rebuilds the scene. Kept up to date in an effect rather than during
   // render — React 19 rejects the latter, and a frame drawn against the
@@ -460,6 +479,22 @@ export default function FateScene({ sides, players, phase, pairs }) {
     const GAP_Y = 0.5;
     const EDGE = 0.15;
     const grid = { w: RESULT_W, h: RESULT_H, stepX: 6, stepY: 1.55 };
+
+    /* Where pair `at` stands: two columns of four, centred on the origin.
+     *
+     * The camera sits at y 1.1 but LOOKS AT (0,0,0), so it is pitched down and
+     * the band it can see is centred on zero rather than on its own height —
+     * hanging the rows off 1.05 put the top one through the ceiling and ate
+     * the first pair. Spacing comes from the measured grid, and there is ONE
+     * copy of this sum: the side card, the player card and the box that
+     * replaces them cannot disagree about where "there" is, which is exactly
+     * how they came to disagree before. */
+    function slot(at) {
+      const row = at % 4;
+      const col = Math.floor(at / 4);
+      target.set((col - 0.5) * grid.stepX, (1.5 - row) * grid.stepY, 0);
+      return target;
+    }
 
     function measureGrid() {
       // Half the world the camera takes in, at the depth the boxes sit.
@@ -646,30 +681,15 @@ export default function FateScene({ sides, players, phase, pairs }) {
           target.set(0, 0, -9);
           return target;
         }
-        const row = at % 4;
-        const col = Math.floor(at / 4);
-        /* Centred on the origin, because that is where the camera is pointed.
-           It sits at y 1.1 but LOOKS AT (0,0,0), so it is pitched down and the
-           band it can see on this plane is centred on zero — not on the
-           camera's own height. Hanging the four rows off 1.05 instead put the
-           top one at +4.10 against a ceiling of +4.04 and ate the first pair.
-           Centred here they run +3.05 to -3.05, a metre inside on both sides. */
-        target.set((col - 0.5) * grid.stepX, (1.5 - row) * grid.stepY, 0);
-        return target;
+        return slot(at);
       }
 
-      /* A result box has one place and never moves from it. It used to be
-         parked behind the scene until it was wanted, which meant it had to fly
-         forward as it faded up — and if its two cards landed first it became
-         visible while still on the way in, small and sliding. It is invisible
-         until its pair arrives, so standing it in its final spot from the
-         start costs nothing and cannot be seen travelling. */
-      if (kind === "result") {
-        const row = index % 4;
-        const col = Math.floor(index / 4);
-        target.set((col - 0.5) * 6.0, (1.5 - row) * 1.55, 0);
-        return target;
-      }
+      /* A result box has one place and never moves from it — the same place,
+         asked the same way, whatever phase the board is in. It used to work
+         this out from its own hardcoded spacing while the branch above used
+         the measured grid, so the box stood in one spot during the settle and
+         another during the landing, and visibly crept between the two. */
+      if (kind === "result") return slot(index);
 
       // spin and settle: two rings, turning against each other.
       const radius = kind === "team" ? 6.6 : 3.5;
@@ -800,10 +820,8 @@ export default function FateScene({ sides, players, phase, pairs }) {
         // rather than snapping.
         const ease =
           now === "settle" || now === "land" || now === "grid" ? 2.4 : 6;
-        // Measured before the step, against where it is going.
-        mesh.userData.near = landing
-          ? THREE.MathUtils.clamp(1 - mesh.position.distanceTo(to) / 1.6, 0, 1)
-          : 0;
+        // How far it still has to go, measured before the step.
+        mesh.userData.away = landing ? mesh.position.distanceTo(to) : 99;
         mesh.position.lerp(to, Math.min(1, dt * ease));
         // Always square to the room: a spinning ring must not turn its
         // lettering away.
@@ -815,7 +833,16 @@ export default function FateScene({ sides, players, phase, pairs }) {
         /* Handed over to the result box as it lands: the two cards give up
            their opacity at exactly the rate the box takes it, in the same
            place, so the swap is a merge and never a cut. */
-        mesh.material.opacity = (0.34 + depth * 0.66) * (1 - mesh.userData.near);
+        /* Gone BEFORE it arrives, not as it arrives.
+           A card and the box that replaces it carry the same name in different
+           places, so any moment where both are on screen reads as the name
+           printed twice and sliding. The card is therefore fully out by the
+           time it is a metre from home, and the box does not start until then
+           — the two never share the screen. */
+        const HAND_OVER = 1;
+        mesh.material.opacity =
+          (0.34 + depth * 0.66) *
+          THREE.MathUtils.clamp((mesh.userData.away - HAND_OVER) / 1.1, 0, 1);
         // Gone, not merely invisible: nothing to sort, nothing to fight with.
         mesh.visible = mesh.material.opacity > 0.01;
         /* In the ready columns the card shrinks to whatever the column can
@@ -839,10 +866,13 @@ export default function FateScene({ sides, players, phase, pairs }) {
       for (const mesh of results) {
         mesh.position.lerp(place(mesh, spin, t), Math.min(1, dt * 3));
         mesh.quaternion.copy(camera.quaternion);
-        /* The slower of the two. A box that appeared on the side card alone
-           would be standing there while its player was still in the air. */
+        /* Begins only once BOTH its cards are inside the hand-over distance,
+           where they are already invisible. Waiting on the slower of the two
+           is what stops a box standing here while its player is still in the
+           air; starting where the cards end is what stops the doubled name. */
         const { team, player } = mesh.userData;
-        const shown = Math.min(team?.userData.near ?? 0, player?.userData.near ?? 0);
+        const away = Math.max(team?.userData.away ?? 99, player?.userData.away ?? 99);
+        const shown = THREE.MathUtils.clamp((1 - away) / 0.8, 0, 1);
         mesh.material.opacity = shown;
         mesh.visible = shown > 0.01;
         // Scaled to whatever the frame turned out to hold, not to a constant.
@@ -898,7 +928,10 @@ export default function FateScene({ sides, players, phase, pairs }) {
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [sides, players]);
+    // Built from `cast`: the arrays are read inside, but a change of identity
+    // without a change of contents must not rebuild the scene.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cast]);
 
   return <div className="fate-canvas" ref={host} aria-hidden="true" />;
 }
