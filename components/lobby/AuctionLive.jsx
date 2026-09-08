@@ -448,8 +448,12 @@ export default function AuctionLive({
         const here = now.state.review ?? now.state.current;
         const at = line.indexOf(here);
         const step = event.key === "ArrowRight" ? 1 : -1;
-        // Wraps, so the end of the order is not a dead end mid-auction.
-        const to = at === -1 ? 0 : (at + step + line.length) % line.length;
+        /* The order has two ends and the arrows stop at them. It used to wrap,
+           which meant a left press on the first name threw the board to the
+           sixty-first — the room watching the auction jump to the end of the
+           night because somebody pressed a key one time too many. */
+        const to = at === -1 ? 0 : at + step;
+        if (to < 0 || to >= line.length) return;
         const name = line[to];
         if (name === here) return;
         send(
