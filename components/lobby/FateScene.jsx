@@ -757,9 +757,13 @@ export default function FateScene({ sides, players, phase, pairs }) {
       const h = window.innerHeight;
       if (!w || !h) return;
 
-      // The height the composition was tuned at: the arena, the first time we
-      // are measured. Everything after is judged against it.
-      const arena = mount.getBoundingClientRect();
+      /* The ARENA, not the canvas.
+         The canvas is fixed to the viewport, so measuring it gives the window
+         back and the compensation below cancels itself out — which is exactly
+         what happened: the world stayed the size it was while the canvas grew,
+         and every card rendered half again as large, over the title. The arena
+         is the parent, and it is still the box the composition belongs in. */
+      const arena = (mount.parentElement ?? mount).getBoundingClientRect();
       if (!REF_PX) REF_PX = arena.height || h;
 
       renderer.setSize(w, h, false);
