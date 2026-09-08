@@ -5825,6 +5825,9 @@ button.rail-side:disabled {
   position: fixed;
   inset: 0;
   z-index: 0;
+  /* Fixed over the whole viewport, it sat on top of the lobby bar and ate the
+     click on "Lobby". It is scenery — it never needs a pointer. */
+  pointer-events: none;
 }
 .fate-canvas canvas {
   display: block;
