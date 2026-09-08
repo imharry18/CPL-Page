@@ -129,9 +129,9 @@ export const SEASON_4_AUCTION_RULES = [
       "Players are called in the order the list holds, and it calls itself — nobody chooses who comes next once the auction has started.",
   },
   {
-    title: "Unsold players get a second call",
+    title: "Unsold players get two more calls",
     body:
-      "A player nobody bids for is not out. Once the list has been worked through, every unsold player is called again in a second round.",
+      "A player nobody bids for is not out. Once the running order has been worked through, every unsold player is called again in the Recall, and once more after that in Last Chance.",
     emphasis: "Going unsold the first time costs you nothing.",
   },
   {

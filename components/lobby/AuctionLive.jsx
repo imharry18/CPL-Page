@@ -584,7 +584,7 @@ export default function AuctionLive({
         /* The pause between two rounds. Everything the auction knows is held
            back so the room has one thing to read. */
         <div className="interlude">
-          <p className="interlude-tag num">Round {roundName(round)}</p>
+          <p className="interlude-tag num">{roundName(round)}</p>
           <h2 className="interlude-line display">
             Now it&rsquo;s the unsold players&rsquo; turn
           </h2>
@@ -660,7 +660,7 @@ export default function AuctionLive({
            still need. */
         <div className="interlude">
           <p className="interlude-tag num">
-            Round {roundName(round)} complete
+            {roundName(round)} complete
           </p>
           <h2 className="interlude-line display">
             {reoffer.length} went unsold
@@ -680,7 +680,7 @@ export default function AuctionLive({
                 send({ action: "notice", notice: "unsold", pass: round + 1 })
               }
             >
-              Next: round {roundName(round + 1)}
+              Next: {roundName(round + 1)}
             </button>
           )}
         </div>
@@ -879,7 +879,7 @@ export default function AuctionLive({
             text={state.unsold.name}
           />
           <p className="sold-to num">No bids</p>
-          <p className="sold-note num">He comes back in the second round</p>
+          <p className="sold-note num">He comes back in the {roundName(round + 1)}</p>
           {admin && (
             <button
               type="button"
