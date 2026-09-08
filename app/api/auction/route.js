@@ -165,6 +165,29 @@ async function handle({ action, name, team, notice, names, pass }) {
         [deck[k], deck[swap]] = [deck[swap], deck[k]];
       }
       await writeOrder(deck);
+
+      /* A new order starts at the top of itself.
+       *
+       * The lot on the board used to be left alone, so the name standing there
+       * kept its place while every other name moved around it — a shuffle read
+       * as "38 of 61" because that is where the old lot happened to land. The
+       * lot is cleared instead and the board calls the first name of the new
+       * order, which is what a shuffle means.
+       *
+       * The ledger is not touched: whoever has already been sold stays sold,
+       * and the queue skips them, so a shuffle mid-night still starts at the
+       * first name nobody has bid on.
+       */
+      state.current = null;
+      state.bid = BASE_PRICE;
+      state.leader = null;
+      state.bids = [];
+      state.sold = null;
+      state.unsold = null;
+      state.review = null;
+
+      await writeState(state);
+      publishNow(state);
       return Response.json({ ...state, order: deck });
     }
 
