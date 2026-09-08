@@ -1841,20 +1841,20 @@ img {
 }
 /* The captains' block: eight settled names, read at a glance rather than
    studied, so the rows are shorter than the pool's. */
-.roster.is-tight .player {
+.roster .player {
   padding: 0.45rem 1.25rem;
 }
 /* The side goes beside the name rather than under it, so the row is one line
    deep instead of two. */
-.roster.is-tight .player-id {
+.roster .player-id {
   flex-direction: row;
   align-items: baseline;
   gap: 0.75rem;
 }
-.roster.is-tight .player-id b {
+.roster .player-id b {
   font-size: 0.92rem;
 }
-.roster.is-tight .player-team {
+.roster .player-team {
   margin-top: 0;
 }
 .player-role {
