@@ -37,9 +37,16 @@ const RTEX_H = 376;
 /* The world-space height the camera takes in at the cards' depth, and the
    middle of it. Derived from the camera below (fov 46 at z 9.4, looking from
    y 1.1); kept a little inside the true frustum so the top and bottom cards
-   are not flush against the edge of the screen. */
+   are not flush against the edge of the screen.
+ *
+ * The middle is ZERO, not the camera's own height. The camera stands at y 1.1
+ * but LOOKS AT the origin, so it is pitched down about 7 degrees and the band
+ * it can see on this plane — roughly -4.04 to +4.04 — is centred on the point
+ * it is aimed at. Taking the camera's height as the middle instead put the top
+ * of the column at +4.77 against a ceiling of +4.04, and the first card of
+ * each column was cut in half by the top of the screen. */
 const READY_SPAN = 7.5;
-const READY_MID = 1.05;
+const READY_MID = 0;
 const TEX_W = 1024;
 const TEX_H = 406;
 
@@ -338,12 +345,15 @@ export default function FateScene({ sides, players, phase, pairs }) {
          warp     streaks lying along the line of sight. At rest they are
                   specks; on the spin they stretch into lines, which is the
                   oldest trick there is for saying "fast" and still the best.
-         portal   a ring standing behind the rings of cards, breathing. It
-                  gives the middle of the screen something to be the middle OF
-                  once the countdown is gone.
+       There is deliberately no ring behind the middle. One was tried and
+       taken out: it lives in the scene at a fixed depth while the Believe
+       button is a DOM element centred by the stylesheet, so the two are in
+       different coordinate systems and drift apart at every viewport size.
+       The button draws its own circles, and they are always in the right
+       place.
 
-       All additive and all cheap: two line sets and one ring, no shader, no
-       texture, nothing to load. The draw itself must never drop a frame for
+       All additive and all cheap: two line sets, no shader, no texture,
+       nothing to load. The draw itself must never drop a frame for
        decoration, and this is decoration.
        --------------------------------------------------------------------- */
     const HOUSE = new THREE.Color("#c8102e");
@@ -368,9 +378,12 @@ export default function FateScene({ sides, players, phase, pairs }) {
       new THREE.Float32BufferAttribute(gridPts, 3)
     );
     const gridMat = new THREE.LineBasicMaterial({
-      color: HOUSE,
+      /* The lit red rather than the house red: at this opacity, over black,
+         the darker one barely separated from the background and the floor
+         read as a smudge instead of a grid. */
+      color: new THREE.Color("#ff5a6e"),
       transparent: true,
-      opacity: 0.16,
+      opacity: 0.34,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
@@ -384,7 +397,7 @@ export default function FateScene({ sides, players, phase, pairs }) {
     const hazeMat = new THREE.MeshBasicMaterial({
       color: "#07090a",
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.72,
       depthWrite: false,
     });
     const haze = new THREE.Mesh(hazeGeo, hazeMat);
@@ -424,21 +437,6 @@ export default function FateScene({ sides, players, phase, pairs }) {
     warp.renderOrder = -3;
     scene.add(warp);
 
-    // ---- portal ----------------------------------------------------------
-    const portalGeo = new THREE.RingGeometry(4.6, 4.72, 128);
-    const portalMat = new THREE.MeshBasicMaterial({
-      color: HOUSE,
-      transparent: true,
-      opacity: 0.3,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-    const portal = new THREE.Mesh(portalGeo, portalMat);
-    portal.position.z = -7;
-    portal.renderOrder = -3;
-    scene.add(portal);
-
     let scroll = 0;
     let warpPull = 0;
 
@@ -447,7 +445,7 @@ export default function FateScene({ sides, players, phase, pairs }) {
       // The floor runs towards the room, faster the harder the rings turn.
       scroll = (scroll + dt * (2.2 + rush * 26)) % GRID_STEP;
       floor.position.z = scroll;
-      gridMat.opacity = 0.16 + rush * 0.22;
+      gridMat.opacity = 0.34 + rush * 0.26;
 
       /* Specks at rest, streaks at speed. Only the far end of each segment is
          moved, so a line grows backwards out of a point rather than sliding. */
@@ -469,11 +467,6 @@ export default function FateScene({ sides, players, phase, pairs }) {
       warpGeo.attributes.position.needsUpdate = true;
       warpMat.opacity = 0.1 + warpPull * 0.55;
 
-      // The portal breathes at rest and opens up as the rings wind on.
-      const breath = 1 + Math.sin(t * 0.9) * 0.02;
-      portal.scale.setScalar(breath * (1 + rush * 0.16));
-      portalMat.opacity = 0.3 + rush * 0.35;
-      portal.rotation.z = t * 0.06;
     }
 
     const cards = [];
@@ -817,8 +810,6 @@ export default function FateScene({ sides, players, phase, pairs }) {
       hazeMat.dispose();
       warpGeo.dispose();
       warpMat.dispose();
-      portalGeo.dispose();
-      portalMat.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
