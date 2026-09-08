@@ -270,6 +270,19 @@ export default function AuctionLive({
   // the cap, so there is nothing to check for here.
   const reoffer = queueFor({ order, history: state.history, pass: round + 1 });
   const roundOver = navQueue.length === 0;
+
+  /* Where this lot stands in the round being called.
+     Counted against the round's OWN list, not the night's: in the first round
+     that is the running order, and afterwards it is however many went unsold
+     and are owed another call — so "04 of 12" in a later round means the
+     fourth of twelve unsold, which is the number the room actually wants. */
+  const placeInRound = navQueue.indexOf(state.current);
+  const roundTotal =
+    navQueue.length + state.history.filter((s) => (s.pass ?? 1) === round).length;
+  const calledSoFar =
+    placeInRound >= 0
+      ? roundTotal - navQueue.length + placeInRound + 1
+      : roundTotal - navQueue.length;
   const nextRoundReady = roundOver && reoffer.length > 0;
   // Nobody left to call in this round, and nobody owed another one.
   const complete = roundOver && reoffer.length === 0;
@@ -589,7 +602,15 @@ export default function AuctionLive({
           </div>
 
           <div className="live-who">
-            <p className="lot-tag num">Under the hammer</p>
+            <p className="lot-tag num">
+              Under the hammer
+              {roundTotal > 0 && (
+                <span className="lot-count">
+                  {String(calledSoFar).padStart(2, "0")} of {roundTotal}
+                  {round > 1 && " unsold"}
+                </span>
+              )}
+            </p>
             {/* Keyed to the name so every new lot runs the characters again
                 rather than the text simply swapping under the room's eyes. */}
             <Decode
