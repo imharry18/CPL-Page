@@ -556,7 +556,11 @@ export default function AuctionLive({
       </section>
 
     <div
-      className={`stage${theme ? " is-themed" : ""}`}
+      /* While a sale or an unsold call is being announced the board goes quiet
+         behind it — see .stage.is-announcing. */
+      className={`stage${theme ? " is-themed" : ""}${
+        announcing ? " is-announcing" : ""
+      }`}
       style={
         theme ? { "--team": theme.color, "--team-lit": theme.colorLit } : undefined
       }

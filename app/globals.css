@@ -5116,11 +5116,15 @@ button.rail-side:disabled {
   );
   animation: sold-in 0.35s var(--ease-out) both;
 }
-/* Centred over the board, not over the window. The rail owns the right-hand
-   column all night, and a name centred on the viewport ran underneath it. */
+/* Centred on the screen, and still clear of the rail.
+   Padding the right alone kept the name off the rail but moved the whole
+   announcement — name, side and price — visibly left of centre. The same
+   padding on BOTH sides keeps that clearance and puts the block back in the
+   middle of the screen, which is where a result being read to a room belongs;
+   the space it gives up on the left is empty anyway. */
 @media (min-width: 901px) {
   .sold {
-    padding-right: calc(clamp(1rem, 4vh, 3rem) + clamp(8rem, 14vw, 12rem));
+    padding-inline: calc(clamp(1rem, 4vh, 3rem) + clamp(8rem, 14vw, 12rem));
   }
 }
 /* Sized against the viewport height as well as its width: the stamp shares the
@@ -5183,9 +5187,10 @@ button.rail-side:disabled {
   color: var(--team-lit);
 }
 .sold-price {
+  position: relative;
   display: flex;
   align-items: baseline;
-  gap: 0.6rem;
+  justify-content: center;
   margin-top: clamp(0.5rem, 2vh, 1.5rem);
   font-size: min(clamp(1.8rem, 1rem + 4vw, 4.6rem), 10vh);
   line-height: 1;
@@ -5200,10 +5205,18 @@ button.rail-side:disabled {
 .sold-team.is-longest {
   --fit: 0.62;
 }
+/* Hung off the left of the figure rather than sitting in the line with it.
+   In the flow, "for" was counted in the centring and pushed the price itself
+   right of the name above it — the one line on the card that has to line up
+   with the others. Out of the flow, the figure centres on its own. */
 .sold-price-tag {
+  position: absolute;
+  right: 100%;
+  margin-right: 0.6rem;
   font-size: clamp(0.6rem, 0.85vw, 0.8rem);
   letter-spacing: 0.4em;
   text-transform: uppercase;
+  white-space: nowrap;
   color: var(--seam-45);
 }
 
@@ -6884,4 +6897,45 @@ body.has-reticle .reticle-dot {
   padding-left: 0.9em;
   border-left: 1px solid var(--seam-10);
   color: var(--seam-45);
+}
+
+
+/* The announcement is the whole screen.
+
+   The stamp is laid over the board rather than replacing it, which is right —
+   but everything underneath was still legible through it: the heading, the
+   eight sides down the right, the run of lots along the foot, the controls.
+   The room ends up reading a name over a price list. Everything but the stamp
+   steps back while a sale or an unsold call is up, and comes back the moment
+   Next is pressed. */
+.stage.is-announcing .stage-title,
+.stage.is-announcing .rail,
+.stage.is-announcing .strip-run,
+.stage.is-announcing .deck,
+.stage.is-announcing .stage-next,
+.stage.is-announcing .stage-board {
+  opacity: 0;
+  /* Nothing behind the stamp can be clicked either — the controls are back a
+     press later, and a mis-hit during the moment is a mis-hit on the night. */
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-out);
+}
+.stage-title,
+.rail,
+.strip-run,
+.deck,
+.stage-next,
+.stage-board {
+  transition: opacity 0.3s var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage.is-announcing .stage-title,
+  .stage.is-announcing .rail,
+  .stage.is-announcing .strip-run,
+  .stage.is-announcing .deck,
+  .stage.is-announcing .stage-next,
+  .stage.is-announcing .stage-board {
+    transition: none;
+  }
 }
