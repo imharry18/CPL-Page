@@ -37,7 +37,7 @@ export const metadata = {
   icons: { icon: "/icon-64.png", apple: "/icon-64.png" },
   openGraph: {
     title: "Campus Premier League — Season 4",
-    description: "Same pitch, same ball, same chance. Season 4 auction on 12 September.",
+    description: "Same pitch, same ball, same chance. The Season 4 auction is live.",
     type: "website",
   },
 };

@@ -10,7 +10,7 @@ import { purses, readState } from "@/lib/auction";
 export const metadata = {
   title: "Teams — Season 4, Campus Premier League",
   description:
-    "The eight Season 4 sides. Squads are built from scratch at the auction on 12 September.",
+    "The eight Season 4 sides. Squads are built from scratch at the auction.",
 };
 
 /* Squads and purses come out of the auction ledger, so this page is only ever

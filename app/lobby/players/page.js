@@ -1,8 +1,11 @@
 import Link from "next/link";
 import LobbySub from "@/components/lobby/LobbySub";
 import PlayersBrowser from "@/components/PlayersBrowser";
+import { SEASON_4_ICONIC } from "@/data/season4Iconic";
 import { SEASON_4_SIDES } from "@/data/season4Sides";
-import { REVEAL, SEASON_4 } from "@/lib/cplData";
+import { isAdmin } from "@/lib/admin";
+import { readOrder } from "@/lib/auction";
+import { REVEAL } from "@/lib/cplData";
 import { getPlayers } from "@/lib/players";
 
 /**
@@ -24,7 +27,16 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function PlayersPage() {
-  const { players } = await getPlayers();
+  const [{ players }, order, admin] = await Promise.all([
+    getPlayers(),
+    /* The same file the board calls from, so the order shown here IS the order
+       the room will hear. Shuffling below rewrites it. */
+    readOrder(),
+    /* Shuffling is the auctioneer's, not a visitor's — /api/auction refuses
+       everyone else anyway, so an ungated button would only ever be a button
+       that does nothing. */
+    isAdmin(),
+  ]);
 
   return (
     <>
@@ -45,11 +57,16 @@ export default async function PlayersPage() {
           <p className="lede players-lede">
             {players.length} in the hat — everyone who entered before the
             deadline. Skill ratings are the players’ own, from the entry form;
-            the auction on {SEASON_4[0].day} {SEASON_4[0].month} decides who
-            ends up where.
+            the auction decides who ends up where.
           </p>
 
-          <PlayersBrowser players={players} sides={SEASON_4_SIDES} />
+          <PlayersBrowser
+            players={players}
+            sides={SEASON_4_SIDES}
+            iconic={SEASON_4_ICONIC}
+            order={order}
+            admin={admin}
+          />
 
           <p className="players-back">
             <Link className="btn" href="/lobby">

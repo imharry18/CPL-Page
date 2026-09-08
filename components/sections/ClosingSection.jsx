@@ -15,9 +15,8 @@ export default function ClosingSection({ dates }) {
       </h2>
 
       <p className="lede reveal" style={{ "--delay": "0.2s" }}>
-        Entries are closed. Teams, the auction on {dates[0].day}{" "}
-        {dates[0].month}, the full fourteen-match day, the player pool and the
-        fee are all in one place.
+        Entries are closed. Teams, the auction, the full fourteen-match day,
+        the player pool and the fee are all in one place.
       </p>
 
       <div className="register-actions reveal" style={{ "--delay": "0.3s" }}>

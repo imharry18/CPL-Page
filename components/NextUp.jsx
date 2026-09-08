@@ -36,6 +36,20 @@ const getServerToday = () => null;
 export default function NextUp({ dates }) {
   const today = useSyncExternalStore(subscribe, getToday, getServerToday);
 
+  /* The night itself. Answered before the clock is asked, so the server and
+     the browser agree without a hydration pass — and because counting down to
+     something already happening reads as a mistake. */
+  const live = dates.find((date) => date.live);
+  if (live) {
+    return (
+      <p className="nextup">
+        <span className="nextup-label">Now on</span>
+        <span className="nextup-event">{live.label}</span>
+        <span className="nextup-when">Live</span>
+      </p>
+    );
+  }
+
   // Server render and first hydration pass: show the first date with no
   // countdown, so the layout is identical and nothing jumps.
   const fallback = dates[0];

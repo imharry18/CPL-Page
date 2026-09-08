@@ -49,7 +49,7 @@ export default function Home() {
 
       <Navbar
         sections={SECTIONS}
-        nextDate={`Auction ${SEASON_4[0].day} ${SEASON_4[0].month}`}
+        nextDate="Auction · Live now"
       />
       <RevealOnScroll />
 

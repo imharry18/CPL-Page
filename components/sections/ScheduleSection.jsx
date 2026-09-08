@@ -17,9 +17,11 @@ export default function ScheduleSection({ dates }) {
               key={entry.label}
               style={{ "--delay": `${i * 0.08}s` }}
             >
+              {/* A date that is happening says so instead of counting: the
+                  auction's own line reads "Live · now" on the night. */}
               <p className="date-num">
-                <strong>{entry.day}</strong>
-                <span>{entry.month}</span>
+                <strong>{entry.live ? "Live" : entry.day}</strong>
+                <span>{entry.live ? "now" : entry.month}</span>
               </p>
               <div>
                 <h3 className="date-label">{entry.label}</h3>

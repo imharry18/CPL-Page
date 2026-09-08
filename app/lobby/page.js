@@ -37,8 +37,8 @@ export default async function LobbyPage() {
               <p className="eyebrow">Campus Premier League</p>
               <h1 className="display lobby-title">Season 04</h1>
               <p className="lobby-sub num">
-                Auction {SEASON_4[0].day} {SEASON_4[0].month} · Tournament{" "}
-                {SEASON_4[1].day} {SEASON_4[1].month}
+                Auction live · Tournament {SEASON_4[1].day}{" "}
+                {SEASON_4[1].month}
               </p>
             </div>
 

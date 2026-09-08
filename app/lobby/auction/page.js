@@ -9,7 +9,7 @@ import { getPlayers } from "@/lib/players";
 export const metadata = {
   title: "Auction — Season 4, Campus Premier League",
   description:
-    "The Season 4 auction, live. Every player in the pool goes under the hammer on 12 September.",
+    "The Season 4 auction, live. Every player in the pool goes under the hammer.",
 };
 
 // The board is the state of the room; it must never come from a cache.
