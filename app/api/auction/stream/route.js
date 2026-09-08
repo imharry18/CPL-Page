@@ -1,5 +1,5 @@
 import { subscribe } from "@/lib/auctionBus";
-import { readState } from "@/lib/auction";
+import { readOrder, readState } from "@/lib/auction";
 
 /**
  * The auction state, pushed the instant it changes.
@@ -34,7 +34,7 @@ export async function GET(request) {
 
       // The current state immediately, so a board that connects mid-lot is not
       // blank until something happens.
-      send(await readState());
+      send({ ...(await readState()), order: await readOrder() });
 
       const unsubscribe = subscribe(send);
 
@@ -51,9 +51,17 @@ export async function GET(request) {
          the bus and a direct push never arrives; fs.watch on macOS proved
          just as unreliable across a rename. Reading a small JSON file five
          times a second costs nothing and cannot be defeated by either. */
+      /* The running order rides along with the ledger.
+
+         The board is handed an order when its page renders and then never
+         hears about it again — so a shuffle made from the players page reached
+         the file and the auctioneer's own screen, and left every board that
+         was already open calling the old list. It is small, it changes twice a
+         night, and this poll is already reading a file. */
       let last = null;
       const safety = setInterval(async () => {
-        const state = await readState();
+        const [state, order] = await Promise.all([readState(), readOrder()]);
+        state.order = order;
         const encoded = JSON.stringify(state);
         if (encoded === last) return;
         last = encoded;

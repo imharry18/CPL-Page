@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import SkillMeter from "@/components/SkillMeter";
 import AuctionGuide from "@/components/lobby/AuctionGuide";
@@ -9,8 +16,20 @@ import AuctionStrip from "@/components/lobby/AuctionStrip";
 import Decode from "@/components/lobby/Decode";
 import SquadPopup from "@/components/lobby/SquadPopup";
 import StageFX from "@/components/lobby/StageFX";
-import { SQUAD_MAX, money, nextBid, purses } from "@/lib/auctionMoney";
-import { nextInQueue, outcomes, queueFor, roundName } from "@/lib/auctionQueue";
+import { SQUAD_MAX, SQUAD_MIN, money, nextBid, purses } from "@/lib/auctionMoney";
+import {
+  ROUNDS,
+  nextInQueue,
+  outcomes,
+  queueFor,
+  roundName,
+} from "@/lib/auctionQueue";
+
+/* useLayoutEffect on the client, useEffect on the server. There is no layout
+   to measure during a server render, and React warns if you ask for one. */
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
+
 
 /**
  * The room's view of the auction.
@@ -62,11 +81,16 @@ export default function AuctionLive({
   players,
   initial,
   eyebrow,
-  order = [],
+  order: initialOrder = [],
   admin = false,
   poll = 1500,
 }) {
   const [state, setState] = useState(initial);
+  /* The running order, following the file rather than frozen at page load.
+     A shuffle rewrites data/auctionOrder.json and the stream sends it down
+     with the ledger, so a board that has been open all evening calls the same
+     list as the one it was shuffled on. */
+  const [order, setOrder] = useState(initialOrder);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   // Which side's squad is open, from a right-click on its cell in the rail.
@@ -99,7 +123,9 @@ export default function AuctionLive({
       source.onmessage = (event) => {
         if (!alive) return;
         try {
-          setState(JSON.parse(event.data));
+          const next = JSON.parse(event.data);
+          setState(next);
+          if (Array.isArray(next.order)) setOrder(next.order);
         } catch {
           // A malformed frame is skipped; the next change resends everything.
         }
@@ -270,6 +296,41 @@ export default function AuctionLive({
      Taking the head instead would have the panel and the board naming two
      different players after an out-of-order call. A lot that is not in the
      queue at all (between lots) falls back to the head, as it does there. */
+  /* Can every side still reach the nine?
+   *
+   * SQUAD_MIN has been in the money file since the start and never once read:
+   * the comment beside it says a side short of nine "needs to be told, not
+   * stopped", and nothing told anybody. This is the telling.
+   *
+   * Seats still to fill against players still to be called, counting every
+   * round the night has left rather than only this one — a man unsold now is
+   * still available in the next round, so counting only the current queue
+   * would cry short while there was time.
+   */
+  const squads = useMemo(() => {
+    const needs = sides.map((side) => ({
+      name: side.name,
+      needs: Math.max(0, SQUAD_MIN - (held.get(side.name) ?? 0)),
+    }));
+    const needed = needs.reduce((sum, side) => sum + side.needs, 0);
+
+    // Everyone the night can still put under the hammer, counted once.
+    const callable = new Set();
+    for (let p = round; p <= ROUNDS; p++) {
+      for (const name of queueFor({ order, history: state.history, pass: p })) {
+        callable.add(name);
+      }
+    }
+    if (state.current) callable.add(state.current);
+
+    return {
+      needed,
+      left: callable.size,
+      slack: callable.size - needed,
+      short: needs.filter((side) => side.needs > 0).sort((a, b) => b.needs - a.needs),
+    };
+  }, [sides, held, order, state.history, state.current, round]);
+
   const upcoming = useMemo(() => {
     const at = navQueue.indexOf(state.current);
     return navQueue
@@ -402,26 +463,55 @@ export default function AuctionLive({
      fifth — so the text is measured against the column and the type scaled by
      whatever it is over. Cheap: one read on a change of lot, not per frame. */
   const nameRef = useRef(null);
-  useEffect(() => {
+  /* Before the frame is painted, not after.
+
+     The name is keyed to the lot, so every new lot is a brand new element with
+     no measured size on it yet — it paints at the rough guess in lotFit() and
+     was then snapped to the measured one, which on a long name is a visible
+     jump from 0.68 to 0.48. A layout effect runs after the DOM is built and
+     before the browser draws, so the first frame the room sees is already the
+     right size. */
+  useIsomorphicLayoutEffect(() => {
     const el = nameRef.current;
-    if (!el) return;
+    if (!el) return undefined;
 
-    el.style.setProperty("--fit", "1");
-    const room = el.clientWidth;
-    if (!room) return;
+    const fit = () => {
+      el.style.setProperty("--fit", "1");
+      const room = el.clientWidth;
+      if (!room) return;
 
-    // Width of the name set on a single line, whatever the wrapping would be.
-    const was = el.style.whiteSpace;
-    el.style.whiteSpace = "nowrap";
-    const needs = el.scrollWidth;
-    el.style.whiteSpace = was;
+      // The name is nowrap in CSS, so this is already its one-line width.
+      const needs = el.scrollWidth;
 
-    /* Floored: past a point a name is better allowed to wrap than shrunk to
-       something nobody can read across a hall. Nothing in the pool reaches it. */
-    el.style.setProperty(
-      "--fit",
-      needs > room ? String(Math.max(0.55, room / needs)) : "1"
-    );
+      /* Floored, so a freak entry cannot shrink the name to something nobody
+         can read across a hall. Set below what the pool actually asks for:
+         measured against the board's own column, the tightest name in it —
+         "Shikhar Karengulwar" — needs 0.478, and the next three are 0.489,
+         0.492 and 0.517. At 0.45 every name lands on one line with room to
+         spare, and the smallest of them is still around 40px. */
+      el.style.setProperty(
+        "--fit",
+        needs > room ? String(Math.max(0.45, room / needs)) : "1"
+      );
+    };
+
+    fit();
+
+    /* Measured again once the display face has actually loaded. It is wider
+       than the fallback the first paint uses, so a name measured before it
+       lands is measured too narrow, keeps --fit at 1, and then runs off the
+       side of the card when the real font arrives. */
+    let alive = true;
+    document.fonts?.ready.then(() => {
+      if (alive) fit();
+    });
+
+    // The column is a share of the window, so a resized window is a new fit.
+    window.addEventListener("resize", fit);
+    return () => {
+      alive = false;
+      window.removeEventListener("resize", fit);
+    };
   }, [lot?.name]);
 
   /* Finish with this lot and start the next, in one press and one write.
@@ -850,6 +940,7 @@ export default function AuctionLive({
           sold={soldList}
           unsold={unsoldList}
           upcoming={upcoming}
+          squads={squads}
           onClose={() => setLedgerOpen(false)}
         />
       )}
