@@ -32,7 +32,7 @@ export default async function LobbyPage() {
         <LobbyBar />
 
         <main className="lobby" id="lobby">
-          <div className="lobby-head">
+          <div className="lobby-head lobby-top">
             <div>
               <p className="eyebrow">Campus Premier League</p>
               <h1 className="display lobby-title">Season 04</h1>
