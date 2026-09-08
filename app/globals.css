@@ -4656,16 +4656,22 @@ img {
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--seam);
+  /* One line, always — the type gives instead. Allowing a wrap made the card
+     change height mid-decode, because the scrambled glyphs are wider than the
+     letters they resolve to and a name that just fit would spill onto a second
+     line and back. The measurement below scales it down to fit the column. */
+  white-space: nowrap;
 }
-/* Scaled to the length of the name so it always lands on one line. Measured in
-   the board's own column: fourteen characters fit across at 57px, seventeen at
-   44px, nineteen at 40px. A name that never wraps is what leaves the room for
-   the price below it. */
+/* A first guess at the scale, from the character count alone, used only for
+   the frame before the name can be measured. Kept close to what measurement
+   actually returns for names of that length — the tightest in the pool asks
+   for 0.478 — so that if the measurement is ever late the name is small
+   enough to fit rather than hanging off the side of the card. */
 .live-name.is-long {
-  --fit: 0.76;
+  --fit: 0.62;
 }
 .live-name.is-longest {
-  --fit: 0.68;
+  --fit: 0.5;
 }
 /* The bid is the number the room is watching, so it gets the leading side's
    colour and the largest type on the card. */
@@ -5786,7 +5792,14 @@ button.rail-side:disabled {
 .fate {
   position: relative;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  /* The footer row is a FIXED height, not auto.
+     It carries a one-line hint for most of the draw and a "Draw again" button
+     at the end, and the button is some 25px taller. On `auto` that swap shrank
+     the arena at the exact moment the result landed — which changed the canvas
+     aspect, which re-measured the result board, which slid the eight boxes to
+     new places a beat after they had arrived. The room saw the grid settle and
+     then quietly move again. Reserving the row means the swap costs nothing. */
+  grid-template-rows: minmax(0, 1fr) 3.25rem;
   gap: 1rem;
   min-height: 0;
   height: 100%;
@@ -6018,8 +6031,46 @@ button.rail-side:disabled {
   text-align: center;
   color: var(--seam);
   text-shadow: 0 0 4rem rgba(255, 90, 110, 0.5);
+  font-variant-numeric: tabular-nums;
+  /* Each second arrives rather than appears: struck large and settling, so a
+     room watching from the back reads a countdown and not a changing label.
+     Replayed per tick by keying the element to the number. */
+  animation: fate-tick 0.85s var(--ease-out) both;
+}
+@keyframes fate-tick {
+  0% {
+    opacity: 0;
+    transform: scale(1.5);
+    text-shadow: 0 0 7rem rgba(255, 90, 110, 0.85);
+  }
+  35% { opacity: 1; transform: scale(1); }
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+    text-shadow: 0 0 4rem rgba(255, 90, 110, 0.5);
+  }
+}
+/* The word that replaces the last number. Smaller than the digits, because it
+   is a statement and not a count. */
+.fate-count.is-word {
+  font-size: clamp(1.6rem, min(6vw, 9vh), 4.5rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blood-lit);
+  animation: fate-drawn 0.7s var(--ease-out) both;
+}
+@keyframes fate-drawn {
+  0% { opacity: 0; letter-spacing: 0.5em; }
+  100% { opacity: 1; letter-spacing: 0.16em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fate-count,
+  .fate-count.is-word {
+    animation: none;
+  }
 }
 .fate-hint {
+  align-self: center;
   font-size: 0.62rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -6030,65 +6081,10 @@ button.rail-side:disabled {
 /* ---- the grid ---------------------------------------------------------- */
 /* Four above, four below — the eight sides read as one block rather than a
    list whose length depends on the window. */
-.fate-results {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-rows: repeat(2, auto);
-  gap: 0.75rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  align-content: center;
-  min-height: 0;
-  overflow-y: auto;
-}
-.fate-result {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 0.9rem;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid color-mix(in srgb, var(--team) 45%, transparent);
-  border-left: 3px solid var(--team);
-  background: linear-gradient(
-    100deg,
-    color-mix(in srgb, var(--team) 20%, rgba(12, 17, 16, 0.7)),
-    rgba(12, 17, 16, 0.7) 60%
-  );
-  /* Landing one after another, in the order they were drawn. */
-  animation: fate-land 0.55s var(--ease-out) both;
-  animation-delay: calc(var(--i) * 0.09s);
-}
-.fate-crest {
-  width: clamp(2.6rem, 6vh, 3.6rem);
-  height: clamp(2.6rem, 6vh, 3.6rem);
-  border-radius: 2px;
-  background: var(--seam-06) center / cover no-repeat;
-}
-.fate-said {
-  display: grid;
-  gap: 0.1rem;
-  min-width: 0;
-}
-.fate-team {
-  font-size: clamp(0.95rem, 1.6vw, 1.2rem);
-  line-height: 1.1;
-  color: var(--seam);
-}
-.fate-drew {
-  font-size: 0.5rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--team-lit);
-}
-.fate-player {
-  font-size: clamp(1rem, 1.8vw, 1.35rem);
-  line-height: 1.1;
-  color: var(--team-lit);
-}
 .fate-go.is-again {
   width: auto;
   height: auto;
+  align-self: center;
   background: transparent;
   border: 1px solid var(--seam-22);
   color: var(--seam-70);
@@ -6111,29 +6107,10 @@ button.rail-side:disabled {
   transform: none;
 }
 
-@keyframes fate-land {
-  from { opacity: 0; transform: translateY(1.2rem) scale(0.96); }
-  to { opacity: 1; transform: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .fate-arena.is-spinning .fate-ring,
-  .fate-arena.is-spinning .fate-card,
-  .fate-result {
+  .fate-arena.is-spinning .fate-card {
     animation: none;
-  }
-}
-
-@media (max-width: 1100px) {
-  .fate-results {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(4, auto);
-  }
-}
-@media (max-width: 600px) {
-  .fate-results {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: none;
   }
 }
 
@@ -6494,6 +6471,14 @@ kbd {
 .ledger-price {
   font-size: 0.72rem;
   color: var(--seam);
+}
+
+/* The squad-minimum line. Red only when it has actually become impossible —
+   before that it is a count, not a warning, and a board that cries wolf all
+   night is a board nobody reads. */
+.ledger-count.is-short,
+.ledger-none.is-short {
+  color: var(--blood-lit);
 }
 
 .ledger-next {
