@@ -6939,3 +6939,66 @@ body.has-reticle .reticle-dot {
     transition: none;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   A lot already resolved, looked back at
+
+   Reached by walking left through the order. It is deliberately NOT the sale
+   announcement: that is a moment, this is a record. So it sits in the board
+   rather than over it, the rail and the run stay up beside it, and the stamp
+   is flat and hard rather than landing.
+   -------------------------------------------------------------------------- */
+.past {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0.15rem;
+  padding: clamp(1rem, 3vh, 2rem);
+  border: 1px solid var(--seam-10);
+  border-left: 3px solid var(--team, var(--blood));
+  background: rgba(12, 17, 16, 0.5);
+}
+.past-tag {
+  font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+  letter-spacing: 0.36em;
+  text-indent: 0.36em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+.past-name {
+  margin: 0.2rem 0 0.6rem;
+  font-size: min(clamp(1.6rem, 5vw, 4.5rem), 9svh);
+  line-height: 1;
+  color: var(--seam);
+}
+/* SOLD in the house red, hard and flat — a result, not a celebration. */
+.past-stamp {
+  font-size: min(clamp(2rem, 7vw, 6rem), 13svh);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--blood-lit);
+}
+.past.is-unsold .past-stamp {
+  color: var(--seam-45);
+}
+.past-to {
+  margin: 0.35rem 0;
+  font-size: clamp(0.58rem, 0.85vw, 0.78rem);
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+.past-team {
+  font-size: min(clamp(1.3rem, 4vw, 3.4rem), 7svh);
+  line-height: 1;
+  color: var(--team-lit, var(--seam));
+}
+.past-price {
+  margin-top: 0.4rem;
+  font-size: min(clamp(1.4rem, 4.5vw, 4rem), 8svh);
+  line-height: 1;
+  color: var(--seam);
+}

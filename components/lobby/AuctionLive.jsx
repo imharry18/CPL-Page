@@ -193,6 +193,19 @@ export default function AuctionLive({
   }, []);
 
   const lot = players.find((player) => player.name === state.current);
+
+  /* A lot already resolved that the board is looking back at, and the last
+     word on it. The LAST word: a name unsold in the Opening and bought in the
+     Recall is in the history twice, and the sale is the one that counts. */
+  const review = state.review
+    ? players.find((player) => player.name === state.review)
+    : null;
+  const reviewSale = review
+    ? [...state.history].reverse().find((h) => h.name === review.name) ?? null
+    : null;
+  const reviewSide = reviewSale?.team
+    ? sides.find((side) => side.name === reviewSale.team)
+    : null;
   const leader = sides.find((side) => side.name === state.leader);
   const buyer = sold ? sides.find((side) => side.name === sold.team) : null;
 
@@ -375,6 +388,8 @@ export default function AuctionLive({
       announcing,
       busy,
       queue: navQueue,
+      line: order,
+      resolved: new Set(state.history.map((h) => h.name)),
       advance,
     };
   });
@@ -419,18 +434,30 @@ export default function AuctionLive({
       /* Stepping through the order without calling anyone. Nothing is
          recorded, so a name arrowed past simply comes round again — this is
          for looking ahead, not for skipping a player. */
+      /* Walking the order.
+
+         The WHOLE order, not just the players still to be called: stepping
+         left runs back over lots that have already been sold or passed over,
+         and the room should be able to see what happened to them. A name with
+         a result is shown rather than called — the ledger is not touched and
+         the night carries on from where it was. */
       if ((event.key === "ArrowRight" || event.key === "ArrowLeft") && !meta) {
         if (now.announcing || now.state.notice) return;
-        const queue = now.queue;
-        if (queue.length === 0) return;
+        const line = now.line;
+        if (line.length === 0) return;
         event.preventDefault();
-        const at = queue.indexOf(now.state.current);
+        const here = now.state.review ?? now.state.current;
+        const at = line.indexOf(here);
         const step = event.key === "ArrowRight" ? 1 : -1;
         // Wraps, so the end of the order is not a dead end mid-auction.
-        const to = at === -1 ? 0 : (at + step + queue.length) % queue.length;
-        if (queue[to] !== now.state.current) {
-          send({ action: "lot", name: queue[to] });
-        }
+        const to = at === -1 ? 0 : (at + step + line.length) % line.length;
+        const name = line[to];
+        if (name === here) return;
+        send(
+          now.resolved.has(name)
+            ? { action: "review", name }
+            : { action: "lot", name }
+        );
         return;
       }
 
@@ -539,7 +566,7 @@ export default function AuctionLive({
   // The page's colour: whoever currently holds the bid, the buyer while the
   // stamp is up over a cleared board, the house red when nobody has bid.
   // Leader first — a live bid always outranks a stamp from the lot before.
-  const theme = leader ?? buyer;
+  const theme = leader ?? buyer ?? reviewSide;
 
   return (
     <>
@@ -584,7 +611,35 @@ export default function AuctionLive({
             evaluates to nothing would leave the rail to slide into the wide
             one and stretch across the screen. */}
         <div className="stage-board">
-          {state.notice === "unsold" ? (
+          {review ? (
+            /* A look back, not a lot: what happened to this player, in the
+               colour of whoever bought him. Nothing here can be bid on — the
+               ledger is untouched and the night is still wherever it was. */
+            <div className={`past${reviewSale?.team ? " is-sold" : " is-unsold"}`}>
+              <p className="past-tag num">
+                {reviewSale?.team ? "Already sold" : "Passed over"}
+              </p>
+              <h2 className="past-name display">{review.name}</h2>
+
+              {reviewSale?.team ? (
+                <>
+                  <p className="past-stamp display">Sold</p>
+                  <p className="past-to num">to</p>
+                  <p className="past-team display">{reviewSale.team}</p>
+                  <p className="past-price display">{money(reviewSale.price)}</p>
+                </>
+              ) : (
+                <>
+                  <p className="past-stamp display">Unsold</p>
+                  <p className="past-to num">
+                    {(reviewSale?.pass ?? 1) < ROUNDS
+                      ? `Comes back in the ${roundName((reviewSale?.pass ?? 1) + 1)}`
+                      : "No calls left"}
+                  </p>
+                </>
+              )}
+            </div>
+          ) : state.notice === "unsold" ? (
         /* The pause between two rounds. Everything the auction knows is held
            back so the room has one thing to read. */
         <div className="interlude">

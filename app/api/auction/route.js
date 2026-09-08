@@ -115,6 +115,7 @@ async function handle({ action, name, team, notice, names, pass }) {
           );
         }
       }
+      state.review = null;
       state.current = name ?? null;
       state.bid = BASE_PRICE;
       state.leader = null;
@@ -126,11 +127,23 @@ async function handle({ action, name, team, notice, names, pass }) {
       break;
     }
 
+    /* Look back at a lot already resolved.
+     *
+     * Walking left through the order runs into players who have been sold or
+     * passed over, and the board should be able to show the room what happened
+     * to them — without touching the ledger. This sets a pointer and nothing
+     * else: no history, no bid, no current lot. Anything that actually moves
+     * the night on clears it below. */
+    case "review":
+      state.review = name ?? null;
+      break;
+
     // Clear whichever announcement is up. Pressing Next is the only thing that
     // takes one down, so it lasts as long as the room needs.
     case "next":
       state.sold = null;
       state.unsold = null;
+      state.review = null;
       break;
 
     // Hold a message up to the room instead of a lot. Nothing in the ledger
@@ -259,6 +272,7 @@ async function handle({ action, name, team, notice, names, pass }) {
         );
       }
 
+      state.review = null;
       state.bids = [...(state.bids ?? []), { team, price }];
       state.bid = price;
       state.leader = team;
