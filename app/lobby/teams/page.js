@@ -35,16 +35,16 @@ export default async function LobbyTeamsPage() {
       reveal={REVEAL}
       lock={false}
       fill
+      action={
+        /* The iconic draw. Its own screen, because it takes over the room for
+           ten seconds when it runs. */
+        <Link className="fategrid-link" href="/lobby/fategrid">
+          FateGrid
+          <span aria-hidden="true">→</span>
+        </Link>
+      }
     >
       <div className="side-wrap">
-        <div className="side-top">
-          {/* The iconic draw. Its own screen, because it takes over the room
-              for ten seconds when it runs. */}
-          <Link className="fategrid-link" href="/lobby/fategrid">
-            FateGrid
-            <span aria-hidden="true">→</span>
-          </Link>
-        </div>
 
         <SideGrid sides={table} players={players} paid={paid} />
 

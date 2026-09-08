@@ -18,6 +18,9 @@ export default function LobbySub({
   // A screen with nothing to list says so in one big line instead, and the
   // countdown would only repeat it.
   lock = true,
+  /* Something to put on the right of the heading, where the countdown would
+     otherwise be. The teams page hangs its FateGrid link here. */
+  action = null,
   fill = false,
   // A screen whose heading has to change while you watch it renders its own,
   // and turns this one off — the auction's title follows the leading bidder.
@@ -39,6 +42,7 @@ export default function LobbySub({
             </div>
 
             {lock && <RevealLock reveal={reveal} what={what} />}
+            {!lock && action}
           </div>
         )}
 
