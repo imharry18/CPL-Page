@@ -5757,15 +5757,26 @@ button.rail-side:disabled {
   flex: 1 1 18rem;
   min-width: 0;
 }
+/* The columns hug the cards rather than dividing the width four ways: a
+   portrait card is narrower than a quarter of the screen, so equal columns
+   left the eight scattered with a hand's width between them. */
 .lobby-shell .side-grid {
   flex: 1;
   min-height: 0;
   grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, auto);
+  justify-content: center;
 }
+/* Portrait, even when the page is pinned to the viewport. The card is a
+   poster and a poster is taller than it is wide — so the height comes from
+   the row and the width follows it, rather than the card being stretched to
+   fill a landscape cell. */
 .lobby-shell .side {
-  aspect-ratio: auto;
+  aspect-ratio: 3 / 4;
   height: 100%;
+  width: auto;
   min-height: 0;
+  justify-self: center;
 }
 
 /* Below this the cards would be too squat to read, so the page goes back to

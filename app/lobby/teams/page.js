@@ -28,9 +28,6 @@ export default async function LobbyTeamsPage() {
     state.history.filter((sale) => sale.team).map((sale) => [sale.name, sale.price])
   );
 
-  const named = SEASON_4_SIDES.filter((side) => side.name).length;
-  const left = SEASON_4_SIDES.length - named;
-
   return (
     <LobbySub
       eyebrow="The draw · Eight sides"
@@ -40,24 +37,7 @@ export default async function LobbyTeamsPage() {
       fill
     >
       <div className="side-wrap">
-        {/* Three states, because "8 named, 0 to come" is not a sentence and
-            neither is promising names that have already arrived. */}
         <div className="side-top">
-        <p className="side-lede">
-            {left === 0 ? (
-              <>
-                All eight named. <span className="lit">Squads</span> are drawn at
-                the Live Auction — {REVEAL.date}, {REVEAL.time}.
-              </>
-            ) : (
-              <>
-                {named === 0 ? "Eight sides." : `${named} named, ${left} to come.`}{" "}
-                <span className="lit">Revealed soon</span> at the Live Auction —{" "}
-                {REVEAL.date}, {REVEAL.time}.
-              </>
-            )}
-          </p>
-
           {/* The iconic draw. Its own screen, because it takes over the room
               for ten seconds when it runs. */}
           <Link className="fategrid-link" href="/lobby/fategrid">
