@@ -5818,9 +5818,13 @@ button.rail-side:disabled {
   height: 100%;
 }
 /* The scene fills the stage; the trigger and the count float over its middle. */
+/* The backdrop is the page, not the panel: fixed to the viewport so the floor
+   and the streaks run to every edge. The scene widens its field of view to
+   match, so the cards stay the size they were. */
 .fate-canvas {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: 0;
 }
 .fate-canvas canvas {
   display: block;

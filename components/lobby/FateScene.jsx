@@ -478,7 +478,16 @@ export default function FateScene({ sides, players, phase, pairs }) {
     const GAP_X = 0.5;
     const GAP_Y = 0.5;
     const EDGE = 0.15;
-    const grid = { w: RESULT_W, h: RESULT_H, stepX: 6, stepY: 1.55 };
+    const grid = { w: RESULT_W, h: RESULT_H, stepX: 6, stepY: 1.55, midY: 0 };
+
+    /* The world the screen takes in, and the slice of it the arena occupies.
+       Declared here rather than beside resize() because measureGrid() reads
+       them and runs before resize() does — a `const` further down the file is
+       still in its dead zone at that point, and the scene threw on build. */
+    const REF_HALF_H =
+      Math.tan(THREE.MathUtils.degToRad(46 / 2)) * camera.position.length();
+    let REF_PX = 0;
+    const band = { top: REF_HALF_H, bottom: -REF_HALF_H };
 
     /* Where pair `at` stands: two columns of four, centred on the origin.
      *
@@ -492,7 +501,14 @@ export default function FateScene({ sides, players, phase, pairs }) {
     function slot(at) {
       const row = at % 4;
       const col = Math.floor(at / 4);
-      target.set((col - 0.5) * grid.stepX, (1.5 - row) * grid.stepY, 0);
+      /* Centred on the ARENA, not on the page. The canvas is the whole
+         viewport now, so world zero is the middle of the screen — and the
+         screen has a heading above the arena and a footer below it. */
+      target.set(
+        (col - 0.5) * grid.stepX,
+        grid.midY + (1.5 - row) * grid.stepY,
+        0
+      );
       return target;
     }
 
@@ -501,6 +517,10 @@ export default function FateScene({ sides, players, phase, pairs }) {
       const dist = camera.position.length();
       const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * dist;
       const halfW = halfH * camera.aspect;
+      /* Vertically the board is held to the arena, so it never runs under the
+         title above it or the footer below. Horizontally it has the whole
+         screen, because there is nothing beside it. */
+      const bandH = Math.max(2, (band.top - band.bottom) / 2);
 
       // As wide as two columns and a gap will allow.
       let w = (halfW * 2 - EDGE * 2 - GAP_X) / 2;
@@ -509,7 +529,7 @@ export default function FateScene({ sides, players, phase, pairs }) {
       // ...unless four rows of that height would not fit, in which case the
       // height decides and the width follows it.
       const tall = h * 4 + GAP_Y * 3;
-      const room = halfH * 2 - EDGE * 2;
+      const room = bandH * 2 - EDGE * 2;
       if (tall > room) {
         h = (room - GAP_Y * 3) / 4;
         w = h * RESULT_RATIO;
@@ -519,6 +539,7 @@ export default function FateScene({ sides, players, phase, pairs }) {
       grid.h = h;
       grid.stepX = w + GAP_X;
       grid.stepY = h + GAP_Y;
+      grid.midY = (band.top + band.bottom) / 2;
     }
     measureGrid();
 
@@ -653,9 +674,13 @@ export default function FateScene({ sides, players, phase, pairs }) {
         /* Pushed further apart the more the cards shrink, so the two columns
            clear the trigger in the middle instead of running under it. */
         const spread = 4.4 + (1 - Math.min(1, step / 1.55)) * 1.6;
+        /* Offset onto the arena, like everything else. The canvas is the
+           whole viewport now, so world zero is the middle of the PAGE — and
+           the page has a title above the arena and a footer below it. Without
+           this the columns ride up under the heading. */
         target.set(
           side * spread,
-          READY_MID + ((n - 1) / 2 - index) * step,
+          grid.midY + READY_MID + ((n - 1) / 2 - index) * step,
           Math.sin(t + index) * 0.15
         );
         return target;
@@ -711,19 +736,55 @@ export default function FateScene({ sides, players, phase, pairs }) {
     let speed = 0;
     let raf = 0;
 
+    /* The canvas covers the whole page, but the cards do not.
+
+       The floor and the streaks are the room the draw happens in and they
+       should run to every edge of the screen — a backdrop that stops short of
+       the page is a backdrop with a border. So the canvas is the viewport.
+
+       That alone would blow the composition up: with a fixed vertical field of
+       view, a taller canvas means more pixels for the same world, and every
+       card would arrive half again as large. So the field of view is widened
+       in step with the height, which keeps the world-to-pixel scale constant —
+       the cards stay exactly the size they were, and the extra height is spent
+       on more of the room being visible.
+
+       `band` is the part of that room the result board is allowed to use: the
+       arena's own rectangle, so the eight boxes still sit between the title
+       and the footer rather than under them. */
     function resize() {
-      const w = mount.clientWidth;
-      const h = mount.clientHeight;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
       if (!w || !h) return;
+
+      // The height the composition was tuned at: the arena, the first time we
+      // are measured. Everything after is judged against it.
+      const arena = mount.getBoundingClientRect();
+      if (!REF_PX) REF_PX = arena.height || h;
+
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
+      // World units the screen takes in, grown in proportion to the pixels.
+      const halfH = REF_HALF_H * (h / REF_PX);
+      camera.fov =
+        THREE.MathUtils.radToDeg(
+          2 * Math.atan(halfH / camera.position.length())
+        );
       camera.updateProjectionMatrix();
+
+      /* Where the arena sits inside that world, top and bottom. The canvas is
+         the viewport now, so a pixel on screen maps to a known height here. */
+      const perPx = (halfH * 2) / h;
+      band.top = halfH - arena.top * perPx;
+      band.bottom = halfH - arena.bottom * perPx;
+
       // The result board is sized off the frame, so it is re-measured whenever
       // the frame changes — otherwise it keeps the proportions of whatever the
       // window happened to be when the scene was built.
       measureGrid();
     }
     resize();
+    window.addEventListener("resize", resize);
     const observer = new ResizeObserver(resize);
     observer.observe(mount);
 
@@ -914,6 +975,7 @@ export default function FateScene({ sides, players, phase, pairs }) {
       stopped = true;
       cancelAnimationFrame(raf);
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("resize", resize);
       observer.disconnect();
       clearResults();
       cards.forEach((mesh) => {
