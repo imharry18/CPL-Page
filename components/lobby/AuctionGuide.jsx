@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { ROUNDS } from "@/lib/auctionQueue";
+
 /**
  * Everything the board can do, on one card, behind one button.
  *
@@ -11,7 +13,7 @@ import { useEffect, useRef } from "react";
  * does not deserve permanent space on it. So the night's rare actions live here
  * and the frequent ones are keys.
  */
-export default function AuctionGuide({ onClose, onShuffle, onRestart, busy }) {
+export default function AuctionGuide({ onClose }) {
   const panel = useRef(null);
 
   useEffect(() => {
@@ -94,7 +96,7 @@ export default function AuctionGuide({ onClose, onShuffle, onRestart, busy }) {
                   <kbd>⌘</kbd>
                   <kbd>↵</kbd>
                 </dt>
-                <dd>Unsold. He comes back in the second round.</dd>
+                <dd>Unsold. He comes back in the next round.</dd>
               </div>
             </dl>
           </section>
@@ -156,31 +158,13 @@ export default function AuctionGuide({ onClose, onShuffle, onRestart, busy }) {
             <h3 className="guide-sub num">The night</h3>
             <p className="guide-note">
               Nobody chooses who is next: the running order does, and it calls
-              itself. When the order is exhausted the board offers the unsold
-              round, and after that it says the auction is complete.
+              itself. When a round is exhausted the board offers the players
+              who went unsold in it, up to {ROUNDS} rounds in all. After the
+              last of them it says the auction is complete.
             </p>
           </section>
         </div>
 
-        {/* Twice a night at most, and one of them cannot be undone. */}
-        <footer className="guide-foot">
-          <button
-            type="button"
-            className="deck-btn"
-            disabled={busy}
-            onClick={onShuffle}
-          >
-            Shuffle the order
-          </button>
-          <button
-            type="button"
-            className="deck-btn is-danger"
-            disabled={busy}
-            onClick={onRestart}
-          >
-            Restart the auction
-          </button>
-        </footer>
       </div>
     </div>
   );

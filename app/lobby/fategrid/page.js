@@ -50,6 +50,18 @@ export default async function FateGridPage() {
     console.warn("[fategrid] not in the roster:", missing.join(", "));
   }
 
+  /* The draw as it already stands, read back off the roster rather than kept
+     anywhere of its own: the grid's whole output is eight vice captains, so
+     the allotment IS the record. Handed to the board so a page opened after
+     the draw shows the eight pairs that were settled, not the trigger. */
+  const drawn = SEASON_4_SIDES.map((side) => {
+    const player = iconic.find((one) => {
+      const record = byName.get(one.name);
+      return record?.viceCaptain && record.team === side.name;
+    });
+    return player ? { side: side.name, player: player.name } : null;
+  }).filter(Boolean);
+
   return (
     <LobbySub
       eyebrow="Eight names · Eight sides"
@@ -58,7 +70,12 @@ export default async function FateGridPage() {
       lock={false}
       fill
     >
-      <FateGrid sides={SEASON_4_SIDES} players={iconic} admin={admin} />
+      <FateGrid
+        sides={SEASON_4_SIDES}
+        players={iconic}
+        initial={drawn}
+        admin={admin}
+      />
     </LobbySub>
   );
 }

@@ -95,7 +95,6 @@ export default function AuctionLive({
   const [error, setError] = useState(null);
   // Which side's squad is open, from a right-click on its cell in the rail.
   const [squad, setSquad] = useState(null);
-  const [confirmRestart, setConfirmRestart] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const [ledgerOpen, setLedgerOpen] = useState(false);
 
@@ -1026,55 +1025,9 @@ export default function AuctionLive({
       )}
 
       {guideOpen && (
-        <AuctionGuide
-          busy={busy}
-          onClose={() => setGuideOpen(false)}
-          onRestart={() => {
-            setGuideOpen(false);
-            setConfirmRestart(true);
-          }}
-        />
+        <AuctionGuide onClose={() => setGuideOpen(false)} />
       )}
 
-      {confirmRestart && (
-        <div
-          className="confirm-scrim"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) setConfirmRestart(false);
-          }}
-        >
-          <div className="confirm" role="dialog" aria-modal="true">
-            <p className="confirm-tag num">Restart the auction</p>
-            <p className="confirm-line">
-              Every sale, every bid and every unsold call is deleted, and the
-              night starts again from the first name in the running order.
-            </p>
-            <p className="confirm-sum num">
-              {state.history.length} results will be lost
-            </p>
-            <div className="confirm-row">
-              <button
-                type="button"
-                className="deck-btn"
-                onClick={() => setConfirmRestart(false)}
-              >
-                Keep going
-              </button>
-              <button
-                type="button"
-                className="deck-btn is-danger"
-                disabled={busy}
-                onClick={() => {
-                  send({ action: "restart" });
-                  setConfirmRestart(false);
-                }}
-              >
-                Restart
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
     </>
   );

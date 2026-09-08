@@ -1,7 +1,6 @@
-import { readFile, rename, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { SEASON_4_SIDES } from "@/data/season4Sides";
 import { isAdmin } from "@/lib/admin";
 import { publishNow } from "@/lib/auctionBus";
 import {
@@ -154,65 +153,6 @@ async function handle({ action, name, team, notice, names, pass }) {
       // the pause comes back into round two rather than round one.
       if (pass) state.pass = pass;
       break;
-
-    // Wipe the night and start again. Only the ledger is cleared — the running
-    // order stays as drawn, and the captains' sides in season4Players.json are
-    // not the auction's to touch.
-    /**
-     * Wipe the night back to the start.
-     *
-     * The ledger below, and every allotment the night made in the roster: the
-     * FateGrid's vice captains as well as anything the auction sold. Captains
-     * are left alone — their side is set by hand, not won, so a restart is not
-     * this route's business to undo.
-     *
-     * A vice captain is spotted by having a side while not being a captain,
-     * rather than by the viceCaptain flag alone: the flag is missing from
-     * rows written before it existed, and a restart that leaves eight players
-     * still allotted is worse than useless.
-     */
-    case "restart": {
-      const roster = path.join(process.cwd(), "data", "season4Players.json");
-      const players = JSON.parse(await readFile(roster, "utf8"));
-
-      const captains = new Set(
-        SEASON_4_SIDES.map(
-          (side) =>
-            players.find(
-              (player) =>
-                player.team === side.name &&
-                side.captain &&
-                player.name.split(" ")[0].toLowerCase() ===
-                  side.captain.toLowerCase()
-            )?.name
-        ).filter(Boolean)
-      );
-
-      let cleared = 0;
-      for (const player of players) {
-        if (!player.team || captains.has(player.name)) continue;
-        player.team = "";
-        player.viceCaptain = false;
-        cleared += 1;
-      }
-
-      if (cleared) {
-        const temp = `${roster}.tmp`;
-        await writeFile(temp, `${JSON.stringify(players, null, 1)}\n`);
-        await rename(temp, roster);
-      }
-
-      state.sold = null;
-      state.unsold = null;
-      state.current = null;
-      state.bid = BASE_PRICE;
-      state.leader = null;
-      state.bids = [];
-      state.notice = null;
-      state.pass = 1;
-      state.history = [];
-      break;
-    }
 
     // Redraw the running order. The order is a file rather than state, so this
     // is the one action that writes outside the ledger.

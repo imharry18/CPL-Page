@@ -51,7 +51,7 @@ function Side({ side }) {
     return (
       <span className="fx-side is-blank">
         <i className="fx-logo" aria-hidden="true" />
-        —
+        ?
       </span>
     );
   }
@@ -178,26 +178,15 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
   const [matches, setMatches] = useState(saved ?? []);
   // Whether what is on screen is the real draw rather than the spin.
   const [official, setOfficial] = useState(Boolean(saved));
-  /* For the auction machine the board is "spinning" from the moment the page
-     loads and keeps hunting until Stop; "stopping" is the wind-down and
-     "stopped" is a made draw. Everyone else starts — and stays — "idle": a
-     still grid, no animation, until the visitors' view is designed. */
-  /* The board spins for everyone. The draw is the moment of the night, so a
-     visitor watching on their own phone sees exactly what is on the screen at
-     the front of the room — including the Stop button. */
-  const [phase, setPhase] = useState(saved ? "stopped" : "spinning");
+  /* "ready" is eight question marks and nothing moving: until the draw is
+     made there is no fixture, and a board hunting through combinations nobody
+     will play reads as a result that keeps changing its mind. "stopping" is
+     the wind-down the room watches, "stopped" is a made draw — and a made draw
+     is written to file, so it is what every board opens on from then until the
+     season is restarted. */
+  const [phase, setPhase] = useState(saved ? "stopped" : "ready");
   const byName = new Map(sides.map((side) => [side.name, side]));
   const timers = useRef([]);
-
-  /* The idle loop: a steady fast cycle, running until Stop is pressed. Bound
-     to the Round 1 tab as well as the phase — left unbound it re-renders the
-     whole board 14 times a second behind every other tab, which restarts the
-     CSS animations there on every frame and burns battery for nothing. */
-  useEffect(() => {
-    if (phase !== "spinning" || round !== 0) return undefined;
-    const id = setInterval(() => setMatches(drawPairs(sides)), 70);
-    return () => clearInterval(id);
-  }, [phase, round, sides]);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
@@ -251,8 +240,8 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
     );
   }
 
-  function stop() {
-    if (phase !== "spinning") return;
+  function draw() {
+    if (phase !== "ready") return;
     settle(drawPairs(sides), true);
   }
 
@@ -309,40 +298,19 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
             {/* Once it has landed the draw is made and written to file, so
                 there is nothing left to press — no way to fumble a redraw over
                 a fixture people have already seen. */}
-            {phase !== "stopped" && (
-              <button
-                type="button"
-                className="shuffle"
-                onClick={stop}
-                disabled={phase === "stopping"}
-              >
-                {phase === "spinning" ? "Stop" : "Stopping…"}
-              </button>
-            )}
-
-            {/* The draw now outlives the page, so the way back to a redraw has
-                to be a button rather than a refresh — and only on the machine
-                that can actually save one. */}
-            {phase === "stopped" && admin && (
-              <button
-                type="button"
-                className="shuffle"
-                onClick={() => {
-                  timers.current.forEach(clearTimeout);
-                  timers.current = [];
-                  setOfficial(false);
-                  setPhase("spinning");
-                }}
-              >
-                Draw again
+            {phase === "ready" && admin && (
+              <button type="button" className="shuffle" onClick={draw}>
+                Draw the Openers
               </button>
             )}
 
             <span className="fx-hint num">
-              {phase === "spinning"
-                ? "Finding a combination"
+              {phase === "ready"
+                ? admin
+                  ? "Eight sides, four ties"
+                  : "Waiting for the draw"
                 : phase === "stopping"
-                  ? "Settling"
+                  ? "Finding a combination"
                   : official
                     ? "Draw made and saved"
                     : "Waiting for the draw"}
@@ -350,9 +318,7 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
           </div>
 
           <div
-            className={`fx-grid${
-              phase === "spinning" || phase === "stopping" ? " is-spinning" : ""
-            }`}
+            className={`fx-grid${phase === "stopping" ? " is-spinning" : ""}`}
           >
             {slots.map((match, i) => {
               const a = byName.get(match.a);

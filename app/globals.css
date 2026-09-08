@@ -2131,6 +2131,34 @@ img {
 }
 .lobby-head {
   flex: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* The way back to zero. Quiet by default and red only under the cursor: it is
+   next to the title because it clears the whole season, but it must not read
+   as one of the things on offer here. */
+.lobby-restart {
+  flex: none;
+  margin-top: 0.35rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--seam-10);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.lobby-restart:hover {
+  border-color: var(--blood);
+  color: var(--blood-lit);
 }
 .lobby-title {
   font-variation-settings: "wdth" 112, "wght" 800;
