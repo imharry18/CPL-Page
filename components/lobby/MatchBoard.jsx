@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import PlayoffBracket from "@/components/lobby/PlayoffBracket";
 import RoundPlates from "@/components/lobby/RoundPlates";
 import ThroneRoom from "@/components/lobby/ThroneRoom";
+import { tintFor } from "@/lib/matchTints";
 
 /* Named for what each stage actually does, not for its number:
      Openers  — the eight go in, the draw decides who meets who
@@ -32,6 +33,246 @@ const PROGRESSION = [0, 1, 2, 3].map((i) => ({
   winner: i,
   loser: i + 4,
 }));
+
+/* Round 2 is matches 5 to 8, so the same table read the other way round: every
+   place from 1st to 8th, in order, against the match and the result that fills
+   it. The four winners take the top half and the four losers the bottom, which
+   is the order the next round is seeded in. */
+const RECKONING_PLACES = [
+  ...PROGRESSION.map(({ winner }, i) => ({ place: winner, no: i + 5, won: true })),
+  ...PROGRESSION.map(({ loser }, i) => ({ place: loser, no: i + 5, won: false })),
+];
+
+/* The tones a place can carry where it is not one of eight numbered seats:
+   gold for the two who are already through, the tech blue for the two who play
+   their way in behind them, and the house red for everyone who is out. */
+const TONES = {
+  gold: { "--tie": "#b08a12", "--tie-lit": "#f4d67a" },
+  tech: { "--tie": "#0b7fd4", "--tie-lit": "#46aef7" },
+  dead: { "--tie": "#c8102e", "--tie-lit": "#ff5a6e" },
+};
+
+/* Round 3 sends four sides on and four home, and unlike the Reckoning it is not
+   a table: the top two are already in the Fantastic 4, the crossover winners
+   join them, and their losers go out with the bottom two. `tie` is which band
+   or match on the left the place comes from, counting down the board. */
+const LAST_STAND_PLACES = [
+  { key: "q1", tie: 0, up: true, tone: "gold", lead: "1st", text: "Straight through" },
+  { key: "q2", tie: 0, up: true, tone: "gold", lead: "2nd", text: "Straight through" },
+  { key: "w9", tie: 1, up: true, tone: "tech", lead: "W · 9", text: "Into Fantastic 4" },
+  { key: "w10", tie: 2, up: true, tone: "tech", lead: "W · 10", text: "Into Fantastic 4" },
+  { key: "l9", tie: 1, up: false, tone: "dead", lead: "L · 9", text: "Eliminated" },
+  { key: "l10", tie: 2, up: false, tone: "dead", lead: "L · 10", text: "Eliminated" },
+  { key: "e7", tie: 3, up: false, tone: "dead", lead: "7th", text: "Eliminated" },
+  { key: "e8", tie: 3, up: false, tone: "dead", lead: "8th", text: "Eliminated" },
+];
+
+const RECKONING_PLATES = PROGRESSION.map(({ seeds }) => ({
+  a: `${ORDINALS[seeds[0]]} Place`,
+  b: `${ORDINALS[seeds[1]]} Place`,
+}));
+
+/* The Reckoning read the same way: every place is one row, against the tie that
+   settles it. Winners keep the green rise and losers the red sink, and each
+   place carries its own match's colour. */
+const RECKONING_SEATS = RECKONING_PLACES.map(({ place, no, won }) => ({
+  key: `p${place}`,
+  tie: no - 5,
+  up: won,
+  tone: won ? "in" : "out",
+  style: tintFor(no),
+  lead: ORDINALS[place],
+  text: `${won ? "Winner" : "Loser"} · Match ${no}`,
+}));
+
+/**
+ * A round as two columns: the ties on the left, where they send each side on
+ * the right, and a wire between the two.
+ *
+ * Each place is a plate — cut corner, colour and all — and sits on the same row
+ * as a plate on the left, so the two columns read as one board rather than as a
+ * board and a list beside it. The rows the plates leave — the label between a
+ * tie's two sides, and the gap between ties — are left empty, which is what
+ * `gridRow` is counting past.
+ *
+ * The wires are measured off the board rather than worked out from the row
+ * heights, because those are clamps that move with the viewport: whatever the
+ * plates end up doing, the lines are drawn between where they actually are.
+ *
+ * They read the same way as the playoff bracket's: one neutral line leaves a
+ * tie at the match label — which already carries the marker the board uses for
+ * "this flows on" — and forks at a dot, green for the side going up and red
+ * for the one going down. Each arm then runs down its own lane through the
+ * gutter and turns in at its place, arrowhead first. The lanes are handed out
+ * shortest wire first, so the short hops stay near the ties and the long drops
+ * take the outside.
+ */
+/* How far into the gutter the neutral stem runs before it forks, and the room
+   left at the far end for an arrowhead. */
+const FORK = 0.2;
+const HEAD = 7;
+
+function SplitRound({ head, label, matches, places, startAt }) {
+  const board = useRef(null);
+  const [wires, setWires] = useState(null);
+
+  useEffect(() => {
+    const root = board.current;
+    if (!root) return undefined;
+
+    function measure() {
+      const ties = [...root.querySelectorAll(".tie")];
+      const seats = [...root.querySelectorAll(".seat")];
+      if (ties.length !== matches.length || seats.length !== places.length) {
+        return;
+      }
+
+      const box = root.getBoundingClientRect();
+
+      /* What is left of the screen under the heading and the round tabs. The
+         rows are cut from this, so the board fills the page it is on instead
+         of stopping short on a tall screen or running off a short one — and
+         the page never has to be scrolled to see the round out. Only the space
+         above the board decides it, so setting it cannot feed back into it. */
+      const page = root.closest("main");
+      const below = page ? parseFloat(getComputedStyle(page).paddingBottom) : 0;
+      // A few pixels in hand, so rounding on the rows cannot tip the page into
+      // a scrollbar over nothing.
+      const fill = Math.max(0, Math.round(window.innerHeight - box.top - below - 8));
+      if (root.style.getPropertyValue("--fill") !== `${fill}px`) {
+        root.style.setProperty("--fill", `${fill}px`);
+        return void requestAnimationFrame(measure);
+      }
+
+      const ends = places.map((place, i) => {
+        const tie = ties[place.tie].getBoundingClientRect();
+        const seat = seats[i].getBoundingClientRect();
+        return {
+          key: place.key,
+          up: place.up,
+          x1: tie.right - box.left,
+          y1: tie.top + tie.height / 2 - box.top,
+          x2: seat.left - box.left,
+          y2: seat.top + seat.height / 2 - box.top,
+        };
+      });
+
+      // Shortest first, so a lane is never crossed by a wire that had a
+      // straighter way through.
+      const order = [...ends].sort(
+        (a, b) => Math.abs(a.y2 - a.y1) - Math.abs(b.y2 - b.y1)
+      );
+
+      setWires({
+        w: box.width,
+        h: box.height,
+        // One stem to a tie, however many places it settles: both arms fork
+        // off the same point, so the split reads as one decision.
+        stems: ties.map((node, i) => {
+          const tie = node.getBoundingClientRect();
+          const x1 = tie.right - box.left;
+          return {
+            key: `s${i}`,
+            x1,
+            y: tie.top + tie.height / 2 - box.top,
+            fork: x1 + (ends[0].x2 - x1) * FORK,
+          };
+        }),
+        arms: ends.map((end) => {
+          const fork = end.x1 + (end.x2 - end.x1) * FORK;
+          const tip = end.x2 - HEAD;
+          const lane =
+            fork + ((tip - fork) * (order.indexOf(end) + 1)) / (ends.length + 1);
+          return {
+            key: end.key,
+            tone: end.up ? "in" : "out",
+            d: `M ${fork} ${end.y1} H ${lane} V ${end.y2} H ${tip}`,
+            // The head, pointing into the plate the arm lands on.
+            head: `${end.x2} ${end.y2} ${tip} ${end.y2 - 3.4} ${tip} ${end.y2 + 3.4}`,
+          };
+        }),
+      });
+    }
+
+    /* Measured a frame late, so the rows have settled at their new heights
+       before anything is read off them: the plate and gap heights are tied to
+       the viewport, so a window that changes size moves both columns and every
+       wire has to be drawn again. */
+    let frame = 0;
+    let settle = 0;
+    const remeasure = () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(settle);
+      frame = requestAnimationFrame(measure);
+      // And again once the resize has stopped, because a window dragged to a
+      // new size arrives in steps and only the last one is the real layout.
+      settle = setTimeout(measure, 200);
+    };
+
+    measure();
+    const watch = new ResizeObserver(remeasure);
+    watch.observe(root);
+    window.addEventListener("resize", remeasure);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(settle);
+      watch.disconnect();
+      window.removeEventListener("resize", remeasure);
+    };
+  }, [matches, places]);
+
+  return (
+    <div className="round-split" ref={board}>
+      <RoundPlates startAt={startAt} matches={matches} />
+
+      <aside className="seats" aria-label={label}>
+        <p className="seats-head num">{head}</p>
+        <ol className="seats-list">
+          {places.map(({ key, up, tone, style, lead, text }, i) => (
+            <li
+              className={`plate seat is-${tone}`}
+              key={key}
+              style={{ ...(style ?? TONES[tone]), gridRow: i * 2 + 1 }}
+            >
+              <em className="seat-no">{lead}</em>
+              <b aria-hidden="true">{up ? "↑" : "↓"}</b>
+              <span className="seat-from num">{text}</span>
+            </li>
+          ))}
+        </ol>
+      </aside>
+
+      {wires && (
+        <svg
+          className="wires"
+          viewBox={`0 0 ${wires.w} ${wires.h}`}
+          /* The box is measured, so it is already in the board's own pixels;
+             letting the viewBox letterbox itself into the element would move
+             every wire off its plate the moment the two disagree. */
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {wires.stems.map(({ key, x1, y, fork }) => (
+            <g className="wire is-stem" key={key}>
+              <path d={`M ${x1} ${y} H ${fork}`} />
+              {/* The fork, marked so the split reads as a decision rather than
+                  as two lines that happen to touch. */}
+              <circle cx={fork} cy={y} r="2.8" />
+            </g>
+          ))}
+
+          {wires.arms.map(({ key, tone, d, head }) => (
+            <g className={`wire is-${tone}`} key={key}>
+              <path d={d} />
+              <polygon points={head} />
+            </g>
+          ))}
+        </svg>
+      )}
+    </div>
+  );
+}
 
 /** Fisher–Yates, then take the shuffled sides two at a time. */
 function drawPairs(sides) {
@@ -130,6 +371,28 @@ function ProgressionRound({ after }) {
  * carry a tone rather than an arrow, so nothing looks like a match that is not
  * one.
  */
+const LAST_STAND_PLATES = [
+  {
+    label: "Qualified · Playoffs",
+    tone: "in",
+    a: `${ORDINALS[QUALIFY[0]]} Place`,
+    b: `${ORDINALS[QUALIFY[1]]} Place`,
+  },
+  /* Numbered on from Round 2, which ends at match 8. */
+  ...CROSSOVER.map(([a, b], i) => ({
+    no: i + 9,
+    label: `Match ${i + 9}`,
+    a: `${ORDINALS[a]} Place`,
+    b: `${ORDINALS[b]} Place`,
+  })),
+  {
+    label: "Eliminated",
+    tone: "out",
+    a: `${ORDINALS[ELIMINATED[0]]} Place`,
+    b: `${ORDINALS[ELIMINATED[1]]} Place`,
+  },
+];
+
 function SeededRound({ after }) {
   return (
     <>
@@ -137,28 +400,11 @@ function SeededRound({ after }) {
         Seeded on the {ROUNDS[after - 1]} points table
       </p>
 
-      <RoundPlates
-        matches={[
-          {
-            label: "Qualified · Playoffs",
-            tone: "in",
-            a: `${ORDINALS[QUALIFY[0]]} Place`,
-            b: `${ORDINALS[QUALIFY[1]]} Place`,
-          },
-          /* Numbered on from Round 2, which ends at match 8. */
-          ...CROSSOVER.map(([a, b], i) => ({
-            no: i + 9,
-            label: `Match ${i + 9}`,
-            a: `${ORDINALS[a]} Place`,
-            b: `${ORDINALS[b]} Place`,
-          })),
-          {
-            label: "Eliminated",
-            tone: "out",
-            a: `${ORDINALS[ELIMINATED[0]]} Place`,
-            b: `${ORDINALS[ELIMINATED[1]]} Place`,
-          },
-        ]}
+      <SplitRound
+        head="After the Last Stand"
+        label="Where the Last Stand leaves each side"
+        matches={LAST_STAND_PLATES}
+        places={LAST_STAND_PLACES}
       />
     </>
   );
@@ -352,12 +598,12 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
            Round 1 is matches 1 to 4, so these are 5 to 8. The placings stand
            in for the sides, because who fills them is not known until Round 1
            has been played. */
-        <RoundPlates
+        <SplitRound
+          head="After the Reckoning"
+          label="Where the Reckoning leaves each place"
           startAt={5}
-          matches={PROGRESSION.map(({ seeds }) => ({
-            a: `${ORDINALS[seeds[0]]} Place`,
-            b: `${ORDINALS[seeds[1]]} Place`,
-          }))}
+          matches={RECKONING_PLATES}
+          places={RECKONING_SEATS}
         />
       ) : round === 2 ? (
         <SeededRound after={round} />

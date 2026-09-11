@@ -13,6 +13,7 @@ import {
   writeOrder,
   writeState,
 } from "@/lib/auction";
+import { ROUNDS, roundName } from "@/lib/auctionQueue";
 
 /**
  * Every change the auction console makes.
@@ -284,14 +285,24 @@ async function handle({ action, name, team, notice, names, pass }) {
     // Unsold is recorded too, so the log is the whole story of the night and
     // Undo can walk back over it.
     //
-    // The pass is recorded with it, and that is what ends the night: the
-    // second round is the players unsold in the FIRST one, so a name that goes
-    // unsold again is finished rather than going back on a list it would be
-    // called from for ever. Without this the console re-calls the same unsold
-    // players in a loop and "Auction completed" never arrives.
+    // The pass is recorded with it, and that is what decides which round a
+    // name comes back in: the Recall is the players unsold in the Opening.
+    //
+    // And it is only allowed in the Opening. The Recall is the last time of
+    // asking, so a name in it has to find a side — refused here, it would sit
+    // in a round that no longer exists and simply vanish from the night with
+    // nothing said about him. Checked on the server because this is the only
+    // check that holds; the console hides the key as well, but a hidden
+    // control is not a rule.
     case "unsold": {
       if (!state.current) {
         return Response.json({ error: "no lot" }, { status: 409 });
+      }
+      if ((state.pass ?? 1) >= ROUNDS) {
+        return Response.json(
+          { error: `no unsold in the ${roundName(state.pass ?? 1)} — every player left must be sold` },
+          { status: 409 }
+        );
       }
       state.history.push({
         name: state.current,

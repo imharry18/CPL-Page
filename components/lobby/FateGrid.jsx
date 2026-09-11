@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import FateScene from "@/components/lobby/FateScene";
 
-const SPIN_SECONDS = 3;
+const SPIN_SECONDS = 7;
 
 /* How long the rings take to stop turning, and then how long the cards take to
    find the side they were drawn to. Both are movement the room watches, so

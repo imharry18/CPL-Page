@@ -1,21 +1,4 @@
 {
  "drawn": false,
- "matches": [
-  {
-   "a": "Blazing Blades",
-   "b": "Rajputana Rifles"
-  },
-  {
-   "a": "Vajra Strikers",
-   "b": "Storm Breakers"
-  },
-  {
-   "a": "Bajrang United",
-   "b": "The Overlords"
-  },
-  {
-   "a": "The Godfathers",
-   "b": "Mavericks XI"
-  }
- ]
+ "matches": []
 }

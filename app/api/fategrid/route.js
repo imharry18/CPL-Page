@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { SEASON_4_SIDES } from "@/data/season4Sides";
 import { isAdmin } from "@/lib/admin";
+import { SQUAD_MAX } from "@/lib/auctionMoney";
 
 /**
  * Commit a FateGrid draw.
@@ -70,6 +71,32 @@ export async function POST(request) {
       player.viceCaptain = false;
       player.team = "";
     }
+  }
+
+  /* A draw cannot push a side past the ten.
+   *
+   * The auction counts a side's squad off the roster plus what it has bought,
+   * so while the iconic eight are undrawn every side looks a man smaller than
+   * it will finish and may buy one more than it should. Run the grid after
+   * that has happened and a side quietly ends up with eleven. This will not
+   * write that: it refuses, and says which side and by how much, so the draw
+   * is re-made rather than the roster silently broken.
+   *
+   * Counted after the clear above, so re-running the same draw is not read as
+   * adding a second vice captain to every side.
+   */
+  const full = [];
+  for (const { side } of pairs) {
+    const held = players.filter((player) => player.team === side).length;
+    if (held >= SQUAD_MAX) full.push(`${side} already has ${held}`);
+  }
+  if (full.length) {
+    return Response.json(
+      {
+        error: `the draw would take a side past ${SQUAD_MAX}: ${full.join(", ")}`,
+      },
+      { status: 409 }
+    );
   }
 
   for (const { side, player } of pairs) {

@@ -32,6 +32,12 @@
   --seam-10: rgba(237, 231, 218, 0.1);
   --seam-06: rgba(237, 231, 218, 0.06);
 
+  /* Wires — green survives, red goes out. Shared by every board that draws a
+     line from a match to where it sends a side, so the playoff bracket and the
+     round boards cannot drift apart. */
+  --wire-win: #7fc9a4;
+  --wire-out: var(--blood-lit);
+
   /* Type */
   --display: var(--font-display), "Archivo", system-ui, sans-serif;
   --body: var(--font-body), "Inter Tight", system-ui, sans-serif;
@@ -1871,6 +1877,39 @@ img {
 .role-bowler { color: var(--leather-lit); }
 .role-allrounder { color: #7fc9a4; }
 
+/* Captains and the iconic eight never go under the hammer, so their row wears
+   what they are instead of what they play. The badge is lit rather than merely
+   coloured — being one of the sixteen settled before the auction is the
+   distinction, and it should read as one from across the page. Gold for the
+   captains, house red for the iconic eight: the same red the FateGrid draws
+   them with. */
+.player-badge {
+  border-color: color-mix(in srgb, currentColor 60%, transparent);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  box-shadow:
+    0 0 0.8rem color-mix(in srgb, currentColor 22%, transparent),
+    inset 0 0 0.5rem color-mix(in srgb, currentColor 10%, transparent);
+  text-shadow: 0 0 0.7rem color-mix(in srgb, currentColor 50%, transparent);
+  font-weight: 600;
+  /* A slow breath, well under the rate anything reads as blinking. */
+  animation: badge-glow 3.4s var(--ease-out) infinite;
+}
+.player-badge.is-captain { color: #e8c77a; }
+.player-badge.is-iconic { color: var(--blood-lit); }
+
+@keyframes badge-glow {
+  50% {
+    box-shadow:
+      0 0 1.3rem color-mix(in srgb, currentColor 36%, transparent),
+      inset 0 0 0.7rem color-mix(in srgb, currentColor 18%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .player-badge {
+    animation: none;
+  }
+}
+
 .player-skills {
   display: flex;
   gap: 1.1rem;
@@ -2168,6 +2207,40 @@ img {
   border-color: var(--blood);
   color: var(--blood-lit);
 }
+.lobby-acts {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+/* The season's own door, and the one thing up here that is meant to be
+   pressed — so it carries colour rather than waiting for a cursor, in the
+   trophy's gold rather than the house red the Restart turns. */
+.lobby-season {
+  flex: none;
+  margin-top: 0.35rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid color-mix(in srgb, #f4d67a 45%, transparent);
+  border-radius: 999px;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, #b08a12 28%, transparent),
+    color-mix(in srgb, #f4d67a 10%, transparent)
+  );
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #f4d67a;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.lobby-season:hover {
+  border-color: #f4d67a;
+  box-shadow: 0 0.7rem 1.6rem -0.9rem rgba(244, 214, 122, 0.8);
+  transform: translateY(-1px);
+}
 .lobby-title {
   font-variation-settings: "wdth" 112, "wght" 800;
   font-size: clamp(2.4rem, 1rem + 6vw, 5.5rem);
@@ -2441,9 +2514,58 @@ img {
    and a staggered entrance so the eight arrive one after another rather than
    all at once. */
 .side-wrap {
+  position: relative;
   max-width: 74rem;
   margin-inline: auto;
   text-align: center;
+}
+
+/* Dynamic floodlights behind the grid: three broad beams in the sides' own
+   colours, drifting slowly so the page reads as lit rather than flat. They
+   sit behind the cards and are clipped to the wrap, so they never fight the
+   type for attention. */
+.side-lights {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.side-light {
+  position: absolute;
+  width: 55%;
+  height: 70%;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  animation: side-light-drift 14s var(--ease-in-out) infinite alternate;
+}
+.side-light.is-a {
+  top: -20%;
+  left: -10%;
+  background: radial-gradient(closest-side, #c8102e, transparent);
+}
+.side-light.is-b {
+  top: 10%;
+  right: -15%;
+  background: radial-gradient(closest-side, #0b7fd4, transparent);
+  animation-delay: -4s;
+  animation-duration: 18s;
+}
+.side-light.is-c {
+  bottom: -25%;
+  left: 20%;
+  background: radial-gradient(closest-side, #b08a12, transparent);
+  animation-delay: -8s;
+  animation-duration: 16s;
+}
+@keyframes side-light-drift {
+  from { transform: translate3d(-8%, -4%, 0) scale(0.92); }
+  to { transform: translate3d(10%, 6%, 0) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .side-light { animation: none; }
 }
 .side-lede {
   /* Wide enough for the whole sentence to sit on one line on a desktop. */
@@ -3288,9 +3410,6 @@ img {
 /* --------------------------------------------------------------------------
    Rulebook — full-page laws, one per band
    -------------------------------------------------------------------------- */
-.rules-page {
-  max-width: 72rem;
-}
 .rules-lede {
   max-width: 46ch;
   margin-bottom: clamp(2.5rem, 8vh, 5rem);
@@ -3312,6 +3431,37 @@ img {
   gap: clamp(1.25rem, 4vw, 3rem);
   padding: clamp(2.25rem, 6vh, 4rem) 0;
   border-bottom: 1px solid var(--seam-10);
+}
+/* The rulebook zigzags: odd rulings carry their number on the left, even
+   rulings mirror them — number on the right and the text right-aligned to
+   meet it, dashes and all. On a phone the zigzag flattens: every number
+   sits above its own rule. */
+@media (min-width: 641px) {
+  .ruling:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr) minmax(5.5rem, 8rem);
+  }
+  .ruling:nth-child(even) .ruling-no {
+    order: 2;
+    text-align: right;
+  }
+  .ruling:nth-child(even) .ruling-body {
+    text-align: right;
+  }
+  .ruling:nth-child(even) .ruling-title,
+  .ruling:nth-child(even) .ruling-text {
+    margin-left: auto;
+  }
+  .ruling:nth-child(even) .ruling-points {
+    justify-items: end;
+  }
+  .ruling:nth-child(even) .ruling-points li {
+    padding-left: 0;
+    padding-right: 1.6rem;
+  }
+  .ruling:nth-child(even) .ruling-points li::before {
+    left: auto;
+    right: 0;
+  }
 }
 
 /* The signature: the number is the loudest thing on the page. A rulebook is
@@ -3416,6 +3566,11 @@ img {
   gap: 0.75rem clamp(0.9rem, 2.6vw, 1.9rem);
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--seam-06);
+}
+/* Two or three tabs do not span a page; spreading them would put one in each
+   corner with a hole between, so they huddle left instead. */
+.rounds.is-few {
+  justify-content: flex-start;
 }
 /* Big enough to be the heading of the section, not a control above it — the
    selected round IS the title of what you are looking at. */
@@ -3622,6 +3777,11 @@ img {
   --col: calc((100% - var(--cgap) * 2) / 3);
   /* The board's own vertical centre — Qualifier 2 and the final hang off it. */
   --mid: calc((var(--grp) * 2 + var(--rgap)) / 2);
+  /* How far past Qualifier 1 the line runs before it splits, and the drop from
+     a label row to the plate a wire turns into. Both are shared by the wires
+     that meet at the fork, so they are stated once here. */
+  --fork: calc(var(--cgap) + var(--col) * 0.32);
+  --rise: calc(var(--mid) - var(--grp) / 2 - var(--plate) - var(--label) / 2);
 }
 
 .tie {
@@ -3717,14 +3877,24 @@ img {
   .tie-fi { left: calc((var(--col) + var(--cgap)) * 2); top: calc(var(--mid) - var(--grp) / 2); }
 
   /* Wires. Each is an L: a horizontal run, then a turn into the plate it
-     feeds, with an arrowhead at the end. */
-  .wire {
+     feeds, with an arrowhead at the end.
+
+     Colour carries the result, in the same green and red the rest of the site
+     uses for surviving and going out: a winner's path is green, a loser's is
+     red. Qualifier 1 is the one tie both happen to, so a single neutral line
+     leaves it and forks — green on to the final, red down to Qualifier 2. */
+  /* .wire is shared with the SVG wires on the round boards, so the CSS ones
+     are scoped to the bracket they are positioned inside. Every rule below
+     carries that same .bracket prefix and has to keep it: scoped here but not
+     there, this rule's two classes outrank a bare .wire-q1, and the border
+     widths that draw the lines all collapse back to the zero set here. */
+  .bracket .wire {
     position: absolute;
     border-color: var(--seam-22);
     border-style: solid;
     border-width: 0;
   }
-  .wire::after {
+  .bracket .wire::after {
     content: "";
     position: absolute;
     width: 0;
@@ -3733,51 +3903,73 @@ img {
     border-right: 0.3rem solid transparent;
   }
 
-  /* Qualifier 1 straight across to Winner Q1. */
-  .wire-q1 {
+  /* The one line out of Qualifier 1, as far as the fork. */
+  .bracket .wire-stem {
     left: var(--col);
     top: calc(var(--plate) + var(--label) / 2);
-    width: calc(var(--col) * 1.65 + var(--cgap) * 2);
-    height: calc(var(--mid) - var(--grp) / 2 - var(--plate) - var(--label) / 2);
+    width: var(--fork);
     border-top-width: 1px;
-    border-right-width: 1px;
   }
-  .wire-q1::after {
-    right: -0.3rem;
-    bottom: -0.3rem;
-    border-top: 0.36rem solid var(--seam-22);
+  /* The fork itself, marked so the split reads as a decision rather than as
+     two lines that happen to touch. */
+  .bracket .wire-stem::after {
+    right: -0.18rem;
+    bottom: -0.19rem;
+    width: 0.36rem;
+    height: 0.36rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--seam-45);
   }
 
-  /* The loser of Qualifier 1 drops into Qualifier 2. */
-  .wire-drop {
-    left: calc(var(--col) + var(--cgap) + var(--col) * 0.32);
+  /* Winner of Qualifier 1, straight through to the final. */
+  .bracket .wire-q1 {
+    left: calc(var(--col) + var(--fork));
     top: calc(var(--plate) + var(--label) / 2);
-    height: calc(var(--mid) - var(--grp) / 2 - var(--plate) - var(--label) / 2);
-    border-left-width: 1px;
+    width: calc(var(--col) * 1.65 + var(--cgap) * 2 - var(--fork));
+    height: var(--rise);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-color: var(--wire-win);
   }
-  .wire-drop::after {
+  .bracket .wire-q1::after {
+    right: -0.3rem;
+    bottom: -0.3rem;
+    border-top: 0.36rem solid var(--wire-win);
+  }
+
+  /* Loser of Qualifier 1, dropping into Qualifier 2. */
+  .bracket .wire-drop {
+    left: calc(var(--col) + var(--fork));
+    top: calc(var(--plate) + var(--label) / 2);
+    height: var(--rise);
+    border-left-width: 1px;
+    border-color: var(--wire-out);
+  }
+  .bracket .wire-drop::after {
     left: -0.3rem;
     bottom: -0.3rem;
-    border-top: 0.36rem solid var(--seam-22);
+    border-top: 0.36rem solid var(--wire-out);
   }
 
   /* The Eliminator winner comes up into Qualifier 2. */
-  .wire-el {
+  .bracket .wire-el {
     left: var(--col);
     top: calc(var(--mid) - var(--grp) / 2 + var(--grp));
-    width: calc(var(--cgap) + var(--col) * 0.32);
+    width: var(--fork);
     height: calc(var(--grp) + var(--rgap) + var(--plate) + var(--label) / 2 - var(--mid) - var(--grp) / 2);
     border-bottom-width: 1px;
     border-right-width: 1px;
+    border-color: var(--wire-win);
   }
-  .wire-el::after {
+  .bracket .wire-el::after {
     right: -0.3rem;
     top: -0.36rem;
-    border-bottom: 0.36rem solid var(--seam-22);
+    border-bottom: 0.36rem solid var(--wire-win);
   }
 
   /* Qualifier 2 into Winner Q2. */
-  .wire-q2 {
+  .bracket .wire-q2 {
     left: calc((var(--col) + var(--cgap)) * 2 - var(--cgap));
     top: calc(var(--mid) - var(--grp) / 2 + var(--plate) + var(--label) / 2);
     width: calc(var(--cgap) + var(--col) * 0.28);
@@ -3786,11 +3978,12 @@ img {
     height: calc(var(--label) / 2);
     border-top-width: 1px;
     border-right-width: 1px;
+    border-color: var(--wire-win);
   }
-  .wire-q2::after {
+  .bracket .wire-q2::after {
     right: -0.3rem;
     bottom: -0.3rem;
-    border-top: 0.36rem solid var(--seam-22);
+    border-top: 0.36rem solid var(--wire-win);
   }
 }
 
@@ -3799,7 +3992,7 @@ img {
     display: grid;
     gap: 1.5rem;
   }
-  .wire {
+  .bracket .wire {
     display: none;
   }
 }
@@ -3903,12 +4096,14 @@ img {
      The gap between ties is well clear of the gap inside one, so each match
      reads as a single block rather than running into the next. */
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(2.25rem, 5vw, 3.5rem);
+  /* Shared with the places column beside it, where there is one, so the two
+     cannot drift out of step. */
+  gap: var(--tie-gap, clamp(2.25rem, 5vw, 3.5rem));
   max-width: 60rem;
 }
 .plates .plate {
   padding: 0 clamp(1rem, 2.4vw, 2rem);
-  font-size: clamp(0.9rem, 2.2svh, 1.4rem);
+  font-size: clamp(0.85rem, 1.8svh, 1.15rem);
   font-weight: 600;
 }
 .plates .tie-name {
@@ -3927,6 +4122,150 @@ img {
 }
 .plates .tie-name::after {
   border-left-color: var(--seam-45);
+}
+/* The ties on the left, the table they leave behind on the right. Both columns
+   are laid on the same three numbers — plate, label, and the gap between ties —
+   so a place on the right always lands level with a plate on the left. Below
+   the breakpoint there is no room for a second column, so the table drops under
+   the ties and is read after them. */
+.round-split {
+  /* The board is cut from whatever is left of the screen below the tabs, which
+     the board itself measures into --fill: eight plate rows, four labels at
+     three fifths of a plate, and three gaps at three quarters — 12.55 plates
+     of height all told. So the round fills the page it is on rather than
+     stopping short on a tall screen, and never asks to be scrolled. The floor
+     keeps it legible on a window too short to hold it, and the ceiling stops a
+     very tall one from turning the plates into slabs. */
+  --plate: clamp(1.5rem, calc(var(--fill, 60svh) / 12.55), 3.6rem);
+  --label: calc(var(--plate) * 0.6);
+  --tie-gap: calc(var(--plate) * 0.75);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: start;
+}
+/* The wires between the two columns. Drawn over the board and taking no
+   clicks, so they can cross a plate without getting in its way. */
+.wires {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Stacked, the places sit under the ties rather than beside them and there
+     is no gutter to run a wire through, so the arrows carry it alone. */
+  display: none;
+}
+@media (min-width: 900px) {
+  .wires { display: block; }
+}
+.wire path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+/* The arrowhead where an arm lands on its plate. */
+.wire polygon {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0.9;
+}
+/* The one neutral line out of a tie, and the dot it forks at — the same
+   split the playoff bracket makes out of Qualifier 1. Past the fork the
+   colour carries the result: green on, red out. */
+.wire.is-stem {
+  color: var(--seam-45);
+}
+.wire.is-stem path { stroke-width: 1.5; }
+.wire.is-stem circle {
+  fill: currentColor;
+  stroke: none;
+}
+.wire.is-in { color: var(--wire-win); }
+.wire.is-out { color: var(--wire-out); }
+.seats-head {
+  margin: 0 0 0.9rem;
+  font-family: var(--mono);
+  font-size: clamp(0.66rem, 1.1vw, 0.82rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+.seats-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* A place is a plate: same cut corner, same height, same match colour as the
+   tie it comes from, so the two columns are plainly one board. */
+.seat {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 clamp(0.7rem, 1.4vw, 1rem);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.seat-no {
+  font-style: normal;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  color: var(--tie-lit);
+}
+.seat b { font-size: 0.9rem; line-height: 1; }
+.seat-from { margin-left: auto; color: var(--seam-45); }
+/* Rising and sinking are carried by the arrow, in the same green and red as
+   the qualified and eliminated bands; the place itself keeps its match colour
+   so it can be traced back to the tie beside it. */
+.seat.is-in b { color: #7fc9a4; }
+.seat.is-out b { color: var(--blood-lit); }
+/* Where a place is an outcome rather than a seat in a table, the arrow takes
+   the tone's own colour: gold for the two already through, the tech blue for
+   the two who play their way in, red for everyone going home. */
+.seat.is-gold b,
+.seat.is-tech b,
+.seat.is-dead b {
+  color: var(--tie-lit);
+}
+/* Out is out: the four eliminated plates are dimmed as well as reddened, so the
+   half of the board that is finished reads as finished. */
+.seat.is-dead {
+  opacity: 0.72;
+}
+
+@media (min-width: 900px) {
+  .round-split {
+    grid-template-columns: minmax(0, 1fr) clamp(15rem, 26vw, 20rem);
+    /* Wide enough for eight wires to pass each other without touching. */
+    column-gap: clamp(3.5rem, 6vw, 6rem);
+  }
+  /* Lifted clear of the column, so the first place still starts level with the
+     first plate rather than a heading's height below it. */
+  .seats {
+    position: relative;
+  }
+  .seats-head {
+    position: absolute;
+    bottom: 100%;
+    margin: 0 0 0.55rem;
+  }
+  /* The plates' rhythm, repeated: two plate rows to a tie with the label row
+     between them, then the gap before the next tie. The places take the plate
+     rows — 1st and 2nd against the first tie, 3rd and 4th against the second,
+     and so on — and the rows between are left empty. Stacked, there is nothing
+     to line up with, so the rows simply follow one another. */
+  .seats-list {
+    grid-template-rows:
+      repeat(3, var(--plate) var(--label) var(--plate) var(--tie-gap))
+      var(--plate) var(--label) var(--plate);
+    gap: 0;
+  }
 }
 
 /* Where a match sends its two sides. Same rise/sink language as the qualified
@@ -4212,7 +4551,8 @@ img {
 /* Each numbered match carries its own colour — see lib/matchTints.js. The
    plate wears it on its cut edge and as a wash off that edge, and the match
    label takes the lighter tone, which is the one with the contrast for text. */
-.tie.is-tinted .plate {
+.tie.is-tinted .plate,
+.seat {
   border-left: 2px solid var(--tie);
   background: linear-gradient(
     100deg,
@@ -4293,8 +4633,11 @@ img {
   object-fit: contain;
 }
 .lot-shot-none {
+  padding: 0 1.5rem;
   font-size: clamp(0.75rem, 1.2vw, 1rem);
+  line-height: 1.6;
   letter-spacing: 0.2em;
+  text-align: center;
   text-transform: uppercase;
   color: var(--seam-45);
 }
@@ -4311,27 +4654,11 @@ img {
   letter-spacing: -0.02em;
   color: var(--seam);
 }
-.lot-meta {
-  font-size: clamp(0.8rem, min(1.6vw, 2svh), 1.35rem);
-  letter-spacing: 0.12em;
-  color: var(--seam-45);
-}
-.lot-role {
-  display: inline-block;
-  margin-top: 0.75rem;
-  padding: 0.3rem 0.7rem;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  font-family: var(--mono);
-  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
 .lot-skills {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  margin: 1.1rem 0 0;
+  margin: clamp(0.5rem, 1.2vh, 1.1rem) 0 0;
 }
 .lot-skills dt {
   font-family: var(--mono);
@@ -4649,29 +4976,46 @@ img {
    -------------------------------------------------------------------------- */
 .live {
   display: grid;
-  /* The text takes the larger share. The name is capped by the width it has,
-     not by the height — so the only way to set it bigger is to give it more
-     column, and the photograph is limited by height anyway. */
-  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
-  gap: clamp(1.25rem, 3vw, 2.5rem);
-  align-items: center;
-  /* Vertical padding is charged against the height of a 16:9 share, which is
-     the scarce dimension here; horizontal is not. */
-  padding: clamp(0.6rem, 1.6vh, 1.4rem) clamp(1rem, 2.5vw, 2rem);
+  /* The photograph takes what it can on the left; the name, the bid and the
+     eight sides stack down the right. The right column still takes the larger
+     share — the name is capped by the width it has, not by the height —
+     though not by as much as it used to, so the photo reads as a real
+     portrait rather than a strip beside the text. */
+  /* The photograph is a 4:5 frame bounded by the height it is given, so a
+     column any wider than that height allows is empty board beside it — which
+     read as a gap between the photo and everything on the right. The left
+     column is cut to about what the frame can actually fill, and the width
+     that frees goes to the eight sides, which are the better use of it. */
+  grid-template-columns: auto minmax(0, 1fr);
+  /* The column is cut to the photograph now, so this gap is the whole of the
+     space between the two halves of the board rather than one part of it. */
+  gap: clamp(1.1rem, 2.4vw, 2.4rem);
+  align-items: stretch;
+  /* Both charged less than they were: the photo was the thing being asked
+     for more of, and padding taken off both edges grows it without moving
+     the rail's own share of the row underneath it. */
+  padding: clamp(0.5rem, 1.4vh, 1.1rem) clamp(0.6rem, 1.6vw, 1.2rem);
   min-height: 0;
-  border: 1px solid var(--seam-10);
-  border-left: 3px solid var(--team, var(--blood));
-  background: rgba(12, 17, 16, 0.5);
 }
 .live-shot {
   display: grid;
   place-items: center;
   aspect-ratio: 4 / 5;
-  /* A portrait frame as wide as its column is taller than a 16:9 screen has
-     to spare, and it was pushing the bid off the bottom. The image covers, so
-     capping the height crops rather than distorts. The cap leaves room for the
-     run-of-play strip that now sits under the card. */
-  max-height: 58svh;
+  /* As big as the panel will give it. Width or height, whichever runs out
+     first, sets the size — the frame keeps its portrait shape either way, so
+     a face is never stretched to fill a gap.
+
+     Hung from the top and stopped short of the foot: the strip sits under
+     this side of the board, and the eight sides in the column beside it are
+     no longer boxed to wherever the photograph happens to end. */
+  align-self: start;
+  /* A width of its own, not one taken from whatever is inside it. The column
+     is sized to this frame, and a lot with no photograph in it must not make
+     that column — and so the whole right-hand half of the board — a different
+     width from the lot before it. */
+  width: clamp(12rem, min(35vw, 50svh), 40rem);
+  max-height: calc(100% - clamp(2.5rem, 6svh, 4rem));
+  max-width: 100%;
   overflow: hidden;
   background: rgba(7, 9, 10, 0.6);
   border: 1px solid var(--seam-06);
@@ -4680,15 +5024,51 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* The element itself, not just its parent: swapping `src` on an existing
+     <img> can flash white for a frame while the new file decodes, because the
+     browser clears the old pixels before the new ones are ready and paints
+     the element's own background in between. Painting that gap in the panel's
+     own colour is what stops the flash from ever being visible. */
+  background-color: #070a09;
 }
+/* Name, skills and bid take the height they need; the eight sides take what
+   is left underneath, which is what keeps the panel from ever running past the
+   foot of the board however tall the name sets. */
+.live-who {
+  display: grid;
+  /* The tag, the name and the skills-and-bid row each take the height they
+     need; the eight sides take everything left under them, so the column ends
+     at the foot of the board rather than stopping short with a gap below it.
+     Nothing above the sides changes height between lots — the name has a box
+     of its own and the bid never wraps — so this cannot move them either. */
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  align-content: start;
+  min-height: 0;
+}
+/* Every line in the column has to be allowed to be narrower than its own text.
+   Without this a grid item defaults to min-width:auto, so the name — which is
+   nowrap — widens the whole column to fit itself, runs off the side of the
+   board, and measures its own room as the width it just took, which leaves the
+   type with nothing to shrink against. */
+.live-who > * {
+  min-width: 0;
+}
+
 .live-name {
+  /* One box, always the same height, whatever size the name inside it ends up
+     being set at. The type scales to the name — big for "Om", small for
+     "Shikhar Karengulwar" — and because the box does not, the bid and the
+     eight sides underneath it never move between lots. */
+  display: flex;
+  align-items: center;
+  height: clamp(2.6rem, 9.5svh, 6.5rem);
   margin: 0.35rem 0 0.5rem;
   /* Read from the back of the room, not from a laptop — every figure on this
      board is sized for a projector. */
-  /* Sized against the height as well as the width: a three-line name and the
-     bid beneath it have to finish above the foot of a 720p share, which is
-     what a screen-shared window usually is. */
-  font-size: calc(min(clamp(1.9rem, 9vw, 8rem), 10svh) * var(--fit, 1));
+  /* Sized against the height as well as the width: the name, the bid and the
+     eight sides now share one column, and all three have to finish above the
+     foot of a 720p share — which is what a screen-shared window usually is. */
+  font-size: calc(min(clamp(1.9rem, 9vw, 8rem), 8.5svh) * var(--fit, 1));
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--seam);
@@ -4709,27 +5089,95 @@ img {
 .live-name.is-longest {
   --fit: 0.5;
 }
+/* Skills and the bid sit side by side — the room reads both at the same
+   glance. The skills take the room they need, the bid takes the rest and
+   right-aligns so the figure sits under the name's right edge. */
+.live-facts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Never two lines. Wrapped, this row grew by its own height and pushed the
+     eight sides down the board — which is the shake between one lot and the
+     next. */
+  flex-wrap: nowrap;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  margin-top: clamp(0.4rem, 1.1vh, 1.1rem);
+  padding-top: clamp(0.4rem, 1vh, 0.9rem);
+  border-top: 1px solid var(--seam-10);
+}
+.live-facts .lot-skills {
+  margin: 0;
+  /* Bat, Bowl and All-round stacked one over the other rather than side by
+     side — three short rows read faster than three columns squeezed against
+     the bid. Grown rather than left to its own width: three short bars in a
+     column left a bare stretch of board between them and the bid, and a meter
+     nobody has to squint at is worth more than a wide gap holding nothing. */
+  flex: 1 1 auto;
+  max-width: 30rem;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: center;
+  min-width: 0;
+  gap: clamp(0.5rem, 1.4vh, 0.85rem);
+}
+/* Every row fills the width the column was just given, and the pips inside it
+   share that width evenly rather than stopping at their own fixed size. */
+.live-facts .lot-skills .meter-pips {
+  flex: 1;
+}
+.live-facts .lot-skills .meter-pips i {
+  flex: 1;
+  width: auto;
+  max-width: 4.5rem;
+  height: 8px;
+}
+/* Inside that stack, a meter turns sideways too — the label beside its pips
+   rather than above them, which is what makes three of them read as a stack
+   rather than three small columns. The label is given a fixed width so the
+   three rows of pips still line up under one another. */
+.live-facts .lot-skills .meter {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+}
+.live-facts .lot-skills .meter-label {
+  flex: none;
+  /* Wide enough for "All-round" — the longest of the three — to sit on one
+     line at this size and spacing; the shorter two just line up under it. */
+  width: 7.4em;
+  white-space: nowrap;
+}
+.live-facts .live-bid {
+  flex: 1 1 auto;
+  text-align: right;
+  min-width: 0;
+  /* The separator moves from the bid to the row above, so the bid itself
+     carries none of it. */
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
 /* The bid is the number the room is watching, so it gets the leading side's
    colour and the largest type on the card. */
 .live-bid {
-  margin-top: clamp(0.5rem, 1.6vh, 1.5rem);
-  padding-top: clamp(0.5rem, 1.4vh, 1rem);
+  margin-top: clamp(0.4rem, 1.1vh, 1.1rem);
+  padding-top: clamp(0.4rem, 1vh, 0.9rem);
   border-top: 1px solid var(--seam-10);
 }
 .live-figure {
-  margin: 0.2rem 0 0.1rem;
+  margin: 0;
+  /* "₹20 L" and "₹1.20 Cr" have to leave the row the same height, or every
+     raise nudges everything under it. */
+  white-space: nowrap;
   /* The biggest thing on the board, and it should be: the price is what the
      room is actually watching. Half again the size it was, paid for by the
      name above never wrapping. */
-  font-size: min(clamp(2.4rem, 12vw, 11rem), 15svh);
+  /* Still the biggest thing on the board by a distance, but no longer taking
+     height the eight sides underneath it now need. */
+  font-size: min(clamp(2.4rem, 12vw, 11rem), 10.5svh);
   line-height: 1;
   color: var(--team-lit, var(--seam));
-}
-.live-leader {
-  font-size: clamp(0.8rem, 1.4vw, 1.1rem);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--team-lit, var(--seam-45));
 }
 .live-idle {
   display: grid;
@@ -4767,12 +5215,13 @@ img {
   position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: clamp(1rem, 3vh, 2rem);
+  /* Tighter than it was: the strip is fixed and out of this flow now (see
+     .strip-run), so the gap here and the padding below no longer have to hold
+     room for it — that height goes to the row above instead, which is what
+     the photograph is bounded by. */
+  gap: clamp(0.5rem, 1.6vh, 1.2rem);
   min-height: 100%;
-  /* Breathing room under the board. Inside the box on purpose — min-height is
-     100% and sizing is border-box, so padding here takes space from the board
-     rather than adding to the page and bringing back a scrollbar. */
-  padding-bottom: clamp(1rem, 4vh, 3rem);
+  padding-bottom: clamp(0.5rem, 1.6vh, 1.2rem);
 }
 /* Fixed, so the colour is the room's colour rather than a panel's. It sits
    under everything and fades between sides rather than cutting. */
@@ -4809,11 +5258,28 @@ img {
    one after him. This replaced a bare "Next — name" in the corner, which told
    the room where the night was going but never where it had just been. */
 .strip-run {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  /* Fixed to the foot of the screen — the same distance up as .stage-tools
+     keeps from the top — rather than sitting wherever the lot panel above it
+     happens to end. The panel's own height used to decide where the strip
+     landed, which left the room below it empty whenever the panel did not
+     reach all the way down. */
+  position: fixed;
+  z-index: 6;
+  left: 50%;
+  bottom: clamp(1rem, 3vh, 2rem);
+  transform: translateX(-50%);
+  /* Sized to however many cells there actually are, not to the six the strip
+     can eventually hold. A grid of six fixed columns kept its full board width
+     even at one player in, and the four columns nothing had been called for
+     yet showed as a bare pale rectangle with nothing in it. Flex cells of a
+     fixed width give the same look once the strip is full, and simply stop
+     short of the edge until then. */
+  display: flex;
+  flex-wrap: nowrap;
   gap: 1px;
-  flex: none;
-  margin-top: clamp(0.5rem, 1.4vh, 1rem);
+  width: fit-content;
+  max-width: calc(100% - var(--gutter) * 2);
+  margin: 0;
   list-style: none;
   background: var(--seam-06);
   border: 1px solid var(--seam-06);
@@ -4821,6 +5287,7 @@ img {
 .run-cell {
   display: flex;
   flex-direction: column;
+  flex: 0 0 clamp(8rem, 15vw, 12.5rem);
   gap: 0.2rem;
   min-width: 0;
   padding: clamp(0.35rem, 1vh, 0.6rem) clamp(0.4rem, 0.9vw, 0.8rem);
@@ -4907,6 +5374,12 @@ img {
 .stage .display {
   text-shadow: none;
 }
+/* Centred over the board rather than pinned to the gutter — the league's
+   name (and a leading side's, once one is bidding) reads as the board's own
+   title this way, not as a heading running down its left edge. */
+.stage-head {
+  text-align: center;
+}
 .stage-title {
   /* One line, always. "Campus Premier League" wants 1546px of width at 100px
      of type and the board gives it 1152px, so it was breaking after "Campus"
@@ -4936,35 +5409,116 @@ img {
    type on the left is sized to be read across a hall and must not shrink. */
 .stage-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(8rem, 14vw, 12rem);
+  /* One column: the eight sides sit inside the lot panel now, under the bid
+     they are answering, rather than in a rail of their own down the side.
+     The second row is for the rounds between lots, where there is no panel
+     to hold them and they fall back to the foot of the board. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
   gap: clamp(0.75rem, 1.5vw, 1.5rem);
-  align-items: center;
+  /* Stretched, not centred: the board has to be told how much height it has
+     to divide, or the lot panel sizes itself off its own content and pushes
+     the run-of-play strip off the foot of the screen. */
+  align-items: stretch;
   min-height: 0;
 }
 .stage-board {
+  grid-row: 1;
   display: grid;
-  align-content: center;
+  /* The strip is fixed to the foot of the screen now (see .strip-run) rather
+     than taking a row of its own here, so the lot panel is free to use
+     everything this row has. */
+  grid-template-rows: minmax(0, 1fr);
   min-width: 0;
   min-height: 0;
+  /* A little room under the board for the strip, which is fixed and out of
+     this flow. Only as much as the strip is tall — the clearance the
+     photograph needs above it is set on the photograph itself, so the
+     right-hand column is free to run all the way down. */
+  padding-bottom: clamp(1.25rem, 3svh, 2rem);
 }
 .rail {
-  /* Eight equal rows of whatever height the board has. Dividing the space
-     rather than stacking into it means the rail can never run off the bottom
-     of the screen, whatever the window is. */
+  /* Two across and four down, under the bid. Dividing whatever height is left
+     between four rows rather than stacking into it means the sides can never
+     run off the foot of the board, however tall the name above them sets. */
   display: grid;
-  grid-template-rows: repeat(8, minmax(0, 1fr));
-  gap: clamp(0.15rem, 0.4vh, 0.4rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.2rem, 0.55vh, 0.55rem) clamp(0.3rem, 0.8vw, 0.75rem);
   align-self: stretch;
-  min-height: 0;
+  /* Set apart from the lot above them: the name, the skills and the bid are
+     one thing to read and the eight sides are another, and they were running
+     straight into each other. */
+  margin-top: clamp(1.25rem, 3.4vh, 2.75rem);
+  min-height: clamp(9rem, 22svh, 15rem);
+  /* Capped as well as floored: left to take everything going, four rows of
+     cells grew taller than the lines inside them needed and each one carried
+     a band of empty card under its bar. */
+  max-height: clamp(11rem, 31svh, 21rem);
+}
+/* A short window — a 720p share is the usual one — has no height for four
+   rows under the bid. There the same eight go four across and two down, which
+   halves what they ask for, and each cell stacks its name over its figures
+   again now that it is narrow rather than wide. */
+@media (max-height: 820px) {
+  .live-who .rail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    min-height: clamp(7rem, 20svh, 10rem);
+  }
+  /* The name's box and the bid both give a little back here: four across and
+     two down still has to finish above the run-of-play strip on a screen this
+     short. */
+  .live-name {
+    height: clamp(2.2rem, 7svh, 4rem);
+  }
+  .live-figure {
+    font-size: min(clamp(2.2rem, 11vw, 11rem), 9svh);
+  }
+  /* And the cells are a quarter of the column wide rather than a half, so the
+     side's name is set to fit that rather than to fill the old one. */
+  .live-who .rail-name,
+  .live-who .rail-no {
+    font-size: clamp(0.5rem, min(0.72vw, 1.3svh), 0.72rem);
+  }
+  .live-who .rail-purse {
+    font-size: clamp(0.7rem, min(1.05vw, 2svh), 1.15rem);
+  }
+  .live-who .rail-side {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "name"
+      "figs"
+      "fill";
+    align-items: center;
+  }
+}
+
+/* Between lots there is no panel to sit in, so the sides take the foot of the
+   board on their own — wider, and half as deep. */
+.stage-body > .rail {
+  grid-row: 2;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  max-height: 34svh;
 }
 .rail-side {
   position: relative;
   display: grid;
+  /* Two across and four down leaves each side a wide, shallow cell, so the
+     name and the purse sit on one line with the squad bar under both —
+     stacking them the way a tall narrow cell did would not fit the height. */
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name figs"
+    "fill fill";
   align-content: center;
-  gap: 0.1rem;
+  align-items: baseline;
+  column-gap: clamp(0.5rem, 1vw, 1rem);
+  row-gap: clamp(0.25rem, 0.7vh, 0.45rem);
   min-height: 0;
   overflow: hidden;
-  padding: 0 clamp(0.35rem, 0.7vw, 0.7rem);
+  padding: 0 clamp(0.6rem, 1vw, 1.1rem);
   padding-top: 4px;
   background: rgba(12, 17, 16, 0.55);
   /* A side out of the running is dimmed rather than removed — the room still
@@ -5014,13 +5568,15 @@ button.rail-side:disabled {
   background: var(--team-lit, var(--blood-lit));
 }
 .rail-name {
+  grid-area: name;
   display: flex;
   align-items: baseline;
   gap: 0.4em;
   font-family: var(--mono);
-  /* Bigger than it was: this is the name the auctioneer calls and the room
-     reads off a shared screen, not a caption. */
-  font-size: clamp(0.55rem, min(0.95vw, 1.5svh), 0.92rem);
+  /* Capped by the longest side's name ("Rajputana Rifles") rather than by the
+     room in the cell — a name that ellipsises to fit a bigger font is a worse
+     trade than a font that stops growing a little sooner. */
+  font-size: clamp(0.6rem, min(0.86vw, 1.4svh), 0.86rem);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--seam-45);
@@ -5034,9 +5590,9 @@ button.rail-side:disabled {
   flex: none;
   display: grid;
   place-items: center;
-  width: 1.5em;
-  height: 1.5em;
-  font-size: clamp(0.55rem, min(0.95vw, 1.5svh), 0.92rem);
+  width: 1.45em;
+  height: 1.45em;
+  font-size: clamp(0.6rem, min(0.86vw, 1.4svh), 0.86rem);
   color: var(--team-lit, var(--seam));
   background: color-mix(in srgb, var(--team) 40%, transparent);
   border: 1px solid color-mix(in srgb, var(--team-lit) 45%, transparent);
@@ -5061,6 +5617,7 @@ button.rail-side:disabled {
   color: var(--team-lit, var(--seam-45));
 }
 .rail-figs {
+  grid-area: figs;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -5069,7 +5626,10 @@ button.rail-side:disabled {
 /* The purse is the figure a viewer actually wants, so it is the largest thing
    in the cell. */
 .rail-purse {
-  font-size: clamp(0.72rem, min(1.3vw, 2.1svh), 1.35rem);
+  /* Sized against the cell's width rather than its new height: the row grew
+     taller, not wider, and every extra pixel here comes straight out of the
+     side's name beside it. */
+  font-size: clamp(0.8rem, min(1.35vw, 2.4svh), 1.6rem);
   line-height: 1.05;
   color: var(--seam);
   white-space: nowrap;
@@ -5079,7 +5639,7 @@ button.rail-side:disabled {
 }
 .rail-count {
   flex: none;
-  font-size: clamp(0.45rem, min(0.75vw, 1.2svh), 0.72rem);
+  font-size: clamp(0.52rem, min(0.8vw, 1.4svh), 0.88rem);
   color: var(--seam-45);
 }
 .rail-count i {
@@ -5087,9 +5647,10 @@ button.rail-side:disabled {
   color: rgba(240, 235, 225, 0.25);
 }
 .rail-fill {
+  grid-area: fill;
   position: relative;
   display: block;
-  height: 3px;
+  height: 5px;
   background: var(--seam-10);
 }
 .rail-fill::after {
@@ -5345,10 +5906,6 @@ button.rail-side:disabled {
 .lot-shot.is-small img {
   object-fit: cover;
 }
-.lot-tag span {
-  color: var(--seam-45);
-}
-
 .queue-head {
   display: flex;
   flex-wrap: wrap;
@@ -6210,24 +6767,6 @@ button.rail-side:disabled {
   color: #fff;
 }
 
-/* The auction's rules sit under the playing conditions as their own set, so
-   the heading has to break the page rather than look like an eleventh rule. */
-.rules-section {
-  margin: clamp(3rem, 9vh, 5.5rem) 0 0;
-  font-size: clamp(1.8rem, 1rem + 3vw, 3.4rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--seam);
-}
-.rules-section-sub {
-  max-width: 46ch;
-  margin: 0.75rem 0 clamp(1.5rem, 4vh, 2.5rem);
-  font-size: clamp(0.95rem, 1vw, 1.1rem);
-  color: var(--seam-45);
-}
-
-
 /* --------------------------------------------------------------------------
    The auction board's own controls
 
@@ -6690,6 +7229,35 @@ kbd {
     );
   animation: stage-drift 26s var(--ease-in-out) infinite alternate;
 }
+/* The lot's photograph, behind everything: blown up, blurred and drifting, so
+   the room's light comes off whoever is under the hammer. Same idea as the
+   Season 4 slides, dimmer — a board that has to be read across a hall cannot
+   have a face competing with the numbers. */
+.stage-photo {
+  position: fixed;
+  inset: -12%;
+  z-index: -2;
+  pointer-events: none;
+  background-position: center 30%;
+  background-size: cover;
+  filter: blur(52px) saturate(1.25);
+  opacity: 0;
+  animation:
+    stage-photo-in 1.4s var(--ease-out) forwards,
+    stage-photo-drift 30s var(--ease-in-out) 1.4s infinite alternate;
+}
+@keyframes stage-photo-in {
+  from { opacity: 0; transform: scale(1.06); }
+  to { opacity: 0.2; transform: none; }
+}
+@keyframes stage-photo-drift {
+  from { transform: translate3d(-2%, 1%, 0) scale(1.04); }
+  to { transform: translate3d(2%, -1%, 0) scale(1.12); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-photo { animation: stage-photo-in 0.4s var(--ease-out) forwards; }
+}
+
 @keyframes stage-drift {
   from { transform: translate3d(-3%, -2%, 0) scale(1); }
   to { transform: translate3d(3%, 2%, 0) scale(1.08); }
@@ -6717,26 +7285,22 @@ kbd {
   to { background-position: -60% 0; }
 }
 
-/* A new lot arrives rather than appearing: the photograph wipes in from the
-   side it sits on and the text lifts under it, staggered so the eye lands on
-   the face and then the name. Keyed to the player's name so every call
-   replays it. */
+/* A new lot used to wipe and lift in — the photograph from the side, the text
+   under it a beat later. On every call that unmounts and remounts the card (a
+   sale clearing before the next lot is revealed), that read as the whole box
+   flashing rather than arriving, so the card is simply there now, the way the
+   eight sides already are. The keyframes stay: the sold stamp still uses
+   lot-line-in for its own lines. */
 .live-shot {
-  animation: lot-shot-in 0.62s var(--ease-out) both;
+  animation: none;
 }
 @keyframes lot-shot-in {
   from { opacity: 0; transform: translate3d(-2.5%, 0, 0) scale(1.04); }
   to { opacity: 1; transform: none; }
 }
 .live-who > * {
-  animation: lot-line-in 0.5s var(--ease-out) both;
+  animation: none;
 }
-.live-who > *:nth-child(1) { animation-delay: 0.06s; }
-.live-who > *:nth-child(2) { animation-delay: 0.12s; }
-.live-who > *:nth-child(3) { animation-delay: 0.19s; }
-.live-who > *:nth-child(4) { animation-delay: 0.25s; }
-.live-who > *:nth-child(5) { animation-delay: 0.31s; }
-.live-who > *:nth-child(6) { animation-delay: 0.37s; }
 @keyframes lot-line-in {
   from { opacity: 0; transform: translate3d(0, 10px, 0); }
   to { opacity: 1; transform: none; }
@@ -6928,10 +7492,30 @@ body.has-reticle .reticle-dot {
 
 /* How far through the round this lot is, beside the label rather than under
    it — the eye is already on that line. */
-.lot-count {
-  margin-left: 0.9em;
-  padding-left: 0.9em;
-  border-left: 1px solid var(--seam-10);
+/* Fixed opposite the way back to the lobby, top-right of the screen — the
+   room's place in the queue, which should hold still rather than travel with
+   the lot's name every time a new one comes up. */
+/* Fixed opposite the way back to the lobby — the two buttons and the count
+   together, right-aligned as one group so the count sits against the gutter
+   and the buttons run off its left rather than any of the three drifting on
+   their own. */
+.stage-tools {
+  position: fixed;
+  z-index: 10;
+  top: 1rem;
+  right: var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.stage-count {
+  margin: 0;
+  /* Matches .lobby-back's own size and position, so the two sit level on the
+     same row rather than one drifting off the other's baseline. */
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: var(--seam-45);
 }
 
@@ -7049,6 +7633,17 @@ body.has-reticle .reticle-dot {
    -------------------------------------------------------------------------- */
 .ruling.reveal {
   --delay: calc(min(var(--i), 4) * 60ms);
+  /* The zigzag carries into the entrance: a rule slides in from the side its
+     number sits on — odd from the left, even from the right. */
+  transform: translateX(-2.5rem);
+}
+.ruling.reveal:nth-child(even) {
+  transform: translateX(2.5rem);
+}
+/* Same specificity as the two rules above, declared last so a rule that has
+   arrived always lands at rest. */
+.ruling.reveal.is-visible {
+  transform: none;
 }
 .ruling.reveal .ruling-no {
   transition: color 0.6s var(--ease-out) 0.15s;
@@ -7091,3 +7686,452 @@ body.has-reticle .reticle-dot {
 }
 
 
+
+/* --------------------------------------------------------------------------
+   Season 4 slide show (/lobby/season4) — one side, the whole screen
+   -------------------------------------------------------------------------- */
+.showboard {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.show {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+/* The stage is the page: in `bare` mode the shell gives back its padding and
+   the bar floats over the slide, so the show runs to all four edges and the
+   way back to the lobby sits on top of it. */
+.lobby-shell.is-bare .lobby-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 12;
+}
+.lobby-shell.is-bare .lobby {
+  padding: 0;
+  gap: 0;
+}
+.show-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #070a09;
+}
+
+/* Every slide is stacked on the stage and only the current one is lit. The
+   change is directional: the outgoing slide leaves the way the incoming one
+   arrives, so going forward slides exit left and going back they exit right —
+   the room always knows which way the show is moving. */
+.show-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translate3d(calc(var(--slide-dir, 1) * 3.5%), 0, 0) scale(0.985);
+  pointer-events: none;
+  transition:
+    opacity 0.85s var(--ease-out),
+    transform 0.85s var(--ease-out);
+}
+/* The stage carries the direction; each slide reads it. Default forward. */
+.show-stage { --slide-dir: 1; }
+.show-stage[data-dir="-1"] { --slide-dir: -1; }
+.show-slide.is-on {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* The side's own colour, thrown across the frame: strongest where its crest
+   stands, falling away to near-black under its name so the type stays read. */
+.show-tint {
+  position: absolute;
+  inset: 0;
+  background:
+    /* Darkest along the top edge, where the bar floats over the slide, so the
+       way back to the lobby is legible whatever is behind it. */
+    linear-gradient(180deg, rgba(7, 10, 9, 0.8), transparent 13%),
+    radial-gradient(
+      70% 90% at 78% 45%,
+      color-mix(in srgb, var(--tie-lit, var(--blood)) 30%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(
+      105deg,
+      #070a09 32%,
+      color-mix(in srgb, var(--tie, var(--blood)) 42%, #070a09)
+    );
+}
+/* The picture again, blown up and blurred behind everything, drifting slowly
+   so the frame is never quite still. */
+.show-wash {
+  object-fit: cover;
+  opacity: 0.22;
+  filter: blur(34px) saturate(1.4);
+  transform: scale(1.15);
+}
+.show-slide.is-on .show-wash {
+  animation: show-drift 18s var(--ease-in-out) infinite alternate;
+}
+@keyframes show-drift {
+  from { transform: scale(1.14) translate3d(-1.5%, 1%, 0); }
+  to { transform: scale(1.26) translate3d(1.5%, -1%, 0); }
+}
+
+/* A vignette over the whole frame, so the picture reads as projected rather
+   than pasted — the corners fall away and the eye is pulled to the middle. */
+.show-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 90% at 50% 42%,
+    transparent 55%,
+    rgba(4, 6, 5, 0.55) 100%
+  );
+}
+
+/* The slide's number, set huge and hollow behind the card — the one piece of
+   set-dressing that is not the picture. It sits low and to the left, half off
+   the frame, so it reads as scale rather than as a label. */
+.show-ghost {
+  position: absolute;
+  z-index: 0;
+  left: clamp(0.5rem, 3vw, 3rem);
+  bottom: clamp(-2rem, -4vh, -1rem);
+  margin: 0;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 118, "wght" 800;
+  font-size: clamp(9rem, 34vh, 22rem);
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--tie-lit, var(--seam)) 14%, transparent);
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+}
+.show-slide.is-on .show-ghost {
+  animation: show-ghost-in 1.2s var(--ease-out) 0.05s both;
+}
+@keyframes show-ghost-in {
+  from { opacity: 0; transform: translate3d(0, 6%, 0); }
+  to { opacity: 0.5; transform: none; }
+}
+
+/* Name on the left, crest on the right. */
+.show-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(1rem, 4vw, 3rem);
+  height: 100%;
+  padding: clamp(1.5rem, 5vh, 3.5rem) clamp(1.25rem, 5vw, 5rem);
+}
+.show-card {
+  max-width: 34ch;
+}
+.show-tag {
+  margin: 0 0 clamp(0.5rem, 1.4vh, 0.9rem);
+  font-size: clamp(0.6rem, 1.4vh, 0.76rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--tie-lit, var(--blood-lit));
+}
+.show-title {
+  margin: 0;
+  font-variation-settings: "wdth" 112, "wght" 800;
+  /* Height decides the size on a wide screen, width on a narrow one — a name
+     set off the height alone runs straight off the side of a phone. */
+  font-size: clamp(1.7rem, min(7.5vh, 10.5vw), 5rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--seam);
+}
+.show-sub {
+  margin: clamp(0.6rem, 1.8vh, 1.1rem) 0 0;
+  font-size: clamp(0.62rem, 1.5vh, 0.8rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--seam-70);
+}
+.show-note {
+  margin: clamp(0.5rem, 1.4vh, 0.9rem) 0 0;
+  max-width: 40ch;
+  font-size: clamp(0.82rem, 1.9vh, 1.05rem);
+  line-height: 1.5;
+  color: var(--seam-45);
+}
+/* A rule in the side's colour under the block, drawn on as the slide lands. */
+.show-card::after {
+  content: "";
+  display: block;
+  width: clamp(4rem, 12vw, 9rem);
+  height: 2px;
+  margin-top: clamp(0.9rem, 2.4vh, 1.6rem);
+  background: linear-gradient(90deg, var(--tie-lit, var(--blood)), transparent);
+  transform-origin: left;
+}
+
+.show-figure {
+  position: relative;
+  height: 100%;
+  margin: 0;
+}
+.show-art {
+  object-fit: contain;
+  /* The crest is lit from its own colour rather than sitting flat on the
+     background. */
+  filter: drop-shadow(0 2rem 3rem rgba(0, 0, 0, 0.55));
+}
+/* Ken Burns on the crest itself: once it has landed it keeps drifting, very
+   slowly, so the frame breathes for the whole hold rather than freezing the
+   moment the entrance ends. */
+.show-slide.is-on .show-art {
+  animation:
+    show-art-in 1s var(--ease-out) both,
+    show-art-drift 16s var(--ease-in-out) 1s infinite alternate;
+}
+@keyframes show-art-drift {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.045) translate3d(-1.2%, -1.6%, 0); }
+}
+.show-blank {
+  display: grid;
+  place-content: center;
+  height: 100%;
+  margin: 0;
+  font-size: clamp(3rem, 16vh, 9rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--tie-lit, var(--seam-45)) 60%, transparent);
+}
+/* A fact slide has no picture, so the number takes the crest's place: the
+   biggest thing on screen, lit in the slide's own colour, with its unit set
+   the way a caption sits under a photograph. */
+.show-stat {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  height: 100%;
+  gap: clamp(0.4rem, 1.4vh, 0.9rem);
+}
+.show-stat-fig {
+  margin: 0;
+  font-variation-settings: "wdth" 118, "wght" 800;
+  font-size: clamp(4.5rem, 20vh, 11rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--tie-lit, var(--blood-lit));
+  text-shadow: 0 1.5rem 3rem color-mix(in srgb, var(--tie, var(--blood)) 45%, transparent);
+}
+.show-stat-unit {
+  margin: 0;
+  font-size: clamp(0.7rem, 1.6vh, 0.9rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+
+/* Each part of a slide arrives rather than appears, in the order it is read:
+   the crest, then the tag, the name, the line under it and the note. The crest
+   keeps drifting after it lands (see .show-art above); the blank initials do
+   not, because there is no photograph to keep alive. */
+.show-slide.is-on .show-blank {
+  animation: show-art-in 1s var(--ease-out) both;
+}
+/* A fact's number gets the crest's entrance and its slow drift both — it is
+   standing in for the picture, so it is treated exactly like one. */
+.show-slide.is-on .show-stat {
+  animation:
+    show-art-in 1s var(--ease-out) both,
+    show-art-drift 16s var(--ease-in-out) 1s infinite alternate;
+}
+.show-slide.is-on .show-tag { animation: show-line-in 0.7s var(--ease-out) 0.1s both; }
+.show-slide.is-on .show-title { animation: show-line-in 0.7s var(--ease-out) 0.18s both; }
+.show-slide.is-on .show-sub { animation: show-line-in 0.7s var(--ease-out) 0.28s both; }
+.show-slide.is-on .show-note { animation: show-line-in 0.7s var(--ease-out) 0.36s both; }
+.show-slide.is-on .show-card::after { animation: show-rule-in 0.8s var(--ease-out) 0.44s both; }
+
+@keyframes show-art-in {
+  from { opacity: 0; transform: translate3d(2.5%, 4%, 0) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes show-line-in {
+  from { opacity: 0; transform: translate3d(0, 1.1rem, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes show-rule-in {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The tabs sit over the slide, top left, where the page heading used to be. */
+.show-tabs {
+  position: absolute;
+  z-index: 3;
+  /* Clear of the bar, which floats over the slide above them. */
+  top: clamp(3.4rem, 8vh, 5rem);
+  left: clamp(1.25rem, 5vw, 5rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem clamp(0.9rem, 2.4vw, 1.8rem);
+}
+.show-tab {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-variation-settings: "wdth" 108, "wght" 700;
+  font-size: clamp(0.95rem, 2.6vh, 1.5rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.show-tab:hover { color: var(--seam-70); }
+.show-tab[aria-selected="true"] {
+  color: var(--seam);
+  /* The selected tab carries the slide's own colour under it. */
+  box-shadow: 0 0.35rem 0 -0.28rem var(--blood);
+}
+/* The page's outline ring boxes a whole word in here, and a tab that has just
+   been pressed should not sit in a red rectangle for the rest of the show. The
+   focus is marked the way the tab already marks itself instead — lit, and
+   underlined in the house colour — so a keyboard still has something to follow
+   and a mouse leaves nothing behind. */
+.show-tab:focus-visible {
+  outline: none;
+  color: var(--seam);
+  box-shadow: 0 0.35rem 0 -0.28rem var(--blood-lit);
+}
+
+.show-step {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  transform: translateY(-50%);
+  border: 1px solid var(--seam-10);
+  border-radius: 999px;
+  background: rgba(8, 11, 10, 0.5);
+  font-size: 1rem;
+  color: var(--seam-70);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.show-step:hover,
+.show-step:focus-visible {
+  outline: none;
+  border-color: var(--blood);
+  background: rgba(8, 11, 10, 0.85);
+  color: var(--seam);
+}
+.show-step.is-back { left: clamp(0.5rem, 1.4vw, 1.1rem); }
+.show-step.is-next { right: clamp(0.5rem, 1.4vw, 1.1rem); }
+
+/* The count and the run through the set, laid over the foot of the slide. */
+.show-foot {
+  position: absolute;
+  z-index: 3;
+  right: clamp(1.25rem, 5vw, 5rem);
+  bottom: clamp(0.9rem, 2.6vh, 1.8rem);
+  left: clamp(1.25rem, 5vw, 5rem);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+.show-no { margin: 0; }
+.show-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+.show-dot {
+  width: 1.4rem;
+  height: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--seam-10);
+  cursor: pointer;
+  transition: background 0.2s, width 0.2s;
+}
+.show-dot.is-on {
+  width: 2.6rem;
+  background: var(--blood-lit);
+}
+.show-dot:focus-visible {
+  outline: none;
+  background: var(--blood-lit);
+}
+/* Too many slides for dots — a pool of eighty would be a wall of them — so the
+   run through the set is shown as one bar instead. */
+.show-bar {
+  flex: 1;
+  max-width: 22rem;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--seam-10);
+  overflow: hidden;
+}
+.show-run {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--blood-lit);
+  transition: width 0.4s var(--ease-out);
+}
+
+.show-empty {
+  margin: auto;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+}
+.show-empty b { color: var(--seam-70); }
+
+/* A phone has no room for two columns: the crest takes the top of the frame
+   and the name sits under it. */
+@media (max-width: 780px) {
+  .show-body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-content: center;
+    padding-top: clamp(3.5rem, 12vh, 6rem);
+  }
+  .show-figure { order: -1; }
+  .show-card { max-width: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .show-slide.is-on .show-wash,
+  .show-slide.is-on .show-art,
+  .show-slide.is-on .show-blank,
+  .show-slide.is-on .show-stat,
+  .show-slide.is-on .show-tag,
+  .show-slide.is-on .show-title,
+  .show-slide.is-on .show-sub,
+  .show-slide.is-on .show-note,
+  .show-slide.is-on .show-ghost,
+  .show-slide.is-on .show-card::after {
+    animation: none;
+  }
+  .show-slide { transition: opacity 0.3s linear; transform: none; }
+}

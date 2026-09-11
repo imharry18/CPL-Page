@@ -45,6 +45,13 @@ export default async function LobbyTeamsPage() {
       }
     >
       <div className="side-wrap">
+        {/* Dynamic floodlights behind the grid — slow-moving beams in the
+            sides' own colours, so the page feels lit rather than flat. */}
+        <div className="side-lights" aria-hidden="true">
+          <span className="side-light is-a" />
+          <span className="side-light is-b" />
+          <span className="side-light is-c" />
+        </div>
 
         <SideGrid sides={table} players={players} paid={paid} />
 

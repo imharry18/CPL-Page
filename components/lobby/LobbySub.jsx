@@ -25,6 +25,10 @@ export default function LobbySub({
   // A screen whose heading has to change while you watch it renders its own,
   // and turns this one off — the auction's title follows the leading bidder.
   head = true,
+  /* A screen that IS its content: the page's padding is given back and the bar
+     floats over what is behind it, so a full-bleed slide show runs to all four
+     edges rather than into a strip at the top. Only makes sense with `fill`. */
+  bare = false,
   children,
 }) {
   const body = (
@@ -56,7 +60,11 @@ export default function LobbySub({
       <div className="backdrop backdrop-vignette" aria-hidden="true" />
       <div className="backdrop backdrop-grain" aria-hidden="true" />
 
-      {fill ? <div className="lobby-shell">{body}</div> : body}
+      {fill ? (
+        <div className={`lobby-shell${bare ? " is-bare" : ""}`}>{body}</div>
+      ) : (
+        body
+      )}
     </>
   );
 }

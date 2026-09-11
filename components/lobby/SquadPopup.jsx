@@ -22,17 +22,9 @@ import { SQUAD_MAX, money } from "@/lib/auctionMoney";
  * the stylesheet never has to know the eight sides exist.
  */
 
-/** A standing figure. One shape, drawn once, used ten times. */
+/** A helmeted, waist-up batter. One generated shape, tinted for every side. */
 function Figure() {
-  return (
-    <svg className="peg-body" viewBox="0 0 40 74" aria-hidden="true">
-      {/* Head, then shoulders falling into a torso, then two legs. Kept as one
-          filled path so it reads as a shape at any size rather than as an
-          illustration that falls apart when it is small. */}
-      <circle cx="20" cy="9" r="7.4" />
-      <path d="M20 18.5c-7.2 0-12.4 4.3-13.4 11L4.4 43.2c-.3 2 1.1 3.6 3 3.6h1.5l1.2 22.6c.1 2 1.7 3.5 3.6 3.5s3.5-1.5 3.6-3.5l1-18.6h2.4l1 18.6c.1 2 1.7 3.5 3.6 3.5s3.5-1.5 3.6-3.5l1.2-22.6h1.5c1.9 0 3.3-1.6 3-3.6l-2.2-13.7c-1-6.7-6.2-11-13.4-11Z" />
-    </svg>
-  );
+  return <span className="peg-body" aria-hidden="true" />;
 }
 
 export default function SquadPopup({ side, players, paid = {}, onClose }) {

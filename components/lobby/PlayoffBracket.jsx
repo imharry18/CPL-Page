@@ -4,16 +4,17 @@ import { tintFor } from "@/lib/matchTints";
  * The road to the final.
  *
  * Each tie is two plates with the tie's name between them, and the wires run
- * left to right in the order the ties are played:
+ * left to right in the order the ties are played. One line leaves Qualifier 1
+ * and forks: the winner's half is green, the loser's red.
  *
  *   1st ─┐                                    ┌──────────▼
- *        QUALIFIER 1 ──┬──────────────────────┘   WINNER Q1
- *   2nd ─┘             │                             FINAL
- *                      ▼   LOSER Q1               WINNER Q2
- *                          QUALIFIER 2 ──────────────▲
+ *        QUALIFIER 1 ──●━━━━━━━━━━━━━━━━━━━━━━┘   WINNER Q1   green
+ *   2nd ─┘             ┃                             FINAL
+ *                      ▼   LOSER Q1               WINNER Q2     red
+ *                          QUALIFIER 2 ━━━━━━━━━━━━━━▲
  *                          WINNER ELIMINATOR
  *   3rd ─┐                     ▲
- *        ELIMINATOR ───────────┘
+ *        ELIMINATOR ━━━━━━━━━━━┛
  *   4th ─┘
  *
  * The plates carry league positions until the league has been played — the
@@ -64,7 +65,9 @@ export default function PlayoffBracket() {
 
         {/* Wires are decoration over a structure the plates already state —
             every one of them is hidden from assistive tech, and they are not
-            drawn at all once the board stacks. */}
+            drawn at all once the board stacks. The stem is the single line out
+            of Qualifier 1; the green and red arms fork off its end. */}
+        <span className="wire wire-stem" aria-hidden="true" />
         <span className="wire wire-q1" aria-hidden="true" />
         <span className="wire wire-drop" aria-hidden="true" />
         <span className="wire wire-el" aria-hidden="true" />

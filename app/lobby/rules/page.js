@@ -1,11 +1,11 @@
 import LobbySub from "@/components/lobby/LobbySub";
-import RevealOnScroll from "@/components/RevealOnScroll";
+import SeasonShow from "@/components/lobby/SeasonShow";
 import {
-  SEASON_4_AUCTION_RULES,
   SEASON_4_RULES,
   SEASON_4_RULES_CLOSING,
 } from "@/data/season4Rules";
 import { REVEAL } from "@/lib/cplData";
+import { tintFor } from "@/lib/matchTints";
 
 export const metadata = {
   title: "Rules — Season 4, Campus Premier League",
@@ -14,101 +14,41 @@ export const metadata = {
 };
 
 export default function LobbyRulesPage() {
+  /* Each rule is a slide: the number stands where a crest would on the Season
+     4 screen, and the rule itself is set against it. The closing word is the
+     last slide, set apart by its size rather than by a different layout. */
+  const slides = [
+    ...SEASON_4_RULES.map((rule, i) => ({
+      key: rule.title,
+      tag: `Rule ${String(i + 1).padStart(2, "0")}`,
+      title: rule.title,
+      note: rule.body,
+      stat: String(i + 1).padStart(2, "0"),
+      statUnit: "of " + String(SEASON_4_RULES.length).padStart(2, "0"),
+      tint: tintFor(i + 1),
+    })),
+    {
+      key: "closing",
+      tag: "The last word",
+      title: SEASON_4_RULES_CLOSING.lead,
+      note: SEASON_4_RULES_CLOSING.body,
+      stat: "∞",
+      statUnit: "open to change",
+      tint: { "--tie": "#c8102e", "--tie-lit": "#ff5a6e" },
+    },
+  ];
+
   return (
     <LobbySub
       eyebrow="Before you play"
       title="Rules"
       reveal={REVEAL}
       lock={false}
+      fill
+      head={false}
+      bare
     >
-      {/* Each rule arrives as it is scrolled to, rather than the whole page
-          being there at once — a rulebook read one rule at a time. */}
-      <RevealOnScroll />
-
-      <div className="rules-page">
-        <p className="rules-lede">
-          Read these before you take the field. Penalties are awarded on the
-          day, and one player&rsquo;s fight can cost a side the tournament.
-        </p>
-
-        <ol className="rulebook">
-          {SEASON_4_RULES.map((rule, i) => (
-            <li
-              className="ruling reveal"
-              key={rule.title}
-              style={{ "--i": i }}
-            >
-              <p className="ruling-no">{String(i + 1).padStart(2, "0")}</p>
-
-              <div className="ruling-body">
-                <h2 className="ruling-title">{rule.title}</h2>
-                <p className="ruling-text">{rule.body}</p>
-
-                {rule.points && (
-                  <ul className="ruling-points">
-                    {rule.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                )}
-
-                {/* The line of the rule that has to land, set apart so it is
-                    read even when the paragraph above it is not. */}
-                {rule.emphasis && (
-                  <p className="ruling-emphasis">{rule.emphasis}</p>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        {/* The auction's own conditions, under their own heading. Numbering
-            restarts: these are a different set of rules for a different night,
-            not rules eleven onward. */}
-        <h2 className="rules-section display">Auction</h2>
-        <p className="rules-section-sub">
-          For the Live Auction. Every figure below is what the console
-          actually enforces on the night.
-        </p>
-
-        <ol className="rulebook">
-          {SEASON_4_AUCTION_RULES.map((rule, i) => (
-            <li
-              className="ruling reveal"
-              key={rule.title}
-              style={{ "--i": i }}
-            >
-              <p className="ruling-no">{String(i + 1).padStart(2, "0")}</p>
-
-              <div className="ruling-body">
-                <h3 className="ruling-title">{rule.title}</h3>
-                <p className="ruling-text">{rule.body}</p>
-
-                {rule.points && (
-                  <ul className="ruling-points">
-                    {rule.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                )}
-
-                {rule.emphasis && (
-                  <p className="ruling-emphasis">{rule.emphasis}</p>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        {/* The last word, and the largest thing on the page after the title:
-            everything above is a starting point. */}
-        <section className="rules-close reveal">
-          <p className="rules-close-lead display">
-            {SEASON_4_RULES_CLOSING.lead}
-          </p>
-          <p className="rules-close-body">{SEASON_4_RULES_CLOSING.body}</p>
-        </section>
-      </div>
+      <SeasonShow slides={slides} label="Rules" />
     </LobbySub>
   );
 }

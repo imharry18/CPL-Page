@@ -21,8 +21,12 @@ import { useEffect, useRef, useState } from "react";
  *     running, the run restarts on the new value rather than finishing the old
  *     one — the board always ends on what is true now.
  *
- * Layout never moves: the width is held by the final string from the first
- * frame, because the scramble is the same length as the text it resolves to.
+ * The scramble is the same LENGTH as the text it resolves to, but not the same
+ * width — "W" and "I" are not the same size in a proportional face. So this
+ * holds the line count steady only where the text it is given cannot wrap:
+ * anything using it across a whole line should be `white-space: nowrap`, or
+ * the running glyphs will spill onto a second line halfway through and take
+ * the height of whatever contains them with it. See `.live-name`.
  *
  * The whole string resolves at once rather than left to right. Settling letter
  * by letter reads as typing, and the eye follows the front of the word instead

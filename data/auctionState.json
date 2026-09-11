@@ -1,11 +1,12 @@
 {
- "current": "Paras Sharma",
+ "current": "Parth Gawande",
  "bid": 2000000,
  "leader": null,
  "bids": [],
  "notice": null,
  "sold": null,
  "unsold": null,
+ "review": null,
  "pass": 1,
  "history": []
 }

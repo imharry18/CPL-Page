@@ -1,5 +1,18 @@
 [
  {
+  "name": "Abhishek Jagotra",
+  "year": "4th Year",
+  "hostellite": false,
+  "bat": "Best",
+  "bowl": "Good",
+  "allround": "Good",
+  "rating": 10,
+  "role": "All-rounder",
+  "prefers": "Batting",
+  "paid": true,
+  "team": ""
+ },
+ {
   "name": "Aditya Pandey",
   "year": "2nd Year",
   "hostellite": true,
@@ -261,6 +274,19 @@
   "team": ""
  },
  {
+  "name": "Ekshwaaku Choudhari",
+  "year": "2nd Year",
+  "hostellite": false,
+  "bat": "Best",
+  "bowl": "Okay",
+  "allround": "Good",
+  "rating": 8,
+  "role": "Batter",
+  "prefers": "Batting",
+  "paid": true,
+  "team": ""
+ },
+ {
   "name": "Harish",
   "year": "4th Year",
   "hostellite": false,
@@ -476,20 +502,6 @@
   "rating": 11,
   "role": "All-rounder",
   "prefers": "Bowling",
-  "paid": true,
-  "team": "",
-  "viceCaptain": false
- },
- {
-  "name": "Lucky Baghel",
-  "year": "Warden",
-  "hostellite": true,
-  "bat": "Good",
-  "bowl": "Good",
-  "allround": "Best",
-  "rating": 10,
-  "role": "All-rounder",
-  "prefers": "Batting",
   "paid": true,
   "team": "",
   "viceCaptain": false

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import LobbyBar from "@/components/lobby/LobbyBar";
 import LobbyGrid from "@/components/lobby/LobbyGrid";
 import RestartSeason from "@/components/lobby/RestartSeason";
@@ -42,7 +44,14 @@ export default async function LobbyPage() {
               </p>
             </div>
 
-            {admin && <RestartSeason />}
+            {/* The way into the season's slide show, and — for the machine
+                running the night only — the way back to zero beside it. */}
+            <div className="lobby-acts">
+              <Link className="lobby-season num" href="/lobby/season4">
+                Season 4
+              </Link>
+              {admin && <RestartSeason />}
+            </div>
           </div>
 
           <LobbyGrid cards={LOBBY_CARDS} />

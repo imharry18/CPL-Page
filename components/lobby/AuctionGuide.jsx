@@ -96,7 +96,10 @@ export default function AuctionGuide({ onClose }) {
                   <kbd>⌘</kbd>
                   <kbd>↵</kbd>
                 </dt>
-                <dd>Unsold. He comes back in the next round.</dd>
+                <dd>
+                  Unsold — in the Opening only. He comes back in the Recall,
+                  where every player left has to be sold.
+                </dd>
               </div>
             </dl>
           </section>
@@ -158,9 +161,11 @@ export default function AuctionGuide({ onClose }) {
             <h3 className="guide-sub num">The night</h3>
             <p className="guide-note">
               Nobody chooses who is next: the running order does, and it calls
-              itself. When a round is exhausted the board offers the players
-              who went unsold in it, up to {ROUNDS} rounds in all. After the
-              last of them it says the auction is complete.
+              itself. When the Opening is exhausted the board offers the
+              players who went unsold in it — the Recall, and the last time of
+              asking. Nobody can be passed over there, so the {ROUNDS} rounds
+              end with every player sold and the board says the auction is
+              complete.
             </p>
           </section>
         </div>

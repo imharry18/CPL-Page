@@ -75,7 +75,18 @@ export default function AuctionLot({ lots }) {
                   strokeWidth="1.2"
                 />
               </svg>
-              <span className="auction-shot-tag num">No photo</span>
+              {/* On the machine running the auction this only ever means a
+                 filename the matcher missed. Everywhere else — a laptop
+                 cloned from GitHub — it means every one of these is empty,
+                 because the photo folder never leaves the machine it was
+                 unzipped on. The caption says the second thing, since that
+                 is the reader it will almost always be true for. */}
+              <span
+                className="auction-shot-tag num"
+                title="Entrants' photographs are kept off the public repository."
+              >
+                Photo not included
+              </span>
             </>
           )}
         </div>

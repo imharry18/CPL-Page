@@ -423,7 +423,12 @@ export default function AuctionLive({
           return;
         }
         if (meta) {
-          if (now.state.current) send({ action: "unsold" });
+          /* Only in the Opening. The Recall is the last time of asking and
+             every player in it has to find a side, so the key that passes one
+             over simply is not there — the server refuses it too. */
+          if (now.state.current && (now.state.pass ?? 1) < ROUNDS) {
+            send({ action: "unsold" });
+          }
           return;
         }
         if (now.state.current && now.state.leader) send({ action: "sold" });
@@ -523,18 +528,32 @@ export default function AuctionLive({
       const room = el.clientWidth;
       if (!room) return;
 
-      // The name is nowrap in CSS, so this is already its one-line width.
-      const needs = el.scrollWidth;
+      /* Measured off the text rather than off the box. scrollWidth never
+         reports narrower than the element itself, so it can say a name is too
+         wide but never that it has room to spare — and a board that can only
+         shrink leaves "Om" as a small word in the middle of a big screen. A
+         range around the text gives its true one-line width either way. */
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const needs = range.getBoundingClientRect().width || el.scrollWidth;
 
       /* Floored, so a freak entry cannot shrink the name to something nobody
          can read across a hall. Set below what the pool actually asks for:
          measured against the board's own column, the tightest name in it —
          "Shikhar Karengulwar" — needs 0.478, and the next three are 0.489,
          0.492 and 0.517. At 0.45 every name lands on one line with room to
-         spare, and the smallest of them is still around 40px. */
+         spare, and the smallest of them is still around 40px.
+
+         And the other way too: a short name is grown into the room a long one
+         needs, so "Om" is not left as a small word in the middle of a board
+         built for "Bhavishya Nilesh Agrawal". Capped, because the name shares
+         its column with the bid and the eight sides — it can take the slack
+         going, not theirs. */
       el.style.setProperty(
         "--fit",
-        needs > room ? String(Math.max(0.45, room / needs)) : "1"
+        needs > room
+          ? String(Math.max(0.45, room / needs))
+          : String(Math.min(1.25, room / needs))
       );
     };
 
@@ -571,6 +590,120 @@ export default function AuctionLive({
   // Leader first — a live bid always outranks a stamp from the lot before.
   const theme = leader ?? buyer ?? reviewSide;
 
+  /* The eight sides, always up.
+
+     The board used to say what was happening and nothing about what was at
+     stake: a viewer could see the bid but not who could still answer it, who
+     was nearly full, or who had spent the room. In the hall you read that off
+     people's faces. Shared to a call there are no faces, so it has to be on
+     the screen.
+
+     Built once and placed twice: under the bid while a lot is up, and on its
+     own at the foot of the board between rounds, when there is no lot panel to
+     sit inside. One element either way, so a side's cell behaves identically
+     wherever the board happens to be putting it. */
+  const railBlock = (
+    <aside className="rail" aria-label="The eight sides">
+      {table.map((side) => {
+        const bidding = state.leader === side.name;
+        // Named apart from the `squad` state above, which is the panel that
+        // is open — shadowing it here would be a trap for the next edit.
+        const squadSize = held.get(side.name) ?? side.bought;
+        const full = squadSize >= SQUAD_MAX;
+        // Out of this lot: nothing left to spend on it, or no room for him.
+        const out = !bidding && (full || side.left < asking);
+        // A side already holding the bid cannot bid against itself, and one
+        // with no lot to bid on has nothing to press for.
+        const canBid =
+          admin && Boolean(state.current) && !announcing && !bidding && !out;
+
+        const inside = (
+          <>
+            <span className="rail-spine" aria-hidden="true" />
+
+            <p className="rail-name">
+              {/* The key that bids for this side, printed where the room and
+                  the auctioneer can both see it. */}
+              <span className="rail-no num" aria-hidden="true">
+                {side.no}
+              </span>
+              <span className="rail-team">{side.name}</span>
+              {full && <em className="rail-flag">Full</em>}
+            </p>
+
+            {/* Purse and squad on one line: the rail divides the height of
+                the board between eight cells, so every row it does not need
+                is height the figures can have instead. */}
+            <div className="rail-figs">
+              <Decode
+                as="b"
+                className="rail-purse num"
+                text={money(side.left)}
+                digits
+                // Moves with the same bid the current-bid figure does, so
+                // the two settle together rather than one trailing the other.
+                duration={480}
+              />
+              <b className="rail-count num">
+                {squadSize}
+                <i>/{SQUAD_MAX}</i>
+              </b>
+            </div>
+
+            {/* The squad as a bar as well as a figure: through a screen
+                share a filled bar survives compression that eats a small
+                numeral, and full is meant to read at a glance. */}
+            <span
+              className="rail-fill"
+              style={{ "--n": squadSize, "--max": SQUAD_MAX }}
+              aria-hidden="true"
+            />
+          </>
+        );
+
+        const className = `rail-side${bidding ? " is-bidding" : ""}${
+          out ? " is-out" : ""
+        }${canBid ? " is-live" : ""}`;
+        const style = { "--team": side.color, "--team-lit": side.colorLit };
+
+        /* Right-click opens the squad, on the auctioneer's machine and on a
+           visitor's alike — it reads the ledger and changes nothing, and
+           "who has this side actually got?" is the question most often
+           asked out loud during an auction. */
+        const onContextMenu = (event) => {
+          event.preventDefault();
+          setSquad(side);
+        };
+
+        // A cell is only a button where it can do something. Rendering one
+        // for a visitor would put a control on screen that does nothing.
+        return admin ? (
+          <button
+            type="button"
+            key={side.name}
+            className={className}
+            style={style}
+            disabled={!canBid}
+            onClick={() => send({ action: "bid", team: side.name })}
+            onContextMenu={onContextMenu}
+            title={`Press ${side.no} to bid · right-click for the squad`}
+          >
+            {inside}
+          </button>
+        ) : (
+          <div
+            key={side.name}
+            className={className}
+            style={style}
+            onContextMenu={onContextMenu}
+          >
+            {inside}
+          </div>
+        );
+      })}
+      </aside>
+  );
+
   return (
     <>
       {/* Below a tablet the board is not drawn at all. It is a screen for the
@@ -597,6 +730,65 @@ export default function AuctionLive({
     >
       {/* The wash that carries the side's colour across the whole screen. */}
       <span className="stage-wash" aria-hidden="true" />
+
+      {/* The lot's own photograph behind all of it — blown up, blurred and
+          drifting, the way the Season 4 slides carry their picture. It changes
+          with the lot, so the room's light changes with whoever is up. */}
+      {lot?.photo && (
+        <span
+          className="stage-photo"
+          key={lot.photo}
+          style={{ backgroundImage: `url("${lot.photo}")` }}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Where the room is in the queue, and — for the machine running the
+         night — the two things it opens between lots, both fixed opposite the
+         way back to the lobby. The count used to sit beside the lot's name and
+         moved every time a new one came up, which is the one thing on this
+         board that should hold still. */}
+      {(roundTotal > 0 || admin) && (
+        <div className="stage-tools">
+          {admin && (
+            <>
+              <button
+                type="button"
+                className="deck-guide"
+                onClick={() => setLedgerOpen(true)}
+                aria-label="Sold, unsold and what is coming"
+                title="Sold, unsold and what is coming"
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  {[3, 8, 13].map((y) => (
+                    <g key={y} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                      <path d={`M1 ${y}h1.4`} />
+                      <path d={`M5.4 ${y}h9.6`} />
+                    </g>
+                  ))}
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                className="deck-guide"
+                onClick={() => setGuideOpen(true)}
+                aria-label="How to run the auction"
+                title="How to run the auction"
+              >
+                ?
+              </button>
+            </>
+          )}
+
+          {roundTotal > 0 && (
+            <p className="stage-count num">
+              {String(calledSoFar).padStart(2, "0")} of {roundTotal}
+              {round > 1 && " unsold"}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="stage-head">
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
@@ -657,22 +849,22 @@ export default function AuctionLive({
           <div className="live-shot">
             {lot.photo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={lot.photo} alt="" />
+              <img src={lot.photo} alt="" decoding="async" />
             ) : (
-              <span className="lot-shot-none num">No photograph</span>
+              /* The room running the auction has the photo folder on the
+                 machine at the front of the hall; a clone of the repo does
+                 not, because that folder is gitignored on purpose. This says
+                 so, rather than leaving a blank frame that reads as broken. */
+              <span className="lot-shot-none num">
+                Photo not included
+                <br />
+                in this repository
+              </span>
             )}
           </div>
 
           <div className="live-who">
-            <p className="lot-tag num">
-              Under the hammer
-              {roundTotal > 0 && (
-                <span className="lot-count">
-                  {String(calledSoFar).padStart(2, "0")} of {roundTotal}
-                  {round > 1 && " unsold"}
-                </span>
-              )}
-            </p>
+            <p className="lot-tag num">Under the hammer</p>
             {/* Keyed to the name so every new lot runs the characters again
                 rather than the text simply swapping under the room's eyes. */}
             <Decode
@@ -682,37 +874,37 @@ export default function AuctionLive({
               key={lot.name}
               text={lot.name}
             />
-            <p className="lot-meta num">
-              {lot.year}
-              {lot.prefers && ` · Prefers ${lot.prefers.toLowerCase()}`}
-            </p>
+            {/* Skills and the bid sit side by side — the room reads both at
+                the same glance, and the row splits the width the name above
+                has already taken. */}
+            <div className="live-facts">
+              <div className="lot-skills">
+                {[
+                  ["Bat", lot.bat],
+                  ["Bowl", lot.bowl],
+                  ["All-round", lot.allround],
+                ].map(([label, value]) => (
+                  <SkillMeter key={label} label={label} value={value} size="lg" />
+                ))}
+              </div>
 
-            <p className={`lot-role role-${lot.role.toLowerCase().replace("-", "")}`}>
-              {lot.role}
-            </p>
-
-            <div className="lot-skills">
-              {[
-                ["Bat", lot.bat],
-                ["Bowl", lot.bowl],
-                ["All-round", lot.allround],
-              ].map(([label, value]) => (
-                <SkillMeter key={label} label={label} value={value} size="lg" />
-              ))}
+              <div className="live-bid">
+                <Decode
+                  as="p"
+                  className="live-figure display"
+                  text={money(state.bid)}
+                  digits
+                  /* Shorter than the default: this one runs on every single
+                     raise, sometimes seconds apart, and a bid that takes a full
+                     second to land reads as the board keeping up rather than
+                     leading the room. */
+                  duration={480}
+                />
+              </div>
             </div>
 
-            <div className="live-bid">
-              <p className="bid-tag num">Current bid</p>
-              <Decode
-                as="p"
-                className="live-figure display"
-                text={money(state.bid)}
-                digits
-              />
-              <p className="live-leader num">
-                {leader ? leader.name : "No bid yet"}
-              </p>
-            </div>
+            {/* The eight sides, under the bid they are answering. */}
+            {railBlock}
           </div>
         </div>
       ) : nextRoundReady ? (
@@ -770,110 +962,7 @@ export default function AuctionLive({
           )}
         </div>
 
-      {/* The eight sides, always up.
-
-          The board used to say what was happening and nothing about what was
-          at stake: a viewer could see the bid but not who could still answer
-          it, who was nearly full, or who had spent the room. In the hall you
-          read that off people's faces. Shared to a call there are no faces, so
-          it has to be on the screen. */}
-      <aside className="rail" aria-label="The eight sides">
-        {table.map((side) => {
-          const bidding = state.leader === side.name;
-          // Named apart from the `squad` state above, which is the panel that
-          // is open — shadowing it here would be a trap for the next edit.
-          const squadSize = held.get(side.name) ?? side.bought;
-          const full = squadSize >= SQUAD_MAX;
-          // Out of this lot: nothing left to spend on it, or no room for him.
-          const out = !bidding && (full || side.left < asking);
-          // A side already holding the bid cannot bid against itself, and one
-          // with no lot to bid on has nothing to press for.
-          const canBid =
-            admin && Boolean(state.current) && !announcing && !bidding && !out;
-
-          const inside = (
-            <>
-              <span className="rail-spine" aria-hidden="true" />
-
-              <p className="rail-name">
-                {/* The key that bids for this side, printed where the room and
-                    the auctioneer can both see it. */}
-                <span className="rail-no num" aria-hidden="true">
-                  {side.no}
-                </span>
-                <span className="rail-team">{side.name}</span>
-                {bidding && <em className="rail-flag">Bidding</em>}
-                {!bidding && full && <em className="rail-flag">Full</em>}
-              </p>
-
-              {/* Purse and squad on one line: the rail divides the height of
-                  the board between eight cells, so every row it does not need
-                  is height the figures can have instead. */}
-              <div className="rail-figs">
-                <Decode
-                  as="b"
-                  className="rail-purse num"
-                  text={money(side.left)}
-                  digits
-                />
-                <b className="rail-count num">
-                  {squadSize}
-                  <i>/{SQUAD_MAX}</i>
-                </b>
-              </div>
-
-              {/* The squad as a bar as well as a figure: through a screen
-                  share a filled bar survives compression that eats a small
-                  numeral, and full is meant to read at a glance. */}
-              <span
-                className="rail-fill"
-                style={{ "--n": squadSize, "--max": SQUAD_MAX }}
-                aria-hidden="true"
-              />
-            </>
-          );
-
-          const className = `rail-side${bidding ? " is-bidding" : ""}${
-            out ? " is-out" : ""
-          }${canBid ? " is-live" : ""}`;
-          const style = { "--team": side.color, "--team-lit": side.colorLit };
-
-          /* Right-click opens the squad, on the auctioneer's machine and on a
-             visitor's alike — it reads the ledger and changes nothing, and
-             "who has this side actually got?" is the question most often
-             asked out loud during an auction. */
-          const onContextMenu = (event) => {
-            event.preventDefault();
-            setSquad(side);
-          };
-
-          // A cell is only a button where it can do something. Rendering one
-          // for a visitor would put a control on screen that does nothing.
-          return admin ? (
-            <button
-              type="button"
-              key={side.name}
-              className={className}
-              style={style}
-              disabled={!canBid}
-              onClick={() => send({ action: "bid", team: side.name })}
-              onContextMenu={onContextMenu}
-              title={`Press ${side.no} to bid · right-click for the squad`}
-            >
-              {inside}
-            </button>
-          ) : (
-            <div
-              key={side.name}
-              className={className}
-              style={style}
-              onContextMenu={onContextMenu}
-            >
-              {inside}
-            </div>
-          );
-        })}
-        </aside>
+      {!lot && railBlock}
       </div>
 
       {/* The moment, in three dimensions, behind whichever stamp is up. Only
@@ -985,35 +1074,8 @@ export default function AuctionLive({
             </button>
           ) : null}
 
-          {/* Beside the guide, and the same shape: two things the auctioneer
-              opens between lots, neither of them part of the broadcast. */}
-          <button
-            type="button"
-            className="deck-guide"
-            onClick={() => setLedgerOpen(true)}
-            aria-label="Sold, unsold and what is coming"
-            title="Sold, unsold and what is coming"
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              {[3, 8, 13].map((y) => (
-                <g key={y} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-                  <path d={`M1 ${y}h1.4`} />
-                  <path d={`M5.4 ${y}h9.6`} />
-                </g>
-              ))}
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            className="deck-guide"
-            onClick={() => setGuideOpen(true)}
-            aria-label="How to run the auction"
-            title="How to run the auction"
-          >
-            ?
-          </button>
-
+          {/* The ledger and the guide moved to the top, beside the count —
+              see .stage-tools above. */}
           {error && <p className="deck-error num">{error}</p>}
         </div>
       )}

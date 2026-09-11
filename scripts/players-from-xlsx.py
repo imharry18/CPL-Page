@@ -57,11 +57,13 @@ PAID_AS = {
 # quietly undoes them. Keys are the name as typed into the form, lowercased.
 RENAME = {
     "mukhtarhussain": "Mukhtar Hussain",
+    "abishak jagotra": "Abhishek Jagotra",
 }
 
 # Entrants to drop, whatever the sheet says.
 WITHDRAWN = {
-    "abishak jagotra",
+    # The warden's entry was a placeholder; Abhishek Jagotra plays instead.
+    "lucky baghel",
 }
 
 # Rows dropped by the address that submitted them. Use this where two rows are
