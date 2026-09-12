@@ -193,18 +193,6 @@ export default function AuctionLive({
 
   const lot = players.find((player) => player.name === state.current);
 
-  /* A lot already resolved that the board is looking back at, and the last
-     word on it. The LAST word: a name unsold in the Opening and bought in the
-     Recall is in the history twice, and the sale is the one that counts. */
-  const review = state.review
-    ? players.find((player) => player.name === state.review)
-    : null;
-  const reviewSale = review
-    ? [...state.history].reverse().find((h) => h.name === review.name) ?? null
-    : null;
-  const reviewSide = reviewSale?.team
-    ? sides.find((side) => side.name === reviewSale.team)
-    : null;
   const leader = sides.find((side) => side.name === state.leader);
   const buyer = sold ? sides.find((side) => side.name === sold.team) : null;
 
@@ -585,7 +573,7 @@ export default function AuctionLive({
   // The page's colour: whoever currently holds the bid, the buyer while the
   // stamp is up over a cleared board, the house red when nobody has bid.
   // Leader first — a live bid always outranks a stamp from the lot before.
-  const theme = leader ?? buyer ?? reviewSide;
+  const theme = leader ?? buyer;
 
   /* The eight sides, always up.
 
@@ -803,35 +791,7 @@ export default function AuctionLive({
             evaluates to nothing would leave the rail to slide into the wide
             one and stretch across the screen. */}
         <div className="stage-board">
-          {review ? (
-            /* A look back, not a lot: what happened to this player, in the
-               colour of whoever bought him. Nothing here can be bid on — the
-               ledger is untouched and the night is still wherever it was. */
-            <div className={`past${reviewSale?.team ? " is-sold" : " is-unsold"}`}>
-              <p className="past-tag num">
-                {reviewSale?.team ? "Already sold" : "Passed over"}
-              </p>
-              <h2 className="past-name display">{review.name}</h2>
-
-              {reviewSale?.team ? (
-                <>
-                  <p className="past-stamp display">Sold</p>
-                  <p className="past-to num">to</p>
-                  <p className="past-team display">{reviewSale.team}</p>
-                  <p className="past-price display">{money(reviewSale.price)}</p>
-                </>
-              ) : (
-                <>
-                  <p className="past-stamp display">Unsold</p>
-                  <p className="past-to num">
-                    {(reviewSale?.pass ?? 1) < ROUNDS
-                      ? `Comes back in the ${roundName((reviewSale?.pass ?? 1) + 1)}`
-                      : "No calls left"}
-                  </p>
-                </>
-              )}
-            </div>
-          ) : state.notice === "unsold" ? (
+          {state.notice === "unsold" ? (
         /* The pause between two rounds. Everything the auction knows is held
            back so the room has one thing to read. */
         <div className="interlude">
