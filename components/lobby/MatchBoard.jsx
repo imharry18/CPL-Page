@@ -16,12 +16,12 @@ import { tintFor } from "@/lib/matchTints";
 const ROUNDS = ["Openers", "Reckoning", "Last Stand", "Fantastic 4", "Crown"];
 
 /* Round 2 splits the Round 1 table three ways: the top two go straight
-   through, the bottom two are out, and the middle four cross over — 3 plays 5,
-   4 plays 6 — for the last two places. Nobody knows who fills a slot until
+   through, the bottom two are out, and the middle four cross over — 3 plays 6,
+   4 plays 5 — for the last two places. Nobody knows who fills a slot until
    Round 1 is played, so the placings stand in for the sides. */
 const ORDINALS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
 const QUALIFY = [0, 1];
-const CROSSOVER = [[2, 4], [3, 5]];
+const CROSSOVER = [[2, 5], [3, 4]];
 const ELIMINATED = [6, 7];
 
 /* Round 2 pairs the table off in twos — 1v2, 3v4, 5v6, 7v8 — and every match
