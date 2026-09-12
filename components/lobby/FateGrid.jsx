@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 import FateScene from "@/components/lobby/FateScene";
 
-const SPIN_SECONDS = 7;
+const SPIN_SECONDS = 3;
+
+/* The rings turning, under the countdown. Started by the press that starts the
+   draw, so the browser counts it as sound the room asked for and lets it
+   play. It runs a little longer than the count, which carries it over the
+   brake rather than cutting out the instant the number reaches nought. */
+const SPIN_SOUND = "/sounds/fate-spin.mp3";
 
 /* How long the rings take to stop turning, and then how long the cards take to
    find the side they were drawn to. Both are movement the room watches, so
@@ -55,8 +61,26 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
   const [count, setCount] = useState(SPIN_SECONDS);
   const [pairs, setPairs] = useState(done ? settled : []);
   const timers = useRef([]);
+  const spinSound = useRef(null);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  /* Built once and kept, rather than made fresh per draw: a new Audio has to
+     fetch before it can sound, and the draw should be heard from its first
+     frame. Never constructed on the server, where there is no Audio. */
+  useEffect(() => {
+    const audio = new Audio(SPIN_SOUND);
+    audio.preload = "auto";
+    spinSound.current = audio;
+    return () => audio.pause();
+  }, []);
+
+  function hush() {
+    const audio = spinSound.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  }
 
   /* Back to the start, so the trigger is there to press again. FateScene
      already knows how to take this: clearing `pairs` is what tells it to fly
@@ -66,6 +90,7 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
   function again() {
     if (phase !== "grid") return;
     timers.current.forEach(clearTimeout);
+    hush();
     setPairs([]);
     setPhase("ready");
   }
@@ -89,6 +114,15 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
 
     setPhase("spin");
     setCount(SPIN_SECONDS);
+
+    /* From the top every time, so a second draw sounds like the first. The
+       browser can still refuse — sound it has no gesture for, a file it could
+       not fetch — and the draw is not a thing to hold up over that. */
+    const audio = spinSound.current;
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
 
     // The countdown is its own clock so the number on screen is the number of
     // seconds left, not a frame count that drifts.
