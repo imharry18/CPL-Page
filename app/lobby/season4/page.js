@@ -4,6 +4,7 @@ import path from "node:path";
 import LobbySub from "@/components/lobby/LobbySub";
 import SeasonTabs from "@/components/lobby/SeasonTabs";
 import { CPL_FACTS } from "@/data/cplFacts";
+import { SEASON_4_NGL } from "@/data/season4Ngl";
 import { SEASON_4_SIDES } from "@/data/season4Sides";
 import { photoFor, photoIndex } from "@/lib/auction";
 import { PURSE, SQUAD_MAX, money } from "@/lib/auctionMoney";
@@ -140,6 +141,30 @@ export default async function LobbySeason4Page() {
     tint: tintFor(i + 1),
   }));
 
+  /* The anonymous inbox, one screenshot and its text per slide — the
+     the text alone, set as large as the room can read it — no screenshot, so
+     nothing on the slide is small enough to need one. A short line gets the
+     full stat-sized treatment; a long one is stepped down so it still fits
+     the frame it lands in. */
+  const ngl = SEASON_4_NGL.map((entry, i) => {
+    const words = entry.text.split(/\s+/).length;
+    const statSize =
+      words <= 6
+        ? undefined
+        : words <= 15
+          ? "clamp(2rem, 5vh, 3.2rem)"
+          : words <= 30
+            ? "clamp(1.4rem, 3.4vh, 2.1rem)"
+            : "clamp(1.1rem, 2.6vh, 1.6rem)";
+    return {
+      key: entry.file,
+      tag: "NGL · anonymous",
+      stat: entry.text,
+      statSize,
+      tint: tintFor(i + 1),
+    };
+  });
+
   const shows = [
     ...(pictures.length > 0
       ? [{ id: "season", name: "Season", slides: pictures }]
@@ -147,6 +172,7 @@ export default async function LobbySeason4Page() {
     { id: "teams", name: "Teams", slides: teams },
     { id: "players", name: "Players", slides: pool },
     { id: "facts", name: "Extras", slides: facts },
+    ...(ngl.length > 0 ? [{ id: "ngl", name: "NGL", slides: ngl }] : []),
   ];
 
   return (

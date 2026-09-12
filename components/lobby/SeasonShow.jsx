@@ -19,11 +19,14 @@ function initials(title = "?") {
 /**
  * One side, one player, or one fact — filling the screen.
  *
- * A slide is `{ key, src, stat, statUnit, tag, title, sub, note, tint }` —
- * everything but `key` is optional, so the same stage carries a plain
- * photograph, a side with its colours, a player with their year and role, or
- * a number with nothing to photograph: `stat` takes the picture's place and is
- * set as large as the crest would have been, `statUnit` a word underneath it.
+ * A slide is `{ key, src, stat, statUnit, statSize, tag, title, sub, note,
+ * tint }` — everything but `key` is optional, so the same stage carries a
+ * plain photograph, a side with its colours, a player with their year and
+ * role, or a number with nothing to photograph: `stat` takes the picture's
+ * place and is set as large as the crest would have been, `statUnit` a word
+ * underneath it. `stat` can carry a line of text instead of a number —
+ * `statSize` overrides how large, for the slide that knows its own text runs
+ * long.
  *
  * The slide is the page: the side's own colour is washed across the whole
  * frame, its crest stands on the right, and its name is set against it on the
@@ -31,12 +34,14 @@ function initials(title = "?") {
  * and the lines follow it in order — so the show has the movement of a
  * broadcast rather than the stillness of a list.
  *
- * Nothing moves on its own. A slide stays up until someone changes it — the
- * arrows, the dots or the left and right keys — because the board is talked
- * over, and a slide that leaves in the middle of a sentence takes the room's
- * attention with it.
+ * Nothing moves on its own, by default. A slide stays up until someone
+ * changes it — the arrows, the dots or the left and right keys — because the
+ * board is talked over, and a slide that leaves in the middle of a sentence
+ * takes the room's attention with it. A show that wants otherwise says so
+ * itself: `auto` is the number of milliseconds to hold a slide before moving
+ * on, for the one board meant to run unattended.
  */
-export default function SeasonShow({ slides, label }) {
+export default function SeasonShow({ slides, label, auto }) {
   const [at, setAt] = useState(0);
   /* Which way the show is moving, so the outgoing slide leaves the way the
      incoming one arrives — forward slides exit left, back slides exit right. */
@@ -58,6 +63,15 @@ export default function SeasonShow({ slides, label }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [go]);
+
+  /* Re-armed on every slide, not just started once — so each one gets its own
+     full `auto` milliseconds regardless of whether it arrived by the timer or
+     by someone pressing an arrow in between. */
+  useEffect(() => {
+    if (!auto || slides.length <= 1) return undefined;
+    const id = setTimeout(() => go(1), auto);
+    return () => clearTimeout(id);
+  }, [auto, at, go, slides.length]);
 
   return (
     <section
@@ -133,7 +147,12 @@ export default function SeasonShow({ slides, label }) {
                        unit set underneath the way a caption sits under a
                        photograph. */
                     <div className="show-stat">
-                      <p className="show-stat-fig display">{slide.stat}</p>
+                      <p
+                        className="show-stat-fig display"
+                        style={slide.statSize ? { fontSize: slide.statSize } : undefined}
+                      >
+                        {slide.stat}
+                      </p>
                       {slide.statUnit && (
                         <p className="show-stat-unit num">{slide.statUnit}</p>
                       )}

@@ -20,7 +20,12 @@ export default function SeasonTabs({ shows }) {
     <div className="showboard">
       {/* Keyed on the set, so switching tabs starts that show at its own
           first slide rather than at whatever number the last one reached. */}
-      <SeasonShow key={show.id} slides={show.slides} label={show.name} />
+      <SeasonShow
+        key={show.id}
+        slides={show.slides}
+        label={show.name}
+        auto={show.id === "teams" ? 3000 : undefined}
+      />
 
       <div className="show-tabs" role="tablist" aria-label="Season 4">
         {shows.map((one, i) => (
