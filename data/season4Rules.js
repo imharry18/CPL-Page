@@ -56,7 +56,7 @@ export const SEASON_4_RULES = [
     body: "Play hard, but no game here is worth an injury.",
   },
   {
-    title: "Every side has ₹100 crore",
+    title: "Every side has ₹80 crore",
     body:
       "The same purse for all eight — what you spend early is not there later.",
   },
@@ -73,7 +73,7 @@ export const SEASON_4_RULES = [
   {
     title: "The order is decided before the night, not during it",
     body:
-      "The list calls itself — unsold players are called again in the Recall and Last Chance.",
+      "The list calls itself — unsold players are called again in the Recall.",
   },
   {
     title: "Sold is sold",
