@@ -204,21 +204,6 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
               Drawn
             </p>
           )}
-          {/* The middle is clear again once the pairs have taken their places
-              at the sides — the same spot the trigger stood in before the
-              draw, now standing empty unless the machine running it wants to
-              run it again. Gated to admin: landing here overwrites the eight
-              names already written into the roster, the same commit the
-              console itself makes. */}
-          {phase === "grid" && admin && (
-            <button
-              type="button"
-              className="fate-go is-again num"
-              onClick={again}
-            >
-              Draw again
-            </button>
-          )}
         </div>
 
         {/* The result is the scene now — eight boxes standing where the
@@ -237,17 +222,27 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
         )}
       </div>
 
-      <p className="fate-hint num">
-        {phase === "ready"
-          ? "Eight iconic players. Eight sides. The grid decides."
-          : phase === "settle"
-            ? "Locking the grid"
-            : phase === "land"
-              ? "Taking their places"
-              : phase === "grid"
-                ? "Drawn. Every one of them is their side's vice captain."
-                : "Drawing"}
-      </p>
+      {phase === "grid" && admin ? (
+        <button
+          type="button"
+          className="fate-go is-again num"
+          onClick={again}
+        >
+          Draw again
+        </button>
+      ) : (
+        <p className="fate-hint num">
+          {phase === "ready"
+            ? "Eight iconic players. Eight sides. The grid decides."
+            : phase === "settle"
+              ? "Locking the grid"
+              : phase === "land"
+                ? "Taking their places"
+                : phase === "grid"
+                  ? "Drawn. Every one of them is their side's vice captain."
+                  : "Drawing"}
+        </p>
+      )}
     </div>
   );
 }
