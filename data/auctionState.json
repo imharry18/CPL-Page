@@ -1,5 +1,5 @@
 {
- "current": "Parth Gawande",
+ "current": null,
  "bid": 2000000,
  "leader": null,
  "bids": [],
@@ -7,6 +7,406 @@
  "sold": null,
  "unsold": null,
  "review": null,
- "pass": 1,
- "history": []
+ "pass": 2,
+ "history": [
+  {
+   "name": "Priyanshu Khatri",
+   "team": "Vajra Strikers",
+   "price": 6000000
+  },
+  {
+   "name": "Mohit Bhabhra",
+   "team": "Vajra Strikers",
+   "price": 50000000
+  },
+  {
+   "name": "Ekshwaaku Choudhari",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Siddharth Pandey",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Aman Singh",
+   "team": "Storm Breakers",
+   "price": 180000000
+  },
+  {
+   "name": "Ramnayan Sharma",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Ram Mandvikar",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Sarth Shirbhate",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Anshul Ghate",
+   "team": "The Godfathers",
+   "price": 80000000
+  },
+  {
+   "name": "Ansh Thakur",
+   "team": "Vajra Strikers",
+   "price": 110000000
+  },
+  {
+   "name": "Kshitij Pal",
+   "team": "Blazing Blades",
+   "price": 80000000
+  },
+  {
+   "name": "Rajveer Singh",
+   "team": "Blazing Blades",
+   "price": 30000000
+  },
+  {
+   "name": "Neel Dorle",
+   "team": "Mavericks XI",
+   "price": 30000000
+  },
+  {
+   "name": "Arjit Shahu",
+   "team": "The Godfathers",
+   "price": 70000000
+  },
+  {
+   "name": "Dhruv Chore",
+   "team": "Blazing Blades",
+   "price": 100000000
+  },
+  {
+   "name": "Rishi Rathi",
+   "team": "The Overlords",
+   "price": 25000000
+  },
+  {
+   "name": "Rushil",
+   "team": "Bajrang United",
+   "price": 70000000
+  },
+  {
+   "name": "Shashwat Gawande",
+   "team": "Rajputana Rifles",
+   "price": 2000000
+  },
+  {
+   "name": "Shiv Zanwar",
+   "team": "Vajra Strikers",
+   "price": 60000000
+  },
+  {
+   "name": "Paras Sharma",
+   "team": "Rajputana Rifles",
+   "price": 15000000
+  },
+  {
+   "name": "Ayan Singh",
+   "team": "The Godfathers",
+   "price": 4000000
+  },
+  {
+   "name": "Aditya Tekade",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Keshav Panpalia",
+   "team": "Rajputana Rifles",
+   "price": 2000000
+  },
+  {
+   "name": "Ansh Chowdhary",
+   "team": "Vajra Strikers",
+   "price": 90000000
+  },
+  {
+   "name": "Rounak Nagwani",
+   "team": "Vajra Strikers",
+   "price": 90000000
+  },
+  {
+   "name": "Aryan Singh",
+   "team": "Rajputana Rifles",
+   "price": 150000000
+  },
+  {
+   "name": "Utkarsh Borkar",
+   "team": "Mavericks XI",
+   "price": 140000000
+  },
+  {
+   "name": "Saurabh Khambalkar",
+   "team": "The Overlords",
+   "price": 25000000
+  },
+  {
+   "name": "Harshit Sewaiwar",
+   "team": "Bajrang United",
+   "price": 10000000
+  },
+  {
+   "name": "Yash Taori",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Uddhav Bajaj",
+   "team": "The Overlords",
+   "price": 140000000
+  },
+  {
+   "name": "Prasad Akle",
+   "team": "Blazing Blades",
+   "price": 40000000
+  },
+  {
+   "name": "Keshav Gupta",
+   "team": "Blazing Blades",
+   "price": 180000000
+  },
+  {
+   "name": "Bhavishya Agrawal",
+   "team": "Storm Breakers",
+   "price": 20000000
+  },
+  {
+   "name": "Devansh Rusia",
+   "team": "Bajrang United",
+   "price": 35000000
+  },
+  {
+   "name": "Meet Agrawal",
+   "team": "Vajra Strikers",
+   "price": 200000000
+  },
+  {
+   "name": "Aishwary Chandela",
+   "team": "Storm Breakers",
+   "price": 2000000
+  },
+  {
+   "name": "Yojya Tembhre",
+   "team": "The Godfathers",
+   "price": 4000000
+  },
+  {
+   "name": "Rudratej Harinkhede",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Kunj Rathi",
+   "team": "The Overlords",
+   "price": 170000000
+  },
+  {
+   "name": "Shikhar Karengulwar",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Abhishek Jagotra",
+   "team": "The Godfathers",
+   "price": 210000000
+  },
+  {
+   "name": "Hemang Pachpande",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Kanishk Mantri",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Rounak Urade",
+   "team": "The Godfathers",
+   "price": 25000000
+  },
+  {
+   "name": "Tushar Sharma",
+   "team": "The Overlords",
+   "price": 10000000
+  },
+  {
+   "name": "Kushal Bodade",
+   "team": "The Godfathers",
+   "price": 25000000
+  },
+  {
+   "name": "Harsh Atara",
+   "team": "The Overlords",
+   "price": 160000000
+  },
+  {
+   "name": "Aniruddha Balsaraf",
+   "team": "Storm Breakers",
+   "price": 8000000
+  },
+  {
+   "name": "Parth Gawande",
+   "team": "Bajrang United",
+   "price": 30000000
+  },
+  {
+   "name": "Kunal Rai",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Aditya Pandey",
+   "team": "Storm Breakers",
+   "price": 30000000
+  },
+  {
+   "name": "Aryan Gupta",
+   "team": "Bajrang United",
+   "price": 2000000
+  },
+  {
+   "name": "Kishan Bhattad",
+   "team": "The Overlords",
+   "price": 60000000
+  },
+  {
+   "name": "Manish Tajane",
+   "team": "Mavericks XI",
+   "price": 80000000
+  },
+  {
+   "name": "Harsh Khajuria",
+   "team": "Storm Breakers",
+   "price": 280000000
+  },
+  {
+   "name": "Sai Doifode",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Ansh Dogra",
+   "team": "Bajrang United",
+   "price": 640000000
+  },
+  {
+   "name": "Jayesh Popli",
+   "team": "Bajrang United",
+   "price": 2000000
+  },
+  {
+   "name": "Shridhar Mishra",
+   "team": null,
+   "price": 0,
+   "pass": 1
+  },
+  {
+   "name": "Parinay Wankhede",
+   "team": "Mavericks XI",
+   "price": 380000000
+  },
+  {
+   "name": "Aryan Gulhare",
+   "team": "Blazing Blades",
+   "price": 4000000
+  },
+  {
+   "name": "Krish Sharma",
+   "team": "Rajputana Rifles",
+   "price": 380000000
+  },
+  {
+   "name": "Ekshwaaku Choudhari",
+   "team": "Mavericks XI",
+   "price": 130000000
+  },
+  {
+   "name": "Siddharth Pandey",
+   "team": "Rajputana Rifles",
+   "price": 30000000
+  },
+  {
+   "name": "Ramnayan Sharma",
+   "team": "Blazing Blades",
+   "price": 290000000
+  },
+  {
+   "name": "Ram Mandvikar",
+   "team": "Rajputana Rifles",
+   "price": 80000000
+  },
+  {
+   "name": "Sarth Shirbhate",
+   "team": "The Godfathers",
+   "price": 290000000
+  },
+  {
+   "name": "Aditya Tekade",
+   "team": "Storm Breakers",
+   "price": 210000000
+  },
+  {
+   "name": "Yash Taori",
+   "team": "Vajra Strikers",
+   "price": 180000000
+  },
+  {
+   "name": "Rudratej Harinkhede",
+   "team": "Storm Breakers",
+   "price": 6000000
+  },
+  {
+   "name": "Shikhar Karengulwar",
+   "team": "Bajrang United",
+   "price": 10000000
+  },
+  {
+   "name": "Hemang Pachpande",
+   "team": "Blazing Blades",
+   "price": 70000000
+  },
+  {
+   "name": "Kanishk Mantri",
+   "team": "Mavericks XI",
+   "price": 10000000
+  },
+  {
+   "name": "Kunal Rai",
+   "team": "Mavericks XI",
+   "price": 2000000
+  },
+  {
+   "name": "Sai Doifode",
+   "team": "Mavericks XI",
+   "price": 20000000
+  },
+  {
+   "name": "Shridhar Mishra",
+   "team": "The Overlords",
+   "price": 2000000
+  }
+ ]
 }

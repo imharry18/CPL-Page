@@ -92,8 +92,8 @@
   "role": "All-rounder",
   "prefers": "",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "Mavericks XI",
+  "viceCaptain": true
  },
  {
   "name": "Ansh Chowdhary",
@@ -216,8 +216,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "Blazing Blades",
+  "viceCaptain": true
  },
  {
   "name": "Ayan Singh",
@@ -353,8 +353,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "The Overlords",
+  "viceCaptain": true
  },
  {
   "name": "Hemang Pachpande",
@@ -738,8 +738,8 @@
   "role": "All-rounder",
   "prefers": "",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "Bajrang United",
+  "viceCaptain": true
  },
  {
   "name": "Rounak Nagwani",
@@ -930,8 +930,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "Rajputana Rifles",
+  "viceCaptain": true
  },
  {
   "name": "Shreyash Jaiswal",
@@ -986,8 +986,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "The Godfathers",
+  "viceCaptain": true
  },
  {
   "name": "Tanishq Dodeja",
@@ -1000,8 +1000,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "Storm Breakers",
+  "viceCaptain": true
  },
  {
   "name": "Tushar Sharma",
@@ -1055,8 +1055,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "Vajra Strikers",
+  "viceCaptain": true
  },
  {
   "name": "Yash Taori",
