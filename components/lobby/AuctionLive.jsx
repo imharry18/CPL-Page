@@ -379,6 +379,21 @@ export default function AuctionLive({
     };
   });
 
+  /* Opening the board always lands on the first name of the round, not
+     wherever a stray key or a stale reload left it. Fires once, the moment
+     the page has a queue to open on — not on every state update, or a sale
+     going through would send the room straight back to the top. Left alone
+     if the board is already there: nothing to jump to, nothing lost. */
+  const opened = useRef(false);
+  useEffect(() => {
+    if (!admin || opened.current) return;
+    const first = live.current?.queue?.[0];
+    if (!first) return;
+    opened.current = true;
+    if (first === state.current) return;
+    send({ action: "lot", name: first }, { quiet: true });
+  }, [admin, navQueue, state.current, send]);
+
   useEffect(() => {
     if (!admin) return undefined;
 
