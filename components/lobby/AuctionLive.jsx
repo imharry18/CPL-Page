@@ -387,8 +387,6 @@ export default function AuctionLive({
       announcing,
       busy,
       queue: navQueue,
-      line: order,
-      resolved: new Set(state.history.map((h) => h.name)),
       advance,
     };
   });
@@ -438,37 +436,33 @@ export default function AuctionLive({
         return;
       }
 
-      /* Stepping through the order without calling anyone. Nothing is
-         recorded, so a name arrowed past simply comes round again — this is
-         for looking ahead, not for skipping a player. */
-      /* Walking the order.
+      /* Walking the round.
 
-         The WHOLE order, not just the players still to be called: stepping
-         left runs back over lots that have already been sold or passed over,
-         and the room should be able to see what happened to them. A name with
-         a result is shown rather than called — the ledger is not touched and
-         the night carries on from where it was. */
+         The round's own queue, not the whole running order: by the Recall most
+         of the order is sold, and arrowing through the night's full list meant
+         stepping over fifty-odd finished lots to reach the handful of players
+         still owed a call — the board running off the end of the order without
+         ever offering one of them. Every name in the queue is callable in the
+         round the night is in, so every step puts a player up rather than
+         showing a result. Nothing is recorded by stepping; a name arrowed past
+         comes round again. */
       if ((event.key === "ArrowRight" || event.key === "ArrowLeft") && !meta) {
         if (now.announcing || now.state.notice) return;
-        const line = now.line;
-        if (line.length === 0) return;
+        const queue = now.queue;
+        if (queue.length === 0) return;
         event.preventDefault();
-        const here = now.state.review ?? now.state.current;
-        const at = line.indexOf(here);
+        const here = now.state.current;
+        const at = queue.indexOf(here);
         const step = event.key === "ArrowRight" ? 1 : -1;
-        /* The order has two ends and the arrows stop at them. It used to wrap,
+        /* The round has two ends and the arrows stop at them. It used to wrap,
            which meant a left press on the first name threw the board to the
-           sixty-first — the room watching the auction jump to the end of the
-           night because somebody pressed a key one time too many. */
+           last — the room watching the auction jump to the end of the night
+           because somebody pressed a key one time too many. */
         const to = at === -1 ? 0 : at + step;
-        if (to < 0 || to >= line.length) return;
-        const name = line[to];
+        if (to < 0 || to >= queue.length) return;
+        const name = queue[to];
         if (name === here) return;
-        send(
-          now.resolved.has(name)
-            ? { action: "review", name }
-            : { action: "lot", name }
-        );
+        send({ action: "lot", name });
         return;
       }
 

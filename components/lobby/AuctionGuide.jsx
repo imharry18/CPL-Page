@@ -139,9 +139,15 @@ export default function AuctionGuide({ onClose }) {
                 <dt>
                   <kbd>←</kbd>
                 </dt>
-                <dd>Back to the name before him in the order.</dd>
+                <dd>Back to the name before him.</dd>
               </div>
             </dl>
+            <p className="guide-note">
+              The arrows walk the round you are in, not the whole night — in
+              the Recall that is the players who went unsold, so they step
+              between the names still to be bid for rather than over every lot
+              already finished.
+            </p>
           </section>
 
           <section>
