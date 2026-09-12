@@ -192,7 +192,7 @@ export default function CPLPage() {
                             )}
                         </section>
                     ))}
-                    <p className="text-center text-[10px] text-white/30 uppercase tracking-widest font-mono pt-4">Umpire's decision is final in all situations.</p>
+                    <p className="text-center text-[10px] text-white/30 uppercase tracking-widest font-mono pt-4">Umpire&apos;s decision is final in all situations.</p>
                 </div>
             </div>
         </div>
