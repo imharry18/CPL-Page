@@ -111,6 +111,8 @@ export default function AuctionGuide({ onClose }) {
                 <dt>
                   <kbd>⌘</kbd>
                   <kbd>Z</kbd>
+                  <span className="guide-or num">or</span>
+                  <kbd>⌫</kbd>
                 </dt>
                 <dd>
                   One step back. The raise just called — or, if none has been,

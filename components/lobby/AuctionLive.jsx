@@ -408,7 +408,10 @@ export default function AuctionLive({
 
       const meta = event.metaKey || event.ctrlKey;
 
-      if (meta && event.key.toLowerCase() === "z") {
+      // ⌘Z, or Backspace on its own — the key that already means "take that
+      // back" everywhere else, so the auctioneer's hand does not have to
+      // learn a second one just for this board.
+      if ((meta && event.key.toLowerCase() === "z") || event.key === "Backspace") {
         event.preventDefault();
         send({ action: "back" });
         return;

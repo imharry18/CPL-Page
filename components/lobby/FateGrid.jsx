@@ -58,6 +58,18 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
+  /* Back to the start, so the trigger is there to press again. FateScene
+     already knows how to take this: clearing `pairs` is what tells it to fly
+     the result boxes apart and send the cards home to the ready columns (see
+     the "redraw" handling in its render loop) — nothing here has to know how
+     that animates, only that it is safe to ask for. */
+  function again() {
+    if (phase !== "grid") return;
+    timers.current.forEach(clearTimeout);
+    setPairs([]);
+    setPhase("ready");
+  }
+
   function draw() {
     if (phase !== "ready") return;
 
@@ -157,6 +169,21 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
             <p className="fate-count display is-word" aria-live="off">
               Drawn
             </p>
+          )}
+          {/* The middle is clear again once the pairs have taken their places
+              at the sides — the same spot the trigger stood in before the
+              draw, now standing empty unless the machine running it wants to
+              run it again. Gated to admin: landing here overwrites the eight
+              names already written into the roster, the same commit the
+              console itself makes. */}
+          {phase === "grid" && admin && (
+            <button
+              type="button"
+              className="fate-go is-again num"
+              onClick={again}
+            >
+              Draw again
+            </button>
           )}
         </div>
 
