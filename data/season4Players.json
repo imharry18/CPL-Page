@@ -92,7 +92,7 @@
   "role": "All-rounder",
   "prefers": "",
   "paid": true,
-  "team": "Mavericks XI",
+  "team": "The Godfathers",
   "viceCaptain": true
  },
  {
@@ -325,8 +325,8 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": "",
-  "viceCaptain": false
+  "team": "Rajputana Rifles",
+  "viceCaptain": true
  },
  {
   "name": "Harshit Sewaiwar",
@@ -930,8 +930,8 @@
   "role": "All-rounder",
   "prefers": "Batting",
   "paid": true,
-  "team": "Rajputana Rifles",
-  "viceCaptain": true
+  "team": "Storm Breakers",
+  "viceCaptain": false
  },
  {
   "name": "Shreyash Jaiswal",
@@ -986,7 +986,7 @@
   "role": "All-rounder",
   "prefers": "Bowling",
   "paid": true,
-  "team": "The Godfathers",
+  "team": "Mavericks XI",
   "viceCaptain": true
  },
  {
@@ -1055,8 +1055,8 @@
   "role": "Batter",
   "prefers": "Batting",
   "paid": true,
-  "team": "Vajra Strikers",
-  "viceCaptain": true
+  "team": "Mavericks XI",
+  "viceCaptain": false
  },
  {
   "name": "Yash Taori",
