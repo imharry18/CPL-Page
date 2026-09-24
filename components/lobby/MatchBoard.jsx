@@ -416,7 +416,7 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
      to whoever happens to have the page open, and a phone opened after the
      draw must show the same four ties as the screen at the front of the room. */
   const saved =
-    initial?.drawn && initial.matches?.length === sides.length / 2
+    initial?.drawn && initial.matches?.length === Math.floor(sides.length / 2)
       ? initial.matches
       : null;
 
@@ -424,7 +424,7 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
   const [matches, setMatches] = useState(saved ?? []);
   // Whether what is on screen is the real draw rather than the spin.
   const [official, setOfficial] = useState(Boolean(saved));
-  /* "ready" is eight question marks and nothing moving: until the draw is
+  /* "ready" is question marks and nothing moving: until the draw is
      made there is no fixture, and a board hunting through combinations nobody
      will play reads as a result that keeps changing its mind. "stopping" is
      the wind-down the room watches, "stopped" is a made draw — and a made draw
@@ -493,7 +493,7 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
 
   /* Everyone else's board follows the draw rather than inventing one.
      Only the auction machine can save a fixture, so a visitor pressing Stop
-     was landing on four ties of their own that nobody else could see. This
+     was landing on ties of their own that nobody else could see. This
      watches for the real draw and settles onto it the moment it exists —
      whether this board is still spinning or has already stopped on a guess. */
   useEffect(() => {
@@ -504,7 +504,7 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
         const response = await fetch("/api/round1", { cache: "no-store" });
         if (!response.ok) return;
         const draw = await response.json();
-        if (!draw.drawn || draw.matches?.length !== sides.length / 2) return;
+        if (!draw.drawn || draw.matches?.length !== Math.floor(sides.length / 2)) return;
         clearInterval(id);
         settle(draw.matches, false);
       } catch {
@@ -518,8 +518,11 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [admin, official, sides]);
 
+  // Placeholder empty slots shown before the draw — one per expected match.
+  const expectedMatchCount = Math.floor(sides.length / 2);
   const slots =
-    matches.length > 0 ? matches : Array.from({ length: 4 }, () => ({}));
+    matches.length > 0 ? matches : Array.from({ length: expectedMatchCount }, () => ({}));
+
 
   return (
     <>
@@ -553,7 +556,7 @@ export default function MatchBoard({ sides, initial, admin, crownedOn }) {
             <span className="fx-hint num">
               {phase === "ready"
                 ? admin
-                  ? "Eight sides, four ties"
+                  ? `${sides.length} sides, ${expectedMatchCount} ties`
                   : "Waiting for the draw"
                 : phase === "stopping"
                   ? "Finding a combination"

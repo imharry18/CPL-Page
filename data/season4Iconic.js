@@ -10,12 +10,9 @@
  * Spelled exactly as data/season4Players.json spells them.
  */
 export const SEASON_4_ICONIC = [
-  "Rishi Sharma",
-  "Anirudh",
-  "Swarit Kokas",
-  "Harshit Upadhyay",
-  "Vaibhav Jagtap",
-  "Tanishq Dodeja",
-  "Atharva Yadav",
-  "Shourya Pandey",
+  "Harsh Mendhe",
+  "Nikunj Jaiswal",
+  "Nihal Toshniwal",
+  "Harshit Raj",
+  
 ];

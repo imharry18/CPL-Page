@@ -20,7 +20,7 @@ import ChampionsSection from "@/components/sections/ChampionsSection";
 import StatsSection from "@/components/sections/StatsSection";
 import RecordsSection from "@/components/sections/RecordsSection";
 import ClosingSection from "@/components/sections/ClosingSection";
-import { CPL_TEAMS } from "@/data/cplTeams";
+import { SEASON_4_SIDES } from "@/data/season4Sides";
 import {
   SEASON_4,
   SECTIONS,
@@ -59,7 +59,7 @@ export default function Home() {
         <MomentsSection />
         <AboutSection />
         <ChampionsSection champions={champions} />
-        <StatsSection seasons={seasons} teams={CPL_TEAMS} />
+        <StatsSection seasons={seasons} teams={SEASON_4_SIDES} />
         <RecordsSection highlights={highlights} />
         <ClosingSection dates={SEASON_4} />
       </main>
