@@ -33,9 +33,9 @@ export default function ScheduleSection({ dates }) {
 
         <p className="schedule-cta reveal">
           <Link className="btn btn-primary btn-lg" href="/lobby">
-            Season 4
+            Season 1
           </Link>
-          <span>Every match at the football ground. Entries are closed.</span>
+          <span>Every match at the football turf. Entries are closed.</span>
         </p>
       </div>
     </section>

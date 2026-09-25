@@ -8,12 +8,13 @@ import { SQUAD_MAX } from "@/lib/auctionMoney";
 /**
  * Commit a FateGrid draw.
  *
- * The eight drawn players become their side's vice captain and are allotted to
- * it there and then — they do not go under the hammer afterwards. Written to
- * data/season4Players.json, the same file the captains sit in.
+ * The drawn players are allotted to their side there and then — they do not go
+ * under the hammer afterwards. Written to data/season4Players.json, the same
+ * file the captains sit in. `viceCaptain` is the mark of having been drawn
+ * rather than bought, which is what lets a re-draw find them again.
  *
  * A fresh draw clears the previous one first, so running the grid twice
- * replaces the eight rather than accumulating them.
+ * replaces the drawn rather than accumulating them.
  */
 
 const FILE = path.join(process.cwd(), "data", "season4Players.json");
@@ -38,10 +39,7 @@ export async function POST(request) {
   const captains = new Set(
     SEASON_4_SIDES.map((side) => {
       const match = players.find(
-        (player) =>
-          player.team === side.name &&
-          side.captain &&
-          player.name.split(" ")[0].toLowerCase() === side.captain.toLowerCase()
+        (player) => player.team === side.name && player.route === "captain"
       );
       return match?.name;
     }).filter(Boolean)
@@ -86,9 +84,15 @@ export async function POST(request) {
    * adding a second vice captain to every side.
    */
   const full = [];
-  for (const { side } of pairs) {
+  const taking = new Map();
+  for (const { side } of pairs) taking.set(side, (taking.get(side) ?? 0) + 1);
+  for (const [side, adding] of taking) {
+    // Counted against everything the draw gives this side, not one at a time:
+    // a side now draws two, and checking them singly lets the second through.
     const held = players.filter((player) => player.team === side).length;
-    if (held >= SQUAD_MAX) full.push(`${side} already has ${held}`);
+    if (held + adding > SQUAD_MAX) {
+      full.push(`${side} would hold ${held + adding}`);
+    }
   }
   if (full.length) {
     return Response.json(

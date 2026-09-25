@@ -8,9 +8,9 @@ import { getPlayers } from "@/lib/players";
 import { purses, readState } from "@/lib/auction";
 
 export const metadata = {
-  title: "Teams — Season 4, Campus Premier League",
+  title: "Teams — Season 1, Football Premier League",
   description:
-    "The eight Season 4 sides. Squads are built from scratch at the auction.",
+    "The eight Season 1 sides. Squads are built from scratch at the auction.",
 };
 
 /* Squads and purses come out of the auction ledger, so this page is only ever
@@ -30,7 +30,7 @@ export default async function LobbyTeamsPage() {
 
   return (
     <LobbySub
-      eyebrow="The draw · Eight sides"
+      eyebrow="The draw · Seven sides"
       title="Teams"
       reveal={REVEAL}
       lock={false}

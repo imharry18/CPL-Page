@@ -793,7 +793,7 @@ export default function AuctionLive({
       <div className="stage-head">
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
         <h1 className="display stage-title" aria-live="polite">
-          {theme ? theme.name : "Campus Premier League"}
+          {theme ? theme.name : "Football Premier League"}
         </h1>
       </div>
 
@@ -851,13 +851,7 @@ export default function AuctionLive({
                 has already taken. */}
             <div className="live-facts">
               <div className="lot-skills">
-                {[
-                  ["Bat", lot.bat],
-                  ["Bowl", lot.bowl],
-                  ["All-round", lot.allround],
-                ].map(([label, value]) => (
-                  <SkillMeter key={label} label={label} value={value} size="lg" />
-                ))}
+                <SkillMeter label={lot.role} value={lot.rating} size="lg" />
               </div>
 
               <div className="live-bid">

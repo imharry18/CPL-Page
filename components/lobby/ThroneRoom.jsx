@@ -18,7 +18,7 @@ export default function ThroneRoom({ sides, crownedOn }) {
           <Image
             className="trophy-art"
             src="/lobby/championship-trophy.png"
-            alt="The Campus Premier League championship trophy"
+            alt="The Football Premier League championship trophy"
             width={1024}
             height={1536}
             sizes="(max-width: 640px) 68vw, 23rem"
@@ -29,7 +29,7 @@ export default function ThroneRoom({ sides, crownedOn }) {
 
       <p className="throne-eyebrow num">Crowned {crownedOn}</p>
       <h2 className="throne-ask display">Who lifts the trophy?</h2>
-      <p className="throne-sub">Eight sides. One champion.</p>
+      <p className="throne-sub">Seven sides. One champion.</p>
 
       <ul className="claimants">
         {sides.map((side, i) => (

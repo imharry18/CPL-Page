@@ -20,7 +20,7 @@ const body = Inter_Tight({
 });
 
 /** Every number on the page is set in this, with tabular figures, so columns
- *  of runs and wickets line up instead of jittering. */
+ *  of goals and clean sheets line up instead of jittering. */
 const mono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
@@ -29,15 +29,15 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "Campus Premier League — Season 4",
+  title: "Football Premier League — Season 1",
   description:
-    "Inter-hostel cricket since 2025. Three champions, no repeats, a full stats archive, and the Season 4 player pool.",
+    "Inter-hostel football, first season. The inaugural season's player pool and auction.",
   // 64px copy of the crest: the full logo is 503KB, which is a lot to ask
   // of every page load for a 16px browser tab.
   icons: { icon: "/icon-64.png", apple: "/icon-64.png" },
   openGraph: {
-    title: "Campus Premier League — Season 4",
-    description: "Same pitch, same ball, same chance. The Season 4 auction is live.",
+    title: "Football Premier League — Season 1",
+    description: "Same turf, same ball, same chance. The Season 1 auction is live.",
     type: "website",
   },
 };

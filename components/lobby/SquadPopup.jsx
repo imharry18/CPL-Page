@@ -22,7 +22,7 @@ import { SQUAD_MAX, money } from "@/lib/auctionMoney";
  * the stylesheet never has to know the eight sides exist.
  */
 
-/** A helmeted, waist-up batter. One generated shape, tinted for every side. */
+/** A kitted, waist-up footballer. One generated shape, tinted for every side. */
 function Figure() {
   return <span className="peg-body" aria-hidden="true" />;
 }
@@ -48,8 +48,7 @@ export default function SquadPopup({ side, players, paid = {}, onClose }) {
      everyone bought, in the order they were bought. The rest stand empty. */
   const ranked = [...squad].sort((a, b) => {
     const rank = (p) => {
-      const first = p.name.split(" ")[0].toLowerCase();
-      if (side.captain && first === side.captain.toLowerCase()) return 0;
+      if (p.route === "captain") return 0;
       if (p.viceCaptain) return 1;
       return 2;
     };
@@ -60,9 +59,8 @@ export default function SquadPopup({ side, players, paid = {}, onClose }) {
   const short = SQUAD_MAX - squad.length;
 
   function roleOf(player) {
-    const first = player.name.split(" ")[0].toLowerCase();
-    if (side.captain && first === side.captain.toLowerCase()) return "Captain";
-    if (player.viceCaptain) return "Vice captain";
+    if (player.route === "captain") return "Captain";
+    if (player.viceCaptain) return "Drawn";
     return paid[player.name] != null ? money(paid[player.name]) : player.role;
   }
 

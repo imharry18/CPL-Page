@@ -6,7 +6,7 @@ export const CPL_TEAMS = [
     name: 'Rashtriya Rifles', 
     captain: 'Harish', 
     color: '#1E3A8A', // Navy Blue
-    desc: 'Known for discipline & aggressive cricket',
+    desc: 'Known for discipline & aggressive football',
     logo: '/teams/rashtriya-rifles.png', 
     squad: [
       'Harish (C)', 'Anirudh', 'Abhishek Jagotra', 'Manthan Pandoh', 
@@ -71,7 +71,7 @@ export const CPL_TEAMS = [
     name: 'Melbourne Stars', 
     captain: 'Harsh Atara', 
     color: '#10B981', // Green
-    desc: 'Fast-paced, modern cricket style',
+    desc: 'Fast-paced, modern football style',
     logo: '/teams/melbourne-stars.png',
     squad: [
       'Harsh Atara (C)', 'Rishi Sharma', 'Sarvagya', 'Ravi Bhushan', 

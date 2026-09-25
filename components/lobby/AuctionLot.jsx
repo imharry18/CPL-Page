@@ -2,18 +2,17 @@
 
 import { useState } from "react";
 
-const PIP = { Best: 4, Good: 3, Average: 2, Okay: 1 };
-
 /** Rupees, grouped the Indian way — 1,20,000 rather than 120,000. */
 const rupees = (value) => `₹${value.toLocaleString("en-IN")}`;
 
+/** The player's own 1–5 rating from the entry form, as pips. */
 function Skill({ label, value }) {
-  const level = PIP[value] || 0;
+  const level = Number(value) || 0;
   return (
     <div className="skill">
       <span className="skill-label">{label}</span>
-      <span className="skill-pips" title={value} aria-label={`${label}: ${value}`}>
-        {[1, 2, 3, 4].map((step) => (
+      <span className="skill-pips" title={`${level} of 5`} aria-label={`${label}: ${level} of 5`}>
+        {[1, 2, 3, 4, 5].map((step) => (
           <i key={step} className={step <= level ? "on" : undefined} aria-hidden="true" />
         ))}
       </span>
@@ -107,17 +106,16 @@ export default function AuctionLot({ lots }) {
           <p className="auction-type num">
             {lot.role}
             <span> · {lot.year}</span>
-            {lot.hostellite && <span> · Hostellite</span>}
-            {lot.prefers && <span> · Prefers {lot.prefers.toLowerCase()}</span>}
+            {lot.secondary && lot.secondary !== lot.role && (
+              <span> · also {lot.secondary.toLowerCase()}</span>
+            )}
           </p>
 
           <div className="auction-skills">
-            <Skill label="Bat" value={lot.bat} />
-            <Skill label="Bowl" value={lot.bowl} />
-            <Skill label="All" value={lot.allround} />
+            <Skill label="Rating" value={lot.rating} />
             <div className="skill">
-              <span className="skill-label">Rating</span>
-              <span className="auction-rating num">{lot.rating} / 12</span>
+              <span className="skill-label">Out of</span>
+              <span className="auction-rating num">{lot.rating} / 5</span>
             </div>
           </div>
 

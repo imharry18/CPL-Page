@@ -19,17 +19,18 @@ const BRAKE_MS = 1200;
 const LAND_MS = 2000;
 
 /**
- * FateGrid — eight iconic players drawn to eight sides.
+ * FateGrid — the pot 1 and pot 2 second years drawn to the second-year sides,
+ * the whole grid on one spin: two players to every side, one out of each pot.
  *
  * Five states, and the screen moves through them without a cut:
  *
- *   ready    two columns, sides on the left and the iconic eight on the right
+ *   ready    two columns, sides on the left and the drawn pool on the right
  *   spin     every card thrown onto two counter-rotating rings, a countdown
  *            in the middle of them
  *   settle   the rings brake
  *   land     each side crosses to the player it drew and the pairs take their
- *            places, eight cards holding in two columns of four
- *   grid     the same eight pairs, resolved into type
+ *            places, two sides to a row and each side's two together
+ *   grid     the same pairs, resolved into type
  *
  * There is no cut anywhere in that, because there is nothing to cut to. The
  * board used to tear down the whole arena the moment the count ended and swap
@@ -44,22 +45,29 @@ const LAND_MS = 2000;
  * animation can never disagree with the draw, however it is interrupted.
  */
 export default function FateGrid({ sides, players, initial, admin = false }) {
-  /* A draw already made. The eight are written into the roster as their side's
-     vice captain the moment the grid lands, so the page hands that back here
-     and the board opens on the result rather than offering to draw it again.
-     The grid runs once a season; what it decided is not a thing to re-roll
-     because somebody reloaded the page. */
+  /* The spins already made. The drawn are written onto their side in the
+     roster the moment the grid lands, so the page hands that back here and the
+     board opens on the result rather than offering to draw it again. The grid
+     runs once a season; what it decided is not a thing to re-roll because
+     somebody reloaded the page.
+
+     Pairs are ordered by the pool, not by when they were drawn, so the board
+     lays out the same way on a reload as it did live. */
   const settled = (initial ?? [])
     .map(({ side, player }) => ({
       side: sides.find((s) => s.name === side),
       player: players.find((p) => p.name === player),
     }))
     .filter((pair) => pair.side && pair.player);
-  const done = settled.length > 0 && settled.length === Math.min(sides.length, players.length);
+  // A grid already drawn opens on its result rather than on the trigger.
+  const [phase, setPhase] = useState(settled.length ? "grid" : "ready");
 
-  const [phase, setPhase] = useState(done ? "grid" : "ready");
   const [count, setCount] = useState(SPIN_SECONDS);
-  const [pairs, setPairs] = useState(done ? settled : []);
+  const [pairs, setPairs] = useState(settled);
+  /* The pairs this spin is for, as against ones read back off the roster: the
+     scene keeps a settled card standing on the board and sends only these to
+     the rings, so a page opened on a finished grid has none. */
+  const [active, setActive] = useState([]);
   const timers = useRef([]);
   const spinSound = useRef(null);
 
@@ -92,25 +100,38 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
     timers.current.forEach(clearTimeout);
     hush();
     setPairs([]);
+    setActive([]);
     setPhase("ready");
   }
 
   function draw() {
     if (phase !== "ready") return;
 
-    const deck = [...players];
-    for (let i = deck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-    /* Fewer players than sides means the last sides draw nothing. The page
-       drops an iconic name that no longer matches the roster, so this is one
-       typo in season4Iconic.js away — and reading `.name` off a blank pairing
-       takes the whole screen down in front of the room. Better a short grid. */
-    const chosen = sides
-      .map((side, i) => ({ side, player: deck[i] }))
-      .filter((pair) => pair.player);
-    setPairs(chosen);
+    /* One spin settles the whole grid: every side takes one player out of
+       each pot, and which player is the only part fate decides.
+
+       Drawn pot by pot rather than from one deck, because that is what makes
+       it even — a side cannot end up with two out of the same pot, and no
+       side can be handed both of the best names. A pot shorter than the
+       number of sides leaves the last sides nothing from it, and those
+       pairings are dropped rather than made with a blank: reading `.name` off
+       one takes the whole screen down in front of the room. */
+    const pots = [...new Set(players.map((player) => player.pot))].sort();
+    const chosen = pots.flatMap((pot) => {
+      const hat = players.filter((player) => player.pot === pot);
+      for (let i = hat.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [hat[i], hat[j]] = [hat[j], hat[i]];
+      }
+      return sides
+        .map((side, i) => ({ side, player: hat[i] }))
+        .filter((pair) => pair.player);
+    });
+    if (chosen.length === 0) return;
+
+    const all = chosen;
+    setPairs(all);
+    setActive(all);
 
     setPhase("spin");
     setCount(SPIN_SECONDS);
@@ -145,15 +166,19 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
     timers.current.push(
       setTimeout(() => {
         setPhase("grid");
-        // The draw is the allotment: these eight are their side's vice captain
-        // from this moment, so it is written as the grid lands rather than
-        // waiting for anyone to confirm what the room has already seen.
+        /* The draw is the allotment: these players are on their side from
+           this moment, so it is written as the grid lands rather than
+           waiting for anyone to confirm what the room has already seen.
+
+           The whole board goes in one call. The route clears the last draw
+           before writing, so a re-draw replaces the grid rather than adding
+           to it. */
         if (!admin) return;
         fetch("/api/fategrid", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            pairs: chosen.map(({ side, player }) => ({
+            pairs: all.map(({ side, player }) => ({
               side: side.name,
               player: player.name,
             })),
@@ -175,6 +200,7 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
           players={players}
           phase={phase}
           pairs={pairs}
+          active={active}
         />
 
         {/* The middle of the rings: the countdown while it runs, the trigger
@@ -184,7 +210,7 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
         <div className="fate-core">
           {phase === "ready" && (
             <button type="button" className="fate-go" onClick={draw}>
-              <span className="fate-go-tag num">Eight draws</span>
+              <span className="fate-go-tag num">{players.length} draws</span>
               <span className="fate-go-word display">Believe</span>
             </button>
           )}
@@ -206,7 +232,7 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
           )}
         </div>
 
-        {/* The result is the scene now — eight boxes standing where the
+        {/* The result is the scene now — the boxes standing where the
             cards landed, each with its crest, its side, and the face of the
             player it drew. This list is what a screen reader gets, since the
             canvas cannot be read; it is not drawn, so there is nothing to cut
@@ -214,8 +240,8 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
         {phase === "grid" && (
           <ol className="sr-only">
             {pairs.map(({ side, player }) => (
-              <li key={side.name}>
-                {side.name} — vice captain {player.name}
+              <li key={player.name}>
+                {side.name} — {player.name}
               </li>
             ))}
           </ol>
@@ -233,13 +259,13 @@ export default function FateGrid({ sides, players, initial, admin = false }) {
       ) : (
         <p className="fate-hint num">
           {phase === "ready"
-            ? "Eight iconic players. Eight sides. The grid decides."
+            ? "Two to every side — one out of each pot. The grid decides."
             : phase === "settle"
               ? "Locking the grid"
               : phase === "land"
                 ? "Taking their places"
                 : phase === "grid"
-                  ? "Drawn. Every one of them is their side's vice captain."
+                  ? "Drawn. Two to every side, one out of each pot."
                   : "Drawing"}
         </p>
       )}

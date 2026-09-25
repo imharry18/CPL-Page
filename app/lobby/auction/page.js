@@ -7,9 +7,9 @@ import { REVEAL } from "@/lib/cplData";
 import { getPlayers } from "@/lib/players";
 
 export const metadata = {
-  title: "Auction — Season 4, Campus Premier League",
+  title: "Auction — Season 1, Football Premier League",
   description:
-    "The Season 4 auction, live. Every player in the pool goes under the hammer.",
+    "The Season 1 auction, live. Every player in the pool goes under the hammer.",
 };
 
 // The board is the state of the room; it must never come from a cache.
@@ -37,14 +37,13 @@ export default async function LobbyAuctionPage() {
     name: player.name,
     year: player.year,
     role: player.role,
-    prefers: player.prefers,
+    secondary: player.secondary,
     // Carried so the squad panel can list who a side already holds, and mark
     // the one the FateGrid drew them.
     team: player.team ?? "",
+    // The squad panel ranks a captain first, and reads it from here.
+    route: player.route,
     viceCaptain: Boolean(player.viceCaptain),
-    bat: player.bat,
-    bowl: player.bowl,
-    allround: player.allround,
     rating: player.rating,
     photo: photoFor(photos, player.name),
   }));

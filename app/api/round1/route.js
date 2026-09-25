@@ -26,19 +26,23 @@ export async function POST(request) {
   const { matches } = await request.json();
 
   const names = SEASON_4_SIDES.map((side) => side.name);
+  /* With an odd number of teams one side gets a bye, so we expect
+     Math.floor(n / 2) matches covering all but (n % 2) sides. */
+  const expectedMatches = Math.floor(names.length / 2);
   const flat = Array.isArray(matches)
     ? matches.flatMap((match) => [match?.a, match?.b])
     : [];
 
   const valid =
-    matches?.length === names.length / 2 &&
-    flat.length === names.length &&
+    matches?.length === expectedMatches &&
     flat.every((name) => names.includes(name)) &&
-    new Set(flat).size === names.length;
+    new Set(flat).size === flat.length; // each named side appears at most once
 
   if (!valid) {
     return Response.json(
-      { error: "each side must appear exactly once across four matches" },
+      {
+        error: `expected ${expectedMatches} matches with each side appearing at most once`,
+      },
       { status: 400 }
     );
   }
@@ -52,6 +56,7 @@ export async function POST(request) {
 
   return Response.json({ drawn: true, matches });
 }
+
 
 /** The draw as it stands. Public: this is what is on the screen in the hall. */
 export async function GET() {

@@ -8,9 +8,9 @@ import { isAdmin } from "@/lib/admin";
 import { SEASON_4 } from "@/lib/cplData";
 
 export const metadata = {
-  title: "Season 4 — Campus Premier League",
+  title: "Season 1 — Football Premier League",
   description:
-    "The Season 4 lobby: teams, the auction, the fixtures, players, records and how to enter.",
+    "The Season 1 lobby: teams, the auction, the fixtures, players, records and how to enter.",
 };
 
 /**
@@ -36,8 +36,8 @@ export default async function LobbyPage() {
         <main className="lobby" id="lobby">
           <div className="lobby-head lobby-top">
             <div>
-              <p className="eyebrow">Campus Premier League</p>
-              <h1 className="display lobby-title">Season 04</h1>
+              <p className="eyebrow">Football Premier League</p>
+              <h1 className="display lobby-title">Season 01</h1>
               <p className="lobby-sub num">
                 Auction live · Tournament {SEASON_4[1].day}{" "}
                 {SEASON_4[1].month}
@@ -48,7 +48,7 @@ export default async function LobbyPage() {
                 running the night only — the way back to zero beside it. */}
             <div className="lobby-acts">
               <Link className="lobby-season num" href="/lobby/season4">
-                Season 4
+                Season 1
               </Link>
               {admin && <RestartSeason />}
             </div>

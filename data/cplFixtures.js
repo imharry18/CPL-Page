@@ -13,7 +13,7 @@ export const CPL_FIXTURES = [
     teamB: 'Kesari Strikers', 
     date: '20 Sep', 
     time: '07:00 AM', 
-    venue: 'Football Ground' 
+    venue: 'Football Turf' 
   },
   { 
     id: 2, 
@@ -22,7 +22,7 @@ export const CPL_FIXTURES = [
     teamB: 'Bajrang United', 
     date: '20 Sep', 
     time: '08:15 AM', 
-    venue: 'Football Ground' 
+    venue: 'Football Turf' 
   },
   { 
     id: 3, 
@@ -31,7 +31,7 @@ export const CPL_FIXTURES = [
     teamB: 'Trishul Titans', 
     date: '20 Sep', 
     time: '09:30 AM', 
-    venue: 'Football Ground' 
+    venue: 'Football Turf' 
   },
   { 
     id: 4, 
@@ -40,7 +40,7 @@ export const CPL_FIXTURES = [
     teamB: 'The Warlords', 
     date: '20 Sep', 
     time: '10:45 AM', 
-    venue: 'Football Ground' 
+    venue: 'Football Turf' 
   },
   { 
     id: 5, 
@@ -49,7 +49,7 @@ export const CPL_FIXTURES = [
     teamB: 'Kshatriya Kings', 
     date: '20 Sep', 
     time: '12:15 PM', 
-    venue: 'Football Ground' 
+    venue: 'Football Turf' 
   },
   { 
     id: 6, 
@@ -58,7 +58,7 @@ export const CPL_FIXTURES = [
     teamB: 'The Warlords', 
     date: '20 Sep', 
     time: '01:30 PM', 
-    venue: 'Football Ground' 
+    venue: 'Football Turf' 
   },
   { 
     id: 7, 
@@ -67,7 +67,7 @@ export const CPL_FIXTURES = [
     teamB: 'Rashtriya Rifles', 
     date: '20 Sep', 
     time: '02:45 PM', 
-    venue: 'Football Ground' 
+    venue: 'Football Turf' 
   },
   { 
     id: 8, 
@@ -76,7 +76,7 @@ export const CPL_FIXTURES = [
     teamB: 'Melbourne Stars', 
     date: '20 Sep', 
     time: '04:00 PM', 
-    venue: 'Football Ground' 
+    venue: 'Football Turf' 
   },
 
   // --- Later in the day: one match per team ---

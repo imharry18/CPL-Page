@@ -43,19 +43,15 @@ export async function POST() {
 
   const players = JSON.parse(await readFile(ROSTER, "utf8"));
 
-  /* A captain is the player on a side whose first name matches the one named
-     in season4Sides.js. Found that way rather than by a flag, because the flag
-     is missing from rows written before it existed — and a restart that leaves
-     eight players still allotted is worse than no restart at all. */
+  /* A captain is a player the roster marks `route: "captain"` and puts on that
+     side. Matched on the route rather than on the name, because the two are
+     spelled by different hands — a restart that clears a captain off their own
+     side because a middle name did not line up is worse than no restart. */
   const captains = new Set(
     SEASON_4_SIDES.map(
       (side) =>
         players.find(
-          (player) =>
-            player.team === side.name &&
-            side.captain &&
-            player.name.split(" ")[0].toLowerCase() ===
-              side.captain.toLowerCase()
+          (player) => player.team === side.name && player.route === "captain"
         )?.name
     ).filter(Boolean)
   );
