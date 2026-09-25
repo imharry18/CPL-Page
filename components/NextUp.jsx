@@ -75,7 +75,7 @@ export default function NextUp({ dates }) {
   if (!upcoming) {
     return (
       <p className="nextup">
-        <span className="nextup-label">Season 04</span>
+        <span className="nextup-label">Season 01</span>
         <span className="nextup-event">Complete</span>
       </p>
     );

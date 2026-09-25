@@ -10,7 +10,7 @@ export default function ScrubVideo() {
     <div className="film" aria-hidden="true">
       <Image
         className="film-media"
-        src="/bg.jpg.png"
+        src="/stadium-bg-v2.jpg"
         alt=""
         fill
         sizes="100vw"

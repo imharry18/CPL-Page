@@ -8,7 +8,7 @@ import { isAdmin } from "@/lib/admin";
 import { REVEAL, SEASON_4 } from "@/lib/cplData";
 
 export const metadata = {
-  title: "Matches — Season 4, Campus Premier League",
+  title: "Matches — Season 1, Football Premier League",
   description:
     "Fourteen matches in a single day on 20 September. The draw is made at the Live Auction, and every round after the first is seeded on the points table.",
 };
@@ -42,7 +42,7 @@ export default async function LobbyMatchesPage() {
 
   return (
     <LobbySub
-      eyebrow={`${SEASON_4[1].day} ${SEASON_4[1].month} · Football Ground`}
+      eyebrow={`${SEASON_4[1].day} ${SEASON_4[1].month} · Football Turf`}
       title="Matches"
       reveal={REVEAL}
       lock={false}

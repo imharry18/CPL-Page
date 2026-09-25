@@ -13,9 +13,9 @@ export default function AboutSection() {
         <div className="about-grid">
           <div className="about-body reveal">
             <p className="lede">
-              It started in 2025 on a basketball court, run by hostel players who were
-              tired of waiting to be picked for something else. It has gone out every
-              semester since, and moved to the football ground in Season 2.
+              It started on a basketball court, run by hostel players who were
+              tired of waiting to be picked for something else. Season 1 is
+              the first time it moves to the football turf.
             </p>
             <p className="lede">
               Hostel players form the core. Outsiders join with permission. After the
@@ -26,7 +26,7 @@ export default function AboutSection() {
                 See the teams
               </a>
               <Link className="btn btn-primary" href="/lobby">
-                Season 4
+                Season 1
               </Link>
             </div>
           </div>
@@ -34,7 +34,7 @@ export default function AboutSection() {
           <dl className="about-facts reveal" style={{ "--delay": "0.12s" }}>
             <div className="fact">
               <dt>First season</dt>
-              <dd>2025</dd>
+              <dd>2026</dd>
             </div>
             <div className="fact">
               <dt>Teams per season</dt>

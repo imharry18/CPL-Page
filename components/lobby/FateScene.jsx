@@ -26,18 +26,18 @@ const CARD_W = 2.9;
 const CARD_H = 1.15;
 
 /* The result card: one box per pair, and the last thing the room looks at, so
-   it is wider than the two it replaces and carries everything at once —
-   the crest on the left, the side and the name it drew up the middle, and the
-   player's own face on the right. */
-/* Wider than it was, and deliberately so. The box height is fixed by having
-   to fit four rows in one frustum, and the width follows the height through
-   this ratio — so the only way to use the space left and right of the board
-   was to make the artwork itself wider. The middle grew with it, which is
-   where the two names live, so they are set larger as well. */
-const RESULT_W = 6.94;
-const RESULT_H = 1.45;
-const RTEX_W = 1800;
-const RTEX_H = 376;
+   it carries everything at once — the crest and the player's own face across
+   the top, the side, the pot and the name underneath.
+
+   Nearly square, because the board is. Four boxes across and two down makes a
+   cell about as tall as it is wide, and the old letterbox card — 4.8 to 1,
+   laid out left to right — could only shrink to a strip inside one, which is
+   what left most of the arena empty under it. Change this ratio and the board
+   re-measures itself around it; nothing else is hardcoded to the shape. */
+const RESULT_W = 3.2;
+const RESULT_H = 2.76;
+const RTEX_W = 1160;
+const RTEX_H = 1000;
 
 /* The world-space height the camera takes in at the cards' depth, and the
    middle of it. Derived from the camera below (fov 46 at z 9.4, looking from
@@ -195,7 +195,7 @@ function cardTexture({ title, sub, image, colour, round }) {
  * box rather than confined to a stripe, so eight results read as eight sides
  * at a glance from the back of a hall.
  */
-function resultTexture({ side, player, crest, photo, colour, colourLit }) {
+function resultTexture({ side, player, label, crest, photo, colour, colourLit }) {
   const canvas = document.createElement("canvas");
   canvas.width = RTEX_W;
   canvas.height = RTEX_H;
@@ -221,10 +221,13 @@ function resultTexture({ side, player, crest, photo, colour, colourLit }) {
   c.fillStyle = shade;
   c.fillRect(0, 0, RTEX_W, RTEX_H);
 
-  const pad = 26;
-  const art = RTEX_H - pad * 2;
-  const cx = pad + 10;
-  const px = RTEX_W - pad - art;
+  /* The crest and the face across the top, the reading of it underneath.
+     The board stands four boxes across and two down, so a cell is nearly
+     square — the old letterbox card, laid out left to right, shrank to a
+     strip in it and left most of the arena empty. */
+  const pad = 40;
+  const gap = 34;
+  const art = (RTEX_W - pad * 2 - gap) / 2;
 
   /** One square picture, framed in the side's colour. */
   const square = (image, x, bias) => {
@@ -242,15 +245,16 @@ function resultTexture({ side, player, crest, photo, colour, colourLit }) {
   };
 
   // The crest from its very top; the player a touch lower, where a face is.
-  square(crest, cx, 0);
-  square(photo, px, 0.12);
+  square(crest, pad, 0);
+  square(photo, pad + art + gap, 0.12);
 
-  /* The middle. Sized to the gap between the two squares and shrunk if a long
-     side name and a long player name will not both fit — a result nobody can
-     read is worse than a result set small. */
-  const x = cx + art + 40;
-  const room = px - 40 - x;
+  /* Under the pictures, centred: the side, the pot it drew out of, and the
+     name. Shrunk to fit rather than clipped — a result nobody can read is
+     worse than a result set small. */
+  const room = RTEX_W - pad * 2;
+  const top = pad + art;
   c.textBaseline = "middle";
+  c.textAlign = "center";
 
   const fit = (text, weight, size) => {
     let at = size;
@@ -265,19 +269,20 @@ function resultTexture({ side, player, crest, photo, colour, colourLit }) {
   c.shadowBlur = 12;
 
   c.fillStyle = "#f4f0e6";
-  fit(side, 700, 62);
-  c.fillText(side, x, RTEX_H / 2 - 74);
+  fit(side, 700, 68);
+  c.fillText(side, RTEX_W / 2, top + 78);
 
   c.shadowBlur = 0;
   c.fillStyle = tint(colourLit, 0.95);
-  c.font = "500 30px ui-monospace, monospace";
-  c.fillText("VICE CAPTAIN", x, RTEX_H / 2);
+  c.font = "500 34px ui-monospace, monospace";
+  c.fillText(label, RTEX_W / 2, top + 148);
 
   c.shadowBlur = 12;
   c.fillStyle = colourLit;
-  fit(player, 700, 72);
-  c.fillText(player, x, RTEX_H / 2 + 74);
+  fit(player, 700, 84);
+  c.fillText(player, RTEX_W / 2, top + 236);
   c.shadowBlur = 0;
+  c.textAlign = "start";
 
   // The frame, and the corner brackets that make a plane read as a panel.
   c.strokeStyle = tint(colourLit, 0.55);
@@ -306,7 +311,7 @@ function resultTexture({ side, player, crest, photo, colour, colourLit }) {
   return texture;
 }
 
-export default function FateScene({ sides, players, phase, pairs }) {
+export default function FateScene({ sides, players, phase, pairs, active }) {
   const host = useRef(null);
 
   /* What the scene is built FROM, as a string.
@@ -331,10 +336,10 @@ export default function FateScene({ sides, players, phase, pairs }) {
   // never rebuilds the scene. Kept up to date in an effect rather than during
   // render — React 19 rejects the latter, and a frame drawn against the
   // previous phase before the effect runs is not something an eye can catch.
-  const live = useRef({ phase, pairs });
+  const live = useRef({ phase, pairs, active });
   useEffect(() => {
-    live.current = { phase, pairs };
-  }, [phase, pairs]);
+    live.current = { phase, pairs, active };
+  }, [phase, pairs, active]);
 
   useEffect(() => {
     const mount = host.current;
@@ -462,14 +467,14 @@ export default function FateScene({ sides, players, phase, pairs }) {
     /* Where the eight results stand, measured from the camera rather than
        fixed.
 
-       The board is two columns of four, and it should fill the screen it is
+       The board is two sides to a row, and it should fill the screen it is
        given — a hard-coded spacing that looks right on a wide share leaves a
        margin on a projector and runs off the edge on a narrow window. So the
        frame is measured at the plane the boxes stand on, the boxes are made as
        large as fit inside it with a real gap between them, and the plane's own
        proportions are kept so the artwork on it never stretches. */
     const RESULT_RATIO = RESULT_W / RESULT_H;
-    /* Four rows have to share one frustum, so the box height and the gap
+    /* The rows have to share one frustum, so the box height and the gap
        between rows come out of the same budget. The old board spent almost a
        quarter of the height on margin and left a tenth of a unit between the
        boxes, which is why they read as one block. Nearly all of the margin is
@@ -478,6 +483,23 @@ export default function FateScene({ sides, players, phase, pairs }) {
     const GAP_X = 0.5;
     const GAP_Y = 0.5;
     const EDGE = 0.15;
+    /* Extra air between one side's pair of boxes and the next side's, on top
+       of GAP_X. Without it four boxes across read as four separate results
+       rather than as two sides of two. */
+    const TEAM_GAP = 0.9;
+
+    /* The board is sides across and pots along: two sides to a row, and each
+       side's two boxes — one out of each pot — standing together in it. Four
+       sides therefore make two rows of two sides, which is four boxes wide.
+
+       Laid out this way rather than one side to a row because a row per side
+       leaves the boxes either tiny or running off a 16:9 screen; two rows of
+       two fills the frame and still reads as "this side got these two". */
+    const POT_LIST = [...new Set(players.map((player) => player.pot))].sort();
+    const SIDES_PER_ROW = Math.min(2, sides.length);
+    const BOARD_ROWS = Math.ceil(sides.length / SIDES_PER_ROW);
+    const BOARD_COLS = SIDES_PER_ROW * Math.max(1, POT_LIST.length);
+
     const grid = { w: RESULT_W, h: RESULT_H, stepX: 6, stepY: 1.55, midY: 0 };
 
     /* The world the screen takes in, and the slice of it the arena occupies.
@@ -489,7 +511,8 @@ export default function FateScene({ sides, players, phase, pairs }) {
     let REF_PX = 0;
     const band = { top: REF_HALF_H, bottom: -REF_HALF_H };
 
-    /* Where pair `at` stands: two columns of four, centred on the origin.
+    /* Where box `at` stands, counting across the row then down, centred on the
+     * origin.
      *
      * The camera sits at y 1.1 but LOOKS AT (0,0,0), so it is pitched down and
      * the band it can see is centred on zero rather than on its own height —
@@ -499,14 +522,18 @@ export default function FateScene({ sides, players, phase, pairs }) {
      * replaces them cannot disagree about where "there" is, which is exactly
      * how they came to disagree before. */
     function slot(at) {
-      const row = at % 4;
-      const col = Math.floor(at / 4);
+      const row = Math.floor(at / BOARD_COLS);
+      const col = at % BOARD_COLS;
+      // Which of the sides in this row the box belongs to, so the pair can be
+      // pushed clear of the side beside it.
+      const group = Math.floor(col / Math.max(1, POT_LIST.length));
       /* Centred on the ARENA, not on the page. The canvas is the whole
          viewport now, so world zero is the middle of the screen — and the
          screen has a heading above the arena and a footer below it. */
       target.set(
-        (col - 0.5) * grid.stepX,
-        grid.midY + (1.5 - row) * grid.stepY,
+        (col - (BOARD_COLS - 1) / 2) * grid.stepX +
+          (group - (SIDES_PER_ROW - 1) / 2) * TEAM_GAP,
+        grid.midY + ((BOARD_ROWS - 1) / 2 - row) * grid.stepY,
         0
       );
       return target;
@@ -522,16 +549,20 @@ export default function FateScene({ sides, players, phase, pairs }) {
          screen, because there is nothing beside it. */
       const bandH = Math.max(2, (band.top - band.bottom) / 2);
 
-      // As wide as two columns and a gap will allow.
-      let w = (halfW * 2 - EDGE * 2 - GAP_X) / 2;
+      /* As wide as the whole row will allow: every column, the gap between
+         each, and the extra air held between one side's pair and the next. */
+      const betweenTeams = TEAM_GAP * (SIDES_PER_ROW - 1);
+      let w =
+        (halfW * 2 - EDGE * 2 - GAP_X * (BOARD_COLS - 1) - betweenTeams) /
+        BOARD_COLS;
       let h = w / RESULT_RATIO;
 
-      // ...unless four rows of that height would not fit, in which case the
+      // ...unless the rows of that height would not fit, in which case the
       // height decides and the width follows it.
-      const tall = h * 4 + GAP_Y * 3;
+      const tall = h * BOARD_ROWS + GAP_Y * (BOARD_ROWS - 1);
       const room = bandH * 2 - EDGE * 2;
       if (tall > room) {
-        h = (room - GAP_Y * 3) / 4;
+        h = (room - GAP_Y * (BOARD_ROWS - 1)) / BOARD_ROWS;
         w = h * RESULT_RATIO;
       }
 
@@ -619,7 +650,7 @@ export default function FateScene({ sides, players, phase, pairs }) {
             colour: "#ff5a6e",
             texture: cardTexture({
               title: player.name,
-              sub: "Iconic",
+              sub: player.pot ? `Pot ${player.pot}` : "",
               image,
               colour: "#ff5a6e",
               round: true,
@@ -658,18 +689,99 @@ export default function FateScene({ sides, players, phase, pairs }) {
        targets: the loop eases towards them, so a phase change is a movement
        rather than a jump. */
     const target = new THREE.Vector3();
+
+    /* Where a pair stands on the board: a row for its side, a column for the
+       pot it came out of. Worked out from who the pair IS rather than from
+       where it happens to sit in the list, so a pair's place is the same
+       whether it was just spun for or read back off the roster on a reload —
+       and the boxes already standing do not shuffle when the next spin adds
+       two more. */
+    const boardSlot = (pair) => {
+      const sideAt = Math.max(
+        0,
+        sides.findIndex((side) => side.name === pair.side.name)
+      );
+      const potAt = Math.max(0, POT_LIST.indexOf(pair.player.pot));
+      const row = Math.floor(sideAt / SIDES_PER_ROW);
+      const col = (sideAt % SIDES_PER_ROW) * POT_LIST.length + potAt;
+      return row * BOARD_COLS + col;
+    };
+
+    /* A card's place, or -1 for one no pair has claimed yet. A side is drawn
+       twice — once out of each pot — so its card holds the place of the first
+       of its two pairs. */
+    function pairFor(kind, index, list) {
+      if (!list?.length) return null;
+      return (
+        (kind === "team"
+          ? list.find((p) => p.side.name === sides[index].name)
+          : list.find((p) => p.player.name === players[index].name)) ?? null
+      );
+    }
+
+    function slotOf(kind, index, drawn) {
+      if (!drawn?.length) return -1;
+      if (kind === "result") return boardSlot(drawn[index]);
+      const pair = pairFor(kind, index, drawn);
+      return pair ? boardSlot(pair) : -1;
+    }
+
+    /* Where a card must STAY put, or -1 for one that is in play.
+       Every spin after the first turns the rings with most of the pool already
+       on the board. Those cards are settled and hold their place; only the two
+       this spin is for — and the side they are going to — belong on the ring,
+       or the room watches pairs it has already seen get thrown back into the
+       draw. */
+    function heldAt(kind, index, drawn, active, now) {
+      const at = slotOf(kind, index, drawn);
+      if (at < 0) return -1;
+      const spinning = now === "spin" || now === "settle";
+      if (spinning && pairFor(kind, index, active)) return -1;
+      return at;
+    }
+
+    /* A card's place in the ready columns, counted among the cards still
+       waiting to be drawn rather than among all of them.
+       The grid is spun a side at a time, so by the third spin half the names
+       are already on the board — and numbering by their place in the full
+       list leaves the column full of the holes they came out of. */
+    function columnRank(kind, index, drawn) {
+      const taken = drawn ?? [];
+      const waiting =
+        kind === "team"
+          ? sides.filter((s) => !taken.some((p) => p.side.name === s.name))
+          : players.filter((pl) => !taken.some((p) => p.player.name === pl.name));
+      const self = kind === "team" ? sides[index] : players[index];
+      return { at: waiting.indexOf(self), of: waiting.length };
+    }
+
     function place(mesh, spin, t) {
       const { kind, index } = mesh.userData;
-      const n = kind === "team" ? sides.length : players.length;
-      const { phase: now, pairs: drawn } = live.current;
+      const { phase: now, pairs: drawn, active } = live.current;
+
+      /* Settled by an earlier spin: it stands at its pair's place through
+         every phase, including the one turning the rings beside it. */
+      if (now === "spin" || now === "settle") {
+        const at = heldAt(kind, index, drawn, active, now);
+        if (at >= 0) return slot(at);
+      }
 
       if (now === "ready") {
+        /* The grid is drawn a side at a time, so "ready" is also the pause
+           between spins. A card an earlier spin already settled holds the
+           place of its pair — it is invisible there, standing under the
+           result box that replaced it, so what the room sees between spins is
+           the board so far and two columns of only what is left to draw. */
+        const settledAt = slotOf(kind, index, drawn);
+        if (settledAt >= 0) return slot(settledAt);
+
         /* Fit the whole column into the frustum rather than starting at a
            fixed height and running off the bottom: at eight a side the old
            spacing put three cards below the screen. READY_SPAN is what the
            camera can see at the cards' depth, so the column is centred in it
            however many names there are. */
-        const step = Math.min(1.55, READY_SPAN / n);
+        const { at, of } = columnRank(kind, index, drawn);
+        const step = Math.min(1.55, READY_SPAN / Math.max(1, of));
         const side = kind === "team" ? -1 : 1;
         /* Pushed further apart the more the cards shrink, so the two columns
            clear the trigger in the middle instead of running under it. */
@@ -680,25 +792,22 @@ export default function FateScene({ sides, players, phase, pairs }) {
            this the columns ride up under the heading. */
         target.set(
           side * spread,
-          grid.midY + READY_MID + ((n - 1) / 2 - index) * step,
-          Math.sin(t + index) * 0.15
+          grid.midY + READY_MID + ((of - 1) / 2 - at) * step,
+          Math.sin(t + at) * 0.15
         );
         return target;
       }
 
-      /* Each pair's place on the board: two columns of four.
+      const n = kind === "team" ? sides.length : players.length;
+
+      /* Each pair's place on the board: its side's row, its pot's column.
          `land` is the journey to it and `grid` is standing in it, so both ask
          for the same point. The side card, the player card and the result box
          that replaces them all aim at the SAME spot — the two fly in, the box
          comes up underneath them, and what the room sees is two cards becoming
          one rather than a screen being swapped. */
       if ((now === "land" || now === "grid") && drawn?.length) {
-        const at =
-          kind === "result"
-            ? index
-            : kind === "team"
-              ? index
-              : drawn.findIndex((p) => p.player.name === players[index].name);
+        const at = slotOf(kind, index, drawn);
         /* A side that drew nobody, or a player nobody drew, has no pair to
            join. Sending it to row -1 would stack it on top of the first pair,
            so it is left out at the back instead. */
@@ -801,6 +910,9 @@ export default function FateScene({ sides, players, phase, pairs }) {
         const texture = resultTexture({
           side: side.name,
           player: player.name,
+          // Which pot the side drew them out of — the one fact the box has
+          // room for that the room does not already know.
+          label: player.pot ? `POT ${player.pot}` : "DRAWN",
           crest: art.crest.get(side.name) ?? null,
           photo: art.photo.get(player.name) ?? null,
           colour: side.color ?? "#c8102e",
@@ -818,12 +930,18 @@ export default function FateScene({ sides, players, phase, pairs }) {
         mesh.renderOrder = 1;
         /* Held on to, so the box can watch the two cards it replaces and wait
            for the slower of them rather than for the board as a whole. */
+        /* Both cards are found by who they are, not by where this pair sits
+           in the list. A side is drawn twice — once out of each pot — so its
+           card's index is its place among the SIDES, and matching it against
+           the pair index leaves every pair after the first with no side card
+           to wait for and a box that never fades up. */
+        const sideAt = sides.findIndex((s) => s.name === side.name);
         const playerAt = players.findIndex((p) => p.name === player.name);
         mesh.userData = {
           kind: "result",
           index: i,
           team: cards.find(
-            (m) => m.userData.kind === "team" && m.userData.index === i
+            (m) => m.userData.kind === "team" && m.userData.index === sideAt
           ),
           player: cards.find(
             (m) => m.userData.kind === "player" && m.userData.index === playerAt
@@ -853,11 +971,17 @@ export default function FateScene({ sides, players, phase, pairs }) {
       raf = requestAnimationFrame(frame);
       const dt = Math.min(clock.getDelta(), 0.05);
       const t = clock.getElapsedTime();
-      const { phase: now, pairs: drawn } = live.current;
+      const { phase: now, pairs: drawn, active } = live.current;
 
-      // The draw arrives long before the cards need it, and a redraw takes the
-      // old boxes away again.
-      if (drawn?.length && results.length === 0 && cards.length) makeResults(drawn);
+      /* The draw arrives long before the cards need it, and a redraw takes the
+         old boxes away again. Compared on length rather than merely on being
+         empty, so a re-draw of a different size still rebuilds them — boxes
+         built for the last draw would leave a new pair with no result to land
+         on. */
+      if (drawn?.length && results.length !== drawn.length && cards.length) {
+        clearResults();
+        makeResults(drawn);
+      }
       if (!drawn?.length && results.length) clearResults();
 
       // Wind up hard, hold, then brake — the ring has weight.
@@ -885,8 +1009,16 @@ export default function FateScene({ sides, players, phase, pairs }) {
         // rather than snapping.
         const ease =
           now === "settle" || now === "land" || now === "grid" ? 2.4 : 6;
+        /* A card an earlier spin settled is at its pair's place even while the
+           board waits on the next spin, so it hands over there too. Without
+           this the pause between spins showed every settled pair as its two
+           raw cards stacked on one point, with the result box that should have
+           replaced them still hidden underneath. */
+        const held =
+          landing ||
+          heldAt(mesh.userData.kind, mesh.userData.index, drawn, active, now) >= 0;
         // How far it still has to go, measured before the step.
-        mesh.userData.away = landing ? mesh.position.distanceTo(to) : 99;
+        mesh.userData.away = held ? mesh.position.distanceTo(to) : 99;
         mesh.position.lerp(to, Math.min(1, dt * ease));
         // Always square to the room: a spinning ring must not turn its
         // lettering away.
@@ -915,10 +1047,17 @@ export default function FateScene({ sides, players, phase, pairs }) {
            full size. Folded in here because this is the only line that owns
            scale — setting it anywhere else is silently overwritten. */
         const count =
-          mesh.userData.kind === "team" ? sides.length : players.length;
+          now === "ready"
+            ? columnRank(mesh.userData.kind, mesh.userData.index, drawn).of
+            : mesh.userData.kind === "team"
+              ? sides.length
+              : players.length;
         const fit =
           now === "ready"
-            ? Math.min(1, Math.min(1.55, READY_SPAN / count) / (CARD_H * 1.06))
+            ? Math.min(
+                1,
+                Math.min(1.55, READY_SPAN / Math.max(1, count)) / (CARD_H * 1.06)
+              )
             : 1;
         const base = (now === "spin" ? 0.94 : 1) + depth * 0.14;
         const scale = base * fit;

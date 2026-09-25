@@ -1,28 +1,16 @@
 import Link from "next/link";
 
-import NextUp from "@/components/NextUp";
-
-/* Server Component apart from the countdown, so almost none of this ships as
-   JavaScript. */
-
-export default function HeroSection({ totals, dates }) {
+export default function HeroSection() {
   // Three near-equal lines, so the headline sets as a solid block of type —
   // and the anaphora gives it the cadence of a chant rather than a slogan.
-  const lines = ["Same pitch.", "Same ball.", "Same chance."];
-
-  const rail = [
-    { value: "03", label: "Seasons" },
-    { value: totals.runs, label: "Runs" },
-    { value: totals.wickets, label: "Wickets" },
-    { value: totals.sixes, label: "Sixes" },
-  ];
+  const lines = ["Same turf.", "Same ball.", "Same chance."];
 
   return (
     <section id="top" className="hero">
       <div className="hero-body">
         <p className="hero-status reveal">
           <span className="dot" aria-hidden="true" />
-          Season 04 · Entries closed
+          Season 01 · Entries closed
         </p>
 
         <h1 className="display hero-title">
@@ -38,15 +26,15 @@ export default function HeroSection({ totals, dates }) {
         </h1>
 
         <p className="lede hero-lede reveal" style={{ "--delay": "0.45s" }}>
-          Inter-hostel cricket since 2025. Eight squads, one match day, and a
-          trophy nobody has won twice.
+          Inter-hostel football starts this season. Seven squads, one match
+          day, and one trophy still waiting for its first name.
         </p>
 
         <div className="hero-actions reveal" style={{ "--delay": "0.55s" }}>
           {/* One button only. Players and past seasons are both reachable
               from the lobby, so putting them here just competes with it. */}
           <Link className="btn btn-primary btn-lg" href="/lobby">
-            Season 4
+            Season 1
           </Link>
         </div>
       </div>
@@ -54,17 +42,6 @@ export default function HeroSection({ totals, dates }) {
       {/* Pinned to the bottom of the viewport, like the strap under a
           broadcast title card. */}
       <div className="hero-rail reveal" style={{ "--delay": "0.7s" }}>
-        <NextUp dates={dates} />
-
-        <dl className="hero-figures">
-          {rail.map((item) => (
-            <div key={item.label}>
-              <dd className="num">{item.value}</dd>
-              <dt>{item.label}</dt>
-            </div>
-          ))}
-        </dl>
-
         <p className="hero-scroll" aria-hidden="true">
           Scroll
           <i />

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Campus Premier League — "Floodlight"
+   Football Premier League — "Floodlight"
    One stylesheet, one source of truth. Tokens first, then base, then blocks.
    ========================================================================== */
 
@@ -230,6 +230,20 @@ img {
 .section {
   position: relative;
   padding: var(--section-y) var(--gutter);
+}
+
+/* The stadium photograph behind the page runs bright through the middle —
+   lit turf and floodlights directly under body copy. These two sections carry
+   the reading text, so they get a scrim that feathers out to nothing at the
+   edges: enough shade to hold the words, no visible panel around them. */
+#about,
+#closing {
+  background: radial-gradient(
+    115% 90% at 50% 50%,
+    rgba(7, 9, 10, 0.9) 0%,
+    rgba(7, 9, 10, 0.78) 45%,
+    rgba(7, 9, 10, 0) 100%
+  );
 }
 
 .wrap {
@@ -1860,9 +1874,10 @@ img {
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
-.role-batter { color: var(--blood-lit); }
-.role-bowler { color: var(--leather-lit); }
-.role-allrounder { color: #7fc9a4; }
+.role-attacker { color: var(--blood-lit); }
+.role-defender { color: var(--leather-lit); }
+.role-midfielder { color: #7fc9a4; }
+.role-goalkeeper { color: #f0c04a; }
 
 /* Captains and the iconic eight never go under the hammer, so their row wears
    what they are instead of what they play. The badge is lit rather than merely
@@ -1899,7 +1914,19 @@ img {
 
 .player-skills {
   display: flex;
+  align-items: center;
   gap: 1.1rem;
+}
+
+/* The second position a player named on the entry form. Quieter than the role
+   badge — it is a fallback, not what they are. */
+.player-second {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--seam-45);
+  white-space: nowrap;
 }
 .skill {
   display: flex;
@@ -2301,10 +2328,10 @@ img {
     linear-gradient(
       to top,
       rgb(4, 5, 6) 0%,
-      rgba(4, 5, 6, 0.98) 30%,
-      rgba(4, 5, 6, 0.78) 46%,
-      rgba(4, 5, 6, 0.3) 72%,
-      rgba(4, 5, 6, 0.05) 100%
+      rgba(4, 5, 6, 0.96) 18%,
+      rgba(4, 5, 6, 0.66) 32%,
+      rgba(4, 5, 6, 0.22) 58%,
+      rgba(4, 5, 6, 0) 100%
     ),
     var(--art), linear-gradient(150deg, var(--accent), var(--night) 78%);
   background-size: cover;
@@ -2336,6 +2363,13 @@ img {
 }
 .tile-tall .tile-title {
   font-size: clamp(1.9rem, 1rem + 2.4vw, 3.2rem);
+}
+/* A half-width tile is a quarter of the grid, so it cannot carry the tall
+   tile's size — "Auction" and "Players" both ran off their own edge. The
+   padding keeps the word clear of the arrow in the corner. */
+.tile-half .tile-title {
+  font-size: clamp(1.2rem, 0.7rem + 1.15vw, 1.9rem);
+  padding-right: 1.75rem;
 }
 .tile-go {
   position: absolute;
@@ -2695,6 +2729,9 @@ img {
   position: relative;
   padding-bottom: 0.7rem;
   font-size: clamp(0.9rem, 0.7rem + 0.6vw, 1.15rem);
+  /* .display sets its own left alignment, so a name long enough to wrap would
+     otherwise set its second line flush left under a centred card. */
+  text-align: center;
 }
 /* A rule under the name that lights from the middle out, the way a lower-third
    graphic wipes on. */
@@ -3461,8 +3498,8 @@ img {
 }
 
 /* The signature: the number is the loudest thing on the page. A rulebook is
-   genuinely numbered — cricket's own laws are — so the scale is carrying real
-   structure, not decorating it. */
+   genuinely numbered — football's own Laws of the Game are — so the scale is
+   carrying real structure, not decorating it. */
 .ruling-no {
   font-family: var(--display);
   font-size: clamp(2.75rem, 1rem + 6vw, 5.5rem);
@@ -5377,7 +5414,7 @@ img {
   text-align: center;
 }
 .stage-title {
-  /* One line, always. "Campus Premier League" wants 1546px of width at 100px
+  /* One line, always. "Football Premier League" wants 1546px of width at 100px
      of type and the board gives it 1152px, so it was breaking after "Campus"
      and taking a second line of a screen that has no height to spare. Sized
      off the viewport so the longest title on the board — the league's own
@@ -6359,15 +6396,16 @@ button.rail-side:disabled {
   flex: 1 1 18rem;
   min-width: 0;
 }
-/* The columns hug the cards rather than dividing the width four ways: a
-   portrait card is narrower than a quarter of the screen, so equal columns
-   left the eight scattered with a hand's width between them. */
+/* Wrapping flex rather than a grid, so a row that does not fill sits centred
+   under the full one instead of hanging off the left edge — the side count is
+   odd against four columns and a grid would leave the gap in the corner. */
 .lobby-shell .side-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
   flex: 1;
   min-height: 0;
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  grid-template-columns: repeat(4, auto);
-  justify-content: center;
 }
 /* Portrait, even when the page is pinned to the viewport. The card is a
    poster and a poster is taller than it is wide — so the height comes from
@@ -6375,10 +6413,10 @@ button.rail-side:disabled {
    fill a landscape cell. */
 .lobby-shell .side {
   aspect-ratio: 3 / 4;
-  height: 100%;
+  height: calc((100% - clamp(0.6rem, 1.4vw, 1.1rem)) / 2);
   width: auto;
+  flex: none;
   min-height: 0;
-  justify-self: center;
 }
 
 /* Below this the cards would be too squat to read, so the page goes back to

@@ -13,55 +13,31 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import BallCanvas from "@/components/three/BallCanvas";
 import ScrubVideo from "@/components/ScrubVideo";
 import HeroSection from "@/components/sections/HeroSection";
-import MomentsSection from "@/components/sections/MomentsSection";
-import ScheduleSection from "@/components/sections/ScheduleSection";
 import AboutSection from "@/components/sections/AboutSection";
-import ChampionsSection from "@/components/sections/ChampionsSection";
-import StatsSection from "@/components/sections/StatsSection";
-import RecordsSection from "@/components/sections/RecordsSection";
 import ClosingSection from "@/components/sections/ClosingSection";
-import { SEASON_4_SIDES } from "@/data/season4Sides";
-import {
-  SEASON_4,
-  SECTIONS,
-  getAllSeasonStats,
-  getChampions,
-  getLeagueHighlights,
-} from "@/lib/cplData";
+import { SECTIONS } from "@/lib/cplData";
 
 export default function Home() {
-  const champions = getChampions();
-  const highlights = getLeagueHighlights();
-  const seasons = getAllSeasonStats();
-
   return (
     <>
       <a className="skip-link" href="#about">
         Skip to content
       </a>
 
-      <Intro total={highlights.totals.runs} />
+      <Intro />
 
       <ScrubVideo />
       <BallCanvas />
       <div className="backdrop backdrop-vignette" aria-hidden="true" />
       <div className="backdrop backdrop-grain" aria-hidden="true" />
 
-      <Navbar
-        sections={SECTIONS}
-        nextDate="Auction · Live now"
-      />
+      <Navbar sections={SECTIONS} />
       <RevealOnScroll />
 
       <main className="shell">
-        <HeroSection totals={highlights.totals} dates={SEASON_4} />
-        <ScheduleSection dates={SEASON_4} />
-        <MomentsSection />
+        <HeroSection />
         <AboutSection />
-        <ChampionsSection champions={champions} />
-        <StatsSection seasons={seasons} teams={SEASON_4_SIDES} />
-        <RecordsSection highlights={highlights} />
-        <ClosingSection dates={SEASON_4} />
+        <ClosingSection />
       </main>
     </>
   );

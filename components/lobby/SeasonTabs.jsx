@@ -27,7 +27,7 @@ export default function SeasonTabs({ shows }) {
         auto={show.id === "teams" ? 3000 : undefined}
       />
 
-      <div className="show-tabs" role="tablist" aria-label="Season 4">
+      <div className="show-tabs" role="tablist" aria-label="Season 1">
         {shows.map((one, i) => (
           <button
             key={one.id}

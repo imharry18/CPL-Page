@@ -7,15 +7,14 @@ function normalise(text) {
   return text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
-const PIP = { Best: 4, Good: 3, Average: 2, Okay: 1 };
-
+/** A player's own 1–5 rating from the entry form, as pips rather than a number. */
 function Skill({ label, value }) {
-  const level = PIP[value] || 0;
+  const level = Number(value) || 0;
   return (
     <div className="skill">
       <span className="skill-label">{label}</span>
-      <span className="skill-pips" title={value} aria-label={`${label}: ${value}`}>
-        {[1, 2, 3, 4].map((step) => (
+      <span className="skill-pips" title={`${level} of 5`} aria-label={`${label}: ${level} of 5`}>
+        {[1, 2, 3, 4, 5].map((step) => (
           <i key={step} className={step <= level ? "on" : undefined} aria-hidden="true" />
         ))}
       </span>
@@ -26,7 +25,6 @@ function Skill({ label, value }) {
 export default function PlayersBrowser({
   players,
   sides = [],
-  iconic = [],
   order = [],
   admin = false,
 }) {
@@ -37,25 +35,8 @@ export default function PlayersBrowser({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
-  /* A side names its captain by first name only, so the captain is the player
-     on that side whose first name matches. Keyed by player name, carrying the
-     side's own two colours so the row can wear them. */
-  const captains = useMemo(() => {
-    const map = new Map();
-    for (const side of sides) {
-      if (!side.name || !side.captain) continue;
-      const player = players.find(
-        (entry) =>
-          entry.team === side.name &&
-          entry.name.split(" ")[0].toLowerCase() === side.captain.toLowerCase()
-      );
-      if (player) map.set(player.name, side);
-    }
-    return map;
-  }, [sides, players]);
-
   /* Every side, by the name a player's `team` field holds. A captain is set
-     by hand, an iconic player by the FateGrid draw, and everyone else by the
+     by hand, a second year by the FateGrid draw, and a first year by the
      auction — three different routes to the same fact, and the row wears the
      side's colours the moment any of them lands. */
   const sideByTeam = useMemo(
@@ -79,37 +60,40 @@ export default function PlayersBrowser({
   // so someone can be added back later by flipping their "paid" flag.
   const paid = useMemo(() => indexed.filter((player) => player.paid), [indexed]);
 
-  /* Three lists, because the pool is three different things. The eight
-     captains and the eight iconic players are settled before a bid is taken —
-     one is appointed, the other is drawn by the FateGrid — so they sit at the
-     top in their own fixed order and never move. Everyone under them is what
-     actually goes under the hammer, and that list is the running order. */
+  /* Three lists, because the pool is three different things, and a player's
+     own `route` says which one they are in. The captains are appointed before
+     a bid is taken, so they sit at the top in side order and never move. The
+     second years are drawn to a side by the FateGrid, pot by pot. Only the
+     first years actually go under the hammer, and that list is the running
+     order. */
   const groups = useMemo(() => {
-    const byName = new Map(paid.map((player) => [player.name, player]));
-
     const captainRows = sides
-      .map((side) => paid.find((player) => captains.get(player.name) === side))
+      .map((side) => paid.find((player) => player.team === side.name && player.route === "captain"))
       .filter(Boolean);
 
-    const iconicRows = iconic.map((name) => byName.get(name)).filter(Boolean);
+    const gridRows = paid
+      .filter((player) => player.route === "fategrid")
+      .sort((a, b) => a.pot - b.pot || a.name.localeCompare(b.name));
 
-    const spoken = new Set([
-      ...captainRows.map((player) => player.name),
-      ...iconicRows.map((player) => player.name),
-    ]);
-
-    // Everyone left is a lot. The drawn order leads; anyone the draw has not
-    // seen yet — a late entry — falls in behind it, still alphabetical.
-    const rest = paid.filter((player) => !spoken.has(player.name));
+    // The drawn order leads; anyone the draw has not seen yet — a late entry —
+    // falls in behind it.
     const at = new Map(draw.map((name, i) => [name, i]));
-    const lotRows = [...rest].sort(
-      (a, b) =>
-        (at.get(a.name) ?? Number.MAX_SAFE_INTEGER) -
-        (at.get(b.name) ?? Number.MAX_SAFE_INTEGER)
-    );
+    const lotRows = paid
+      .filter((player) => player.route === "auction")
+      .sort(
+        (a, b) =>
+          (at.get(a.name) ?? Number.MAX_SAFE_INTEGER) -
+          (at.get(b.name) ?? Number.MAX_SAFE_INTEGER)
+      );
 
-    return { captainRows, iconicRows, lotRows };
-  }, [paid, sides, captains, iconic, draw]);
+    // In the pool, but neither drawn nor called: the first years, who have no
+    // route into a side yet.
+    const poolRows = paid
+      .filter((player) => player.route === "pool")
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return { captainRows, gridRows, lotRows, poolRows };
+  }, [paid, sides, draw]);
 
   const results = useMemo(() => {
     const needle = normalise(deferredQuery.trim());
@@ -117,13 +101,17 @@ export default function PlayersBrowser({
       needle ? list.filter((player) => player.search.includes(needle)) : list;
     return {
       captainRows: match(groups.captainRows),
-      iconicRows: match(groups.iconicRows),
+      gridRows: match(groups.gridRows),
       lotRows: match(groups.lotRows),
+      poolRows: match(groups.poolRows),
     };
   }, [groups, deferredQuery]);
 
   const found =
-    results.captainRows.length + results.iconicRows.length + results.lotRows.length;
+    results.captainRows.length +
+    results.gridRows.length +
+    results.lotRows.length +
+    results.poolRows.length;
 
   /* Redraw the order the auction will be called in. The same action the
      console used to own: it rewrites data/auctionOrder.json, which is the one
@@ -191,11 +179,11 @@ export default function PlayersBrowser({
         </p>
       ) : (
         <>
-          {/* The captains are eight names already settled, read at a glance
+          {/* The captains are seven names already settled, read at a glance
               rather than studied — so their block is the tight one. */}
           <Group
             title="The captains"
-            note="Eight sides, eight names. Set before the auction, not won in it."
+            note="One to a side. Set before the auction, not won in it."
             rows={results.captainRows}
             sideByTeam={sideByTeam}
             badge="Captain"
@@ -203,16 +191,15 @@ export default function PlayersBrowser({
           />
 
           <Group
-            title="Iconic players"
-            note="Allotted by the FateGrid draw, one to each side. They never go under the hammer."
-            rows={results.iconicRows}
+            title="The FateGrid pool"
+            note="Second years. Drawn to a side by the grid, never bid for."
+            rows={results.gridRows}
             sideByTeam={sideByTeam}
-            badge="Iconic"
           />
 
           <Group
             title="The auction pool"
-            note="In the order they will be called on the night."
+            note="Second years from pots 3 and 4, in the order they will be called."
             rows={results.lotRows}
             sideByTeam={sideByTeam}
           >
@@ -228,6 +215,13 @@ export default function PlayersBrowser({
             )}
           </Group>
 
+          <Group
+            title="First years"
+            note="In the pool, but not under the hammer — their route to a side is still to be decided."
+            rows={results.poolRows}
+            sideByTeam={sideByTeam}
+          />
+
           {error && <p className="finder-empty">{error}</p>}
         </>
       )}
@@ -238,9 +232,9 @@ export default function PlayersBrowser({
 /**
  * One block of the pool: its heading, and its rows numbered from one.
  *
- * `badge` is for the two blocks that are not lots. A captain and an iconic
- * player are already spoken for, so the row says what they are rather than
- * what they play — the skills underneath still carry the cricket.
+ * `badge` is for the captains' block. A captain is already spoken for, so the
+ * row says what they are rather than what they play — the rating underneath
+ * still carries the game.
  */
 function Group({ title, note, rows, sideByTeam, tight, badge, children }) {
   if (rows.length === 0) return null;
@@ -289,9 +283,12 @@ function Group({ title, note, rows, sideByTeam, tight, badge, children }) {
               )}
 
               <span className="player-skills">
-                <Skill label="Bat" value={player.bat} />
-                <Skill label="Bowl" value={player.bowl} />
-                <Skill label="All" value={player.allround} />
+                {/* Only worth printing when it says something the badge did
+                    not — plenty of entrants named the same position twice. */}
+                {player.secondary && player.secondary !== player.role && (
+                  <span className="player-second">also {player.secondary}</span>
+                )}
+                <Skill label="Rating" value={player.rating} />
               </span>
             </li>
           );

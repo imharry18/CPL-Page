@@ -1,5 +1,5 @@
 /**
- * The Campus Premier League's own record book — Seasons 1 through 3, read out
+ * The Football Premier League's own record book — Seasons 1 through 3, read out
  * as one fact per slide for the Season 4 screen's Facts tab.
  *
  * Every number here is pulled from the season data captured in
@@ -17,35 +17,35 @@ export const CPL_FACTS = [
     tag: "Career · all seasons",
     title: "The name at the top of every board",
     stat: "390",
-    statUnit: "career runs · Harish",
-    note: "He also leads the all-time six-hitting (45) and wicket-taking (18) lists — the only player to top all three.",
+    statUnit: "career goals · Harish",
+    note: "He also leads the all-time assist (45) and clean-sheet (18) lists — the only player to top all three.",
   },
   {
     tag: "Season 3 · 26 Jan 2026",
-    title: "CPL's only century",
+    title: "CPL's only 100-goal game",
     stat: "101",
     statUnit: "Harish, Rastriya Rifles",
-    note: "The tournament's highest individual score — still the only hundred anyone has made in three seasons.",
+    note: "The tournament's highest individual score — still the only 100-goal haul anyone has made in three seasons.",
   },
   {
     tag: "Season 3 · final",
-    title: "The Godfathers, by six runs",
+    title: "The Godfathers, by six goals",
     stat: "58-8",
     statUnit: "vs Rastriya Rifles' 52-9 (7.5)",
     note: "Played at BCCI, Nagpur on 26 January 2026 — the only final so far held away from the usual ground.",
   },
   {
-    tag: "Season 3 · bowling",
-    title: "The best figures CPL has seen",
+    tag: "Season 3 · goalkeeping",
+    title: "The best clean-sheet return CPL has seen",
     stat: "6-22",
     statUnit: "Harshit, Bajrang United",
-    note: "He also topped the wicket-takers' list for the season, with 14.",
+    note: "He also topped the clean-sheets list for the season, with 14.",
   },
   {
     tag: "Season 3 · in numbers",
-    title: "Sixes outnumbered fours two to one",
+    title: "Goals outnumbered assists two to one",
     stat: "208",
-    statUnit: "sixes · 86 fours",
+    statUnit: "goals · 86 assists",
     note: "Nagpur's tournament total, across two days of the group stage and the final.",
   },
   {
@@ -53,6 +53,6 @@ export const CPL_FACTS = [
     title: "The biggest total CPL has seen",
     stat: "165",
     statUnit: "vs Trishul Titans",
-    note: "Harish's 101 off 31 balls — the tournament's only century — with Jatin's 54 off 23 beside him.",
+    note: "Harish's 101 in 31 minutes — the tournament's only 100-goal haul — with Jatin's 54 in 23 beside him.",
   },
 ];

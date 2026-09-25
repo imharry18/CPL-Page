@@ -1,7 +1,6 @@
 import Link from "next/link";
 import LobbySub from "@/components/lobby/LobbySub";
 import PlayersBrowser from "@/components/PlayersBrowser";
-import { SEASON_4_ICONIC } from "@/data/season4Iconic";
 import { SEASON_4_SIDES } from "@/data/season4Sides";
 import { isAdmin } from "@/lib/admin";
 import { readOrder } from "@/lib/auction";
@@ -11,14 +10,14 @@ import { getPlayers } from "@/lib/players";
 /**
  * The registration sheet also holds email addresses, phone numbers and photo
  * links. None of that is here — data/season4Players.json is generated with
- * names and cricket details only, so there is no way for contact details to
+ * names and football details only, so there is no way for contact details to
  * reach the browser even by accident.
  */
 
 export const metadata = {
-  title: "Season 4 players — Campus Premier League",
+  title: "Season 1 players — Football Premier League",
   description:
-    "Every player in the Season 4 pool, with year and self-rated batting, bowling and all-round skill. Search by name.",
+    "Every player in the Season 1 pool, with year and self-rated attack, defence and all-round skill. Search by name.",
 };
 
 /* Squads are joined on from the auction ledger, which changes all night. Left
@@ -48,7 +47,7 @@ export default async function PlayersPage() {
           navbar. The pool is the one thing here that is already public, so it
           carries no countdown. */}
       <LobbySub
-        eyebrow="Season 04 · Player pool"
+        eyebrow="Season 01 · Player pool"
         title="Players"
         reveal={REVEAL}
         lock={false}
@@ -63,7 +62,6 @@ export default async function PlayersPage() {
           <PlayersBrowser
             players={players}
             sides={SEASON_4_SIDES}
-            iconic={SEASON_4_ICONIC}
             order={order}
             admin={admin}
           />

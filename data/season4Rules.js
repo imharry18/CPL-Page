@@ -12,14 +12,14 @@
  */
 export const SEASON_4_RULES = [
   {
-    title: "The umpire's word is final",
+    title: "The referee's word is final",
     body:
       "Do not argue — your captain says it for you, and the live video settles the rest.",
   },
   {
     title: "A penalty is final once it is given",
     body:
-      "Anyone may ask; the organisers, umpires and both captains decide — 1, 2 or 3 units, served as extra balls, fewer balls, or two runs a unit.",
+      "Anyone may ask; the organisers, referees and both captains decide — 1, 2 or 3 units, served as extra time, fewer players, or two goals a unit.",
   },
   {
     title: "Ten players a side",
@@ -27,29 +27,29 @@ export const SEASON_4_RULES = [
       "Captain and vice captain included — a side that has ten is full, and out of the bidding.",
   },
   {
-    title: "Nobody bowls more than two overs",
+    title: "Nobody keeps goal more than two halves",
     body:
-      "Two bowlers take two overs each, the rest take one — five bowlers in a seven-over game, four in a six.",
+      "Two keepers take two halves each, the rest take one — five keepers in a seven-half game, four in a six.",
   },
   {
     title: "Fourteen matches, all in one day",
     body:
-      "Eight sides, and after the first round the points table decides who you meet next.",
+      "Seven sides, and after the first round the points table decides who you meet next.",
   },
   {
-    title: "There are no automatic outs",
+    title: "There are no automatic send-offs",
     body:
-      "No local rules — only the laws of cricket, and only the umpire, give a batter out.",
+      "No local rules — only the Laws of the Game, and only the referee, send a player off.",
   },
   {
     title: "No fighting, ever",
     body:
-      "Sledge the cricket, not the person — nothing personal, nothing about family, no hand on anyone.",
+      "Chirp the game, not the person — nothing personal, nothing about family, no hand on anyone.",
   },
   {
-    title: "The batting side looks after the ground",
+    title: "The attacking side looks after the ground",
     body:
-      "Water for both teams, the match ball, and fetching every six — all yours while you bat.",
+      "Water for both teams, the match ball, and fetching every goal — all yours while you're attacking.",
   },
   {
     title: "Your health comes first",

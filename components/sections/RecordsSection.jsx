@@ -1,10 +1,10 @@
 export default function RecordsSection({ highlights }) {
   const { leaders } = highlights;
   const records = [
-    { label: "Most runs", ...leaders.runs, accent: "#ff5a6e" },
-    { label: "Most wickets", ...leaders.wickets, accent: "#c8102e" },
-    { label: "Most sixes", ...leaders.sixes, accent: "#e8394a" },
-    { label: "Most fours", ...leaders.fours, accent: "#ede7da" },
+    { label: "Most goals", ...leaders.runs, accent: "#ff5a6e" },
+    { label: "Most clean sheets", ...leaders.wickets, accent: "#c8102e" },
+    { label: "Most assists", ...leaders.sixes, accent: "#e8394a" },
+    { label: "Most hat-tricks", ...leaders.fours, accent: "#ede7da" },
   ];
 
   return (

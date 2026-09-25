@@ -29,11 +29,11 @@ export default function ChampionsSection({ champions }) {
 
               <div className="champ-stats">
                 <p className="champ-stat">
-                  <span>Most runs</span>
+                  <span>Most goals</span>
                   {champion.topScorer}
                 </p>
                 <p className="champ-stat">
-                  <span>Most wickets</span>
+                  <span>Most clean sheets</span>
                   {champion.topWickets}
                 </p>
               </div>

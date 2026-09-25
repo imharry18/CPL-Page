@@ -8,9 +8,9 @@ import { REVEAL } from "@/lib/cplData";
 import { tintFor } from "@/lib/matchTints";
 
 export const metadata = {
-  title: "Rules — Season 4, Campus Premier League",
+  title: "Rules — Season 1, Football Premier League",
   description:
-    "The Season 4 playing conditions: umpiring, penalties, conduct, sledging and safety.",
+    "The Season 1 playing conditions: umpiring, penalties, conduct, sledging and safety.",
 };
 
 export default function LobbyRulesPage() {

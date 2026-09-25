@@ -12,7 +12,6 @@
 export const SEASON_4_ICONIC = [
   "Harsh Mendhe",
   "Nikunj Jaiswal",
-  "Nihal Toshniwal",
+  "Nihal Naval Toshniwal",
   "Harshit Raj",
-  
 ];

@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * `sections` arrives as a prop rather than being imported from lib/cplData —
  * that import chain ends at a 300KB JSON file, and this only needs five labels.
  */
-export default function Navbar({ sections, nextDate }) {
+export default function Navbar({ sections }) {
   const [stuck, setStuck] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -135,8 +135,8 @@ export default function Navbar({ sections, nextDate }) {
               <Image src="/logo.png" alt="" width={72} height={72} priority />
             </span>
             <span className="nav-word">
-              <b>Campus Premier League</b>
-              <i>Season 04</i>
+              <b>Football Premier League</b>
+              <i>Season 01</i>
             </span>
           </a>
 
@@ -153,11 +153,6 @@ export default function Navbar({ sections, nextDate }) {
               </a>
             ))}
           </nav>
-
-          <p className="nav-status">
-            <span className="dot" aria-hidden="true" />
-            {nextDate}
-          </p>
 
           {/* One call to action on the whole site. The forms live in the
               lobby, so this is the only door and there is nothing to choose
@@ -206,7 +201,6 @@ export default function Navbar({ sections, nextDate }) {
             Players
           </Link>
         </nav>
-        <p className="nav-sheet-foot">{nextDate}</p>
       </div>
     </>
   );

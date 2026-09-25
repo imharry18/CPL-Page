@@ -18,8 +18,8 @@ const SEASONS = [
 
 const VIEWS = [
   { key: "points", label: "Points table", meta: "Standings" },
-  { key: "batting", label: "Batting", meta: "Most runs" },
-  { key: "bowling", label: "Bowling", meta: "Most wickets" },
+  { key: "batting", label: "Attack", meta: "Most goals" },
+  { key: "bowling", label: "Defense", meta: "Most clean sheets" },
   { key: "overview", label: "Overview", meta: "Tournament totals" },
   // Only Season 3's franchises were recorded, so this tab is offered on that
   // season alone rather than shown empty on the other two.
@@ -47,7 +47,7 @@ export default function StatsSection({ seasons, teams }) {
       <div className="wrap">
         <div className="head reveal">
           <p className="eyebrow">The archive</p>
-          <h2 className="display display-l head-title">Every ball counted.</h2>
+          <h2 className="display display-l head-title">Every goal counted.</h2>
           <div className="seam-rule head-rule" />
         </div>
 
@@ -135,16 +135,16 @@ export default function StatsSection({ seasons, teams }) {
             {view === "batting" && (
               <div className="table-scroll">
                 <table className="table">
-                  <caption className="sr-only">{seasonMeta.title} leading run scorers</caption>
+                  <caption className="sr-only">{seasonMeta.title} leading goal scorers</caption>
                   <thead>
                     <tr>
                       <th scope="col" className="rank">#</th>
                       <th scope="col">Player</th>
-                      <th scope="col">Runs</th>
-                      <th scope="col">HS</th>
+                      <th scope="col">Goals</th>
+                      <th scope="col">Best</th>
                       <th scope="col">Avg</th>
-                      <th scope="col">SR</th>
-                      <th scope="col">6s</th>
+                      <th scope="col">G/M</th>
+                      <th scope="col">Ast</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -167,14 +167,14 @@ export default function StatsSection({ seasons, teams }) {
             {view === "bowling" && (
               <div className="table-scroll">
                 <table className="table">
-                  <caption className="sr-only">{seasonMeta.title} leading wicket takers</caption>
+                  <caption className="sr-only">{seasonMeta.title} leading clean sheets</caption>
                   <thead>
                     <tr>
                       <th scope="col" className="rank">#</th>
                       <th scope="col">Player</th>
-                      <th scope="col">Wkts</th>
+                      <th scope="col">CS</th>
                       <th scope="col">Best</th>
-                      <th scope="col">Econ</th>
+                      <th scope="col">GC</th>
                       <th scope="col">Avg</th>
                     </tr>
                   </thead>
