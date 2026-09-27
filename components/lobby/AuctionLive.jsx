@@ -585,6 +585,20 @@ export default function AuctionLive({
     return send(upNext ? { action: "lot", name: upNext } : { action: "next" });
   }
 
+  /* Step to the previous or next name in the round's own queue — the button
+     form of the ArrowLeft/ArrowRight keys above, for the same reason and with
+     the same bounds: no wrap, and nothing recorded by stepping. */
+  function stepLot(direction) {
+    if (announcing || state.notice) return undefined;
+    if (navQueue.length === 0) return undefined;
+    const at = navQueue.indexOf(state.current);
+    const to = at === -1 ? 0 : at + direction;
+    if (to < 0 || to >= navQueue.length) return undefined;
+    const name = navQueue[to];
+    if (name === state.current) return undefined;
+    return send({ action: "lot", name });
+  }
+
   // The page's colour: whoever currently holds the bid, the buyer while the
   // stamp is up over a cleared board, the house red when nobody has bid.
   // Leader first — a live bid always outranks a stamp from the lot before.
@@ -752,6 +766,44 @@ export default function AuctionLive({
         <div className="stage-tools">
           {admin && (
             <>
+              <button
+                type="button"
+                className="deck-guide"
+                disabled={busy || announcing || Boolean(state.notice)}
+                onClick={() => stepLot(-1)}
+                aria-label="Previous player"
+                title="Previous player"
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M10 2 4 8l6 6"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                className="deck-guide"
+                disabled={busy || announcing || Boolean(state.notice)}
+                onClick={() => stepLot(1)}
+                aria-label="Next player"
+                title="Next player"
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M6 2l6 6-6 6"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
               <button
                 type="button"
                 className="deck-guide"
